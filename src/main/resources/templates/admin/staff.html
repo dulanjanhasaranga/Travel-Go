@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Directory - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('staff')}"></div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <a th:href="@{/admin/dashboard}">Admin</a>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Staff Management</span>
+                        </div>
+                        <h2 class="topbar-title">Staff Specialists Directory</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <a th:href="@{/admin/staff/new}" class="btn btn-primary btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        + Onboard Staff Member
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Alerts -->
+                <div th:if="${successMessage}" class="alert alert-success">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span th:text="${successMessage}"></span>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span th:text="${errorMessage}"></span>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h4 style="margin: 0;">Active Staff Accounts (<span th:text="${#lists.size(staffList)}">0</span>)</h4>
+                        <span style="font-size: 0.82rem; color: var(--text-muted);">Includes Consultants, Visa Officers & Administrators</span>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Staff Member</th>
+                                <th>Designation / Role</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="staff : ${staffList}">
+                                <td>
+                                    <div class="user-chip">
+                                        <div class="user-chip-avatar" style="background: #FEF3C7; color: #92400E;" th:text="${#strings.substring(staff.name, 0, 1).toUpperCase()}">S</div>
+                                        <div>
+                                            <strong style="color: var(--text-heading);" th:text="${staff.name}">Staff Name</strong>
+                                            <div style="font-size: 0.8rem; color: var(--text-muted);" th:text="${staff.email}">staff@travelgo.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge" th:classappend="${staff.role.roleName == 'ADMIN'} ? 'badge-danger' : 'badge-warning'"
+                                          th:text="${staff.role.roleName}">
+                                        TRAVEL_CONSULTANT
+                                    </span>
+                                </td>
+                                <td th:text="${staff.phone != null ? staff.phone : '—'}">+1 555-0100</td>
+                                <td>
+                                    <span class="badge" th:classappend="${staff.active} ? 'badge-success' : 'badge-danger'">
+                                        <svg width="6" height="6" fill="currentColor" viewBox="0 0 6 6"><circle cx="3" cy="3" r="2.5"/></svg>
+                                        <span th:text="${staff.active ? 'ACTIVE' : 'DEACTIVATED'}">ACTIVE</span>
+                                    </span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <div style="display: inline-flex; gap: 0.5rem; justify-content: flex-end;">
+                                        <a th:href="@{/admin/staff/{id}/edit(id=${staff.id})}" class="btn btn-outline btn-sm">
+                                            Edit Staff
+                                        </a>
+                                        <form th:action="@{/admin/staff/{id}/toggle-status(id=${staff.id})}" method="post" onsubmit="return confirm('Toggle status for this staff member?');" style="display: inline;">
+                                            <button type="submit" class="btn btn-sm" th:classappend="${staff.active} ? 'btn-danger' : 'btn-primary'"
+                                                    th:text="${staff.active ? 'Deactivate' : 'Activate'}">Toggle</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(staffList)}">
+                                <td colspan="5" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                                    No staff accounts found. Click "+ Onboard Staff Member" to add one.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

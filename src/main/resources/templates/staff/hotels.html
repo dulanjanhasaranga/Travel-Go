@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Management - TravelGO Staff</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Dedicated Consultant Sidebar -->
+        <div th:replace="~{fragments/consultant-sidebar :: consultant-sidebar('hotels')}"></div>
+
+        <!-- Main Workspace Area -->
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <span>Travel Consultant Workspace</span>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Hotels</span>
+                        </div>
+                        <h2 class="topbar-title">Partner Hotels & Accommodations</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="openAddHotelModal()" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        + Add Partner Hotel
+                    </button>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Flash Alerts -->
+                <div th:if="${successMessage}" class="alert alert-success" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span th:text="${successMessage}">Operation successful</span>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <span th:text="${errorMessage}">Error occurred</span>
+                </div>
+
+                <!-- KPI Overview Cards -->
+                <div class="stats-grid" style="margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Total Partner Hotels</span>
+                            <div class="stat-icon stat-icon-amber">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="${#lists.size(hotels)}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--text-heading); font-weight: 600;">Partner Lodging</span>
+                            <span>Resorts and city hotels</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Partner Destinations</span>
+                            <div class="stat-icon stat-icon-green">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: #059669;" th:text="${#lists.size(destinations)}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: #059669; font-weight: 600;">Global Regions</span>
+                            <span>With hotel coverage</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search and Filter Bar -->
+                <div class="filter-toolbar">
+                    <div class="search-box">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" id="hotelSearchInput" placeholder="Search hotels by name or address..." onkeyup="filterHotels()" />
+                    </div>
+
+                    <div>
+                        <select id="destFilter" class="filter-select" onchange="filterHotels()">
+                            <option value="">All Destinations</option>
+                            <option th:each="d : ${destinations}" th:value="${d.city}" th:text="${d.city + ', ' + d.country}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Hotels Table Container -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-heading); display: flex; align-items: center; gap: 0.5rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; color: #D97706;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                Partner Hotels Directory (<span id="visibleHotelCount" th:text="${#lists.size(hotels)}">0</span>)
+                            </h3>
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">Manage tariffs, room descriptions, and hospitality partners</span>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="openAddHotelModal()" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;">
+                            + Add Hotel
+                        </button>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="data-table" id="hotelsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Hotel Name & Address</th>
+                                    <th>Destination</th>
+                                    <th>Star Rating</th>
+                                    <th>Price / Night</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="hotel : ${hotels}"
+                                    th:attr="data-name=${#strings.toLowerCase(hotel.name + ' ' + (hotel.address != null ? hotel.address : ''))},
+                                             data-dest=${hotel.destination != null ? hotel.destination.city : ''}">
+                                    <td style="font-family: monospace; font-weight: 700; color: var(--text-muted);" th:text="'#' + ${hotel.id}">#1</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.85rem;">
+                                            <img th:if="${hotel.image != null and !#strings.isEmpty(hotel.image)}"
+                                                 th:src="${hotel.image}"
+                                                 class="hotel-thumb"
+                                                 onerror="this.style.display='none'" />
+                                            <div>
+                                                <strong style="color: var(--text-heading); font-size: 0.92rem;" th:text="${hotel.name}">Grand Hotel Central</strong>
+                                                <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${hotel.address}">123 Main Street</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 600; color: var(--text-heading);" th:text="${hotel.destination != null ? hotel.destination.city : '—'}">Paris</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${hotel.destination != null ? hotel.destination.country : ''}">France</div>
+                                    </td>
+                                    <td>
+                                        <div class="stars-row" th:if="${hotel.starRating != null}">
+                                            <span th:text="${#strings.repeat('★', hotel.starRating)}">★★★★</span>
+                                            <span style="color: #CBD5E1;" th:text="${#strings.repeat('★', 5 - hotel.starRating)}">★</span>
+                                            <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 0.25rem;" th:text="'(' + ${hotel.starRating} + '/5)'">(4/5)</span>
+                                        </div>
+                                        <span th:if="${hotel.starRating == null}" style="color: var(--text-muted);">Unrated</span>
+                                    </td>
+                                    <td>
+                                        <span style="font-weight: 700; color: #059669;" th:text="'$' + ${#numbers.formatDecimal(hotel.pricePerNight, 1, 2)} + '/nt'">$150.00/nt</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" th:classappend="${hotel.active} ? 'badge-success' : 'badge-danger'"
+                                              th:text="${hotel.active ? 'ACTIVE' : 'INACTIVE'}">ACTIVE</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <div style="display: inline-flex; gap: 0.4rem; justify-content: flex-end;">
+                                            <button type="button" class="btn btn-outline btn-sm"
+                                                    style="padding: 0.25rem 0.6rem; font-size: 0.78rem;"
+                                                    th:attr="onclick=|openEditHotelModal(${hotel.id}, '${#strings.escapeJavaScript(hotel.name)}', ${hotel.destination != null ? hotel.destination.id : 0}, '${#strings.escapeJavaScript(hotel.address != null ? hotel.address : '')}', ${hotel.starRating != null ? hotel.starRating : 3}, ${hotel.pricePerNight}, '${#strings.escapeJavaScript(hotel.image != null ? hotel.image : '')}', '${#strings.escapeJavaScript(hotel.description != null ? hotel.description : '')}')|">
+                                                Edit
+                                            </button>
+                                            <form th:if="${!hotel.active}" th:action="@{/staff/hotels/{id}/activate(id=${hotel.id})}" method="post" style="display:inline"><button class="btn btn-outline btn-sm" type="submit">Activate</button></form>
+<form th:if="${hotel.active}" th:action="@{/staff/hotels/{id}/delete(id=${hotel.id})}" method="post" style="display: inline;"
+                                                  onsubmit="return confirm('Are you sure you want to deactivate hotel: ' + this.getAttribute('data-name') + '?');"
+                                                  th:attr="data-name=${hotel.name}">
+                                                <button type="submit" class="btn btn-sm btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">
+                                                    Deactivate
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div th:if="${#lists.isEmpty(hotels)}" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+                            <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-heading);">No hotels found</div>
+                            <p>Click <strong>+ Add Partner Hotel</strong> to record hospitality partners.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide Panel 1: Add Hotel -->
+        <div id="addSlidePanelBackdrop" class="slide-backdrop" onclick="closeAddHotelModal()"></div>
+        <div id="addSlidePanel" class="slide-panel">
+            <div class="slide-panel-header">
+                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #1E293B; display: flex; align-items: center; gap: 0.65rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0D9488;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add New Partner Hotel
+                </h3>
+                <button type="button" class="btn btn-outline btn-sm" onclick="closeAddHotelModal()" style="padding: 0.4rem; border-color: transparent;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <form th:action="@{/staff/hotels/create}" method="post" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+                <div class="slide-panel-body">
+                    <div class="form-group">
+                        <label class="form-label">Hotel Name *</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. The Ritz Palace" required />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Destination *</label>
+                            <select name="destinationId" class="form-control" required>
+                                <option value="">Select Destination...</option>
+                                <option th:each="d : ${destinations}" th:value="${d.id}" th:text="${d.city + ', ' + d.country}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Star Rating (1-5)</label>
+                            <input type="number" min="1" max="5" name="starRating" class="form-control" placeholder="4" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Address / Location *</label>
+                            <input type="text" name="address" class="form-control" placeholder="e.g. 45 Avenue Montaigne" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Price Per Night ($) *</label>
+                            <input type="number" step="0.01" name="pricePerNight" class="form-control" placeholder="189.00" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Hotel Image URL</label>
+                        <input type="text" name="image" class="form-control" placeholder="https://images.unsplash.com/..." />
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Description & Amenities</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Hotel overview, room features, spa, swimming pool..."></textarea>
+                    </div>
+                </div>
+                <div class="slide-panel-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeAddHotelModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;">
+                        Save Hotel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Slide Panel 2: Edit Hotel -->
+        <div id="editSlidePanelBackdrop" class="slide-backdrop" onclick="closeEditHotelModal()"></div>
+        <div id="editSlidePanel" class="slide-panel">
+            <div class="slide-panel-header">
+                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #1E293B; display: flex; align-items: center; gap: 0.65rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0284C7;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit Partner Hotel
+                </h3>
+                <button type="button" class="btn btn-outline btn-sm" onclick="closeEditHotelModal()" style="padding: 0.4rem; border-color: transparent;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <form id="editHotelForm" method="post" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+                <div class="slide-panel-body">
+                    <div class="form-group">
+                        <label class="form-label">Hotel Name *</label>
+                        <input type="text" id="editHotelName" name="name" class="form-control" required />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Destination *</label>
+                            <select id="editHotelDestId" name="destinationId" class="form-control" required>
+                                <option value="">Select Destination...</option>
+                                <option th:each="d : ${destinations}" th:value="${d.id}" th:text="${d.city + ', ' + d.country}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Star Rating (1-5)</label>
+                            <input type="number" min="1" max="5" id="editHotelStars" name="starRating" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Address / Location *</label>
+                            <input type="text" id="editHotelAddress" name="address" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Price Per Night ($) *</label>
+                            <input type="number" step="0.01" id="editHotelPrice" name="pricePerNight" class="form-control" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Hotel Image URL</label>
+                        <input type="text" id="editHotelImage" name="image" class="form-control" />
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Description & Amenities</label>
+                        <textarea id="editHotelDesc" name="description" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="slide-panel-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeEditHotelModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%); border: none;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openAddHotelModal() {
+            document.getElementById('addSlidePanelBackdrop').classList.add('open');
+            document.getElementById('addSlidePanel').classList.add('open');
+        }
+        function closeAddHotelModal() {
+            document.getElementById('addSlidePanelBackdrop').classList.remove('open');
+            document.getElementById('addSlidePanel').classList.remove('open');
+        }
+
+        function openEditHotelModal(id, name, destId, address, stars, price, img, desc) {
+            document.getElementById('editSlidePanelBackdrop').classList.add('open');
+            document.getElementById('editSlidePanel').classList.add('open');
+            var form = document.getElementById('editHotelForm');
+            form.action = '/staff/hotels/' + id + '/edit';
+            document.getElementById('editHotelName').value = name || '';
+            document.getElementById('editHotelDestId').value = destId || '';
+            document.getElementById('editHotelAddress').value = address || '';
+            document.getElementById('editHotelStars').value = stars || 3;
+            document.getElementById('editHotelPrice').value = price || '';
+            document.getElementById('editHotelImage').value = img || '';
+            document.getElementById('editHotelDesc').value = desc || '';
+        }
+        function closeEditHotelModal() {
+            document.getElementById('editSlidePanelBackdrop').classList.remove('open');
+            document.getElementById('editSlidePanel').classList.remove('open');
+        }
+
+        function filterHotels() {
+            var q = (document.getElementById('hotelSearchInput').value || '').toLowerCase().trim();
+            var dest = document.getElementById('destFilter').value;
+
+            var rows = document.querySelectorAll('#hotelsTable tbody tr');
+            var visible = 0;
+            rows.forEach(function(r) {
+                var search = r.getAttribute('data-name') || '';
+                var d = r.getAttribute('data-dest') || '';
+
+                var matchQuery = !q || search.includes(q);
+                var matchDest = !dest || d === dest;
+
+                if (matchQuery && matchDest) {
+                    r.style.display = '';
+                    visible++;
+                } else {
+                    r.style.display = 'none';
+                }
+            });
+            var countEl = document.getElementById('visibleHotelCount');
+            if (countEl) countEl.innerText = visible;
+        }
+
+        window.addEventListener('click', function(e) {
+            var addModal = document.getElementById('addHotelModal');
+            var editModal = document.getElementById('editHotelModal');
+            if (e.target == addModal) closeAddHotelModal();
+            if (e.target == editModal) closeEditHotelModal();
+        });
+    </script>
+<script th:src="@{/js/main.js}"></script></body>
+</html>

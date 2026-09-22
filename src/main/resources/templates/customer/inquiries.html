@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>My Inquiries - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+    
+    <main class="main-content">
+        <div class="container section">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+                <div>
+                    <a th:href="@{/customer/dashboard}" class="btn btn-outline btn-sm" style="margin-bottom: 1rem; display: inline-block;">&larr; Dashboard</a>
+                    <h1 style="margin-bottom: 0.5rem; font-size: 2rem;">Your Travel Inquiries</h1>
+                    <p style="color: var(--text-muted); margin: 0;">View the status and replies to your inquiries sent to our travel consultants.</p>
+                </div>
+                <a class="btn btn-primary" th:href="@{/contact}">Submit New Inquiry</a>
+            </div>
+            
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}" style="margin-bottom: 2rem;"></div>
+
+            <div th:if="${#lists.isEmpty(inquiries)}" class="card" style="padding: 3rem; text-align: center; border-style: dashed; border-color: var(--border-subtle);">
+                <div style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 1rem;">You have not submitted any inquiries yet.</div>
+                <a class="btn btn-primary" th:href="@{/contact}">Get in Touch</a>
+            </div>
+            
+            <div th:if="${not #lists.isEmpty(inquiries)}" style="display: grid; gap: 1.25rem;">
+                <a th:href="@{/customer/inquiries/{id}(id=${i.id})}" th:each="i : ${inquiries}" class="card" style="display: block; text-decoration: none; padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--border-subtle);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                        <div>
+                            <span class="badge" th:classappend="${i.statusLabel == 'New'} ? 'badge-info' : (${i.statusLabel == 'Resolved' or i.statusLabel == 'Replied'} ? 'badge-success' : 'badge-warning')" th:text="${i.statusLabel}" style="margin-bottom: 0.5rem;">STATUS</span>
+                            <h2 style="margin: 0; font-size: 1.25rem; color: var(--text-heading);" th:text="${i.subject}">Subject</h2>
+                        </div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted); font-family: monospace;" th:text="${i.reference}">REF-123</span>
+                    </div>
+                    <div style="font-size: 0.9rem; color: var(--text-body); margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" th:text="${i.message}">
+                        Message snippet...
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                        <span th:text="'Submitted: ' + ${#temporals.format(i.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                        <span th:if="${i.replyText}" style="color: var(--brand-primary); font-weight: 600;">Reply available &rarr;</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

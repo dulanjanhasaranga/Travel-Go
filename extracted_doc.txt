@@ -1,0 +1,995 @@
+Sri Lanka Institute of Information Technology
+Faculty of Computing
+IE3121 – Enterprise Architecture
+Business Architecture Assessment Report
+Client Organization: Travel GO – Smart Travel Agency
+Group ID: ISE_WE_0201_55
+Year 3, Semester 1 – 2026
+Student ID
+Name & Epic Ownership
+IT24101683
+De Silva H.U.S.T. – Project Manager / EP04 Visa & Payment Management
+IT24101865
+Bandara U.G.V.R. – EP01 User, Staff & System Administration
+IT24104104
+Dissanayake S.D.D.H. – EP03 Booking & Customer Journey
+IT24102390
+Abhimani N.H.A. – EP02 Package, Destination & Hotel Management 
+Lecturer: Ms. Chathurangika Kahandawaarachchi
+Submission Date: ____________________
+Contents
+1. Executive Summary6
+2. Organization Profile6
+Organization Name6
+Industry Sector6
+Size6
+Products / Services6
+Organizational Structure6
+Current Business Environment6
+Existing Information Systems6
+3. Business Problem Statement7
+4. Stakeholder Analysis7
+4.1 Stakeholder Identification7
+4.2 Stakeholder Matrix8
+4.3 & 4.4 Classification and Impact8
+5. As-Is Business Process Assessment by Epic8
+5.1 EP01 – User, Staff & System Administration9
+5. Process Scope Definition9
+6. Swim lanes9
+7. Process Activities9
+8. Decision Points10
+9. Handovers and Waiting Points10
+10. As-Is UML Activity Diagram – Guidance11
+11
+11. Diagram Validation11
+12. Analysis of the Current Process12
+13. Measurable Baseline Indicators (KPIs)12
+14. Process Assessment12
+5.2 EP02 – Package, Destination & Hotel Management13
+5. Process Scope Definition13
+6. Swim lanes13
+7. Process Activities13
+8. Decision Points14
+9. Handovers and Waiting Points14
+10. UML Activity Diagram Guidance15
+11. Diagram Validation16
+12. Analysis of the Current Process16
+13. Measurable Baseline Indicators (KPIs)17
+14. Process Assessment17
+5.3 EP03 – Booking & Customer Journey18
+5. Process Scope Definition18
+6. Swim lanes18
+7. Process Activities18
+8. Decision Points19
+9. Handovers and Waiting Points19
+10. UML Activity Diagram Guidance20
+11. Diagram Validation21
+12. Analysis of the Current Process21
+13. Measurable Baseline Indicators (KPIs)21
+14. Process Assessment22
+5.4 EP04 – Visa & Payment Management23
+5. Process Scope Definition23
+6. Swim lanes23
+7. Process Activities23
+8. Decision Points24
+9. Handovers and Waiting Points24
+From24
+To24
+Information Transferred24
+Possible Issue24
+Customer24
+Visa Officer24
+Visa application + uploaded documents24
+Incomplete documents or poor-quality scans24
+System24
+Customer24
+Missing document alerts / Upfront payment request24
+Technical delivery failure or customer delays response24
+Customer24
+Finance System24
+Upfront fee payment (Visa + Doc charge)24
+Payment gateway timeout, card decline, or customer delay24
+Finance System24
+System24
+Upfront payment status confirmation (Success/Failed)24
+Delay in API status sync between Finance and System24
+Visa Officer24
+System24
+Embassy visa decision (Approved / Rejected)24
+Delay in receiving embassy update or manual entry delay24
+System24
+Finance System24
+Refund request for documentation charge (If Rejected)24
+Refund processing delay in Finance System24
+Customer24
+Finance System24
+Final package balance payment (If Approved)24
+System24
+Customer24
+Final PDF receipt & Booking Confirmation notice24
+10. UML Activity Diagram Guidance25
+11. Diagram Validation25
+12. Analysis of the Current Process26
+13. Measurable Baseline Indicators (KPIs)26
+14. Process Assessment27
+Appendix A – Meeting Notes27
+1. Executive Summary
+Travel GO is a company which works in the field of travel and tourism and offers booking of tour packages, help with visa applications, arrangements for flight tickets, and optional hotel accommodation to individuals, families and small tour groups. At the moment the agency makes use of manual, paper-based methods and separate spreadsheets for managing tour bookings, visa applications, customer records and travel packages.
+The Business Architecture Assessment looks at the current (As-Is) business processes at TravelGo in four main operational areas which correspond directly to the system epics: (1) User, Staff and System Administration, (2) Catalogue Management (covering Package, Destination and Hotel), (3) Booking and Customer Journey, and (4) Visa and Payment Management.
+The main findings indicate that the present procedures involve manual transfers between staff members, repeated data entry, slow cycles when verifying visa documents, inconsistent timelines for sending out booking confirmations, and no real-time visibility regarding booking, payment and visa status for either the staff or the customers. These inefficiencies result in delays in processing, occasional mistakes and lower levels of customer satisfaction, as well as imposing a large administrative workload on a small staff team.
+The idea is to substitute the existing manual procedures with an integrated, role-based web platform (Travel GO) which will automate the creation of bookings, the tracking of visas, the simulation of payment processing and the publication of packages and hotels, while at the same time keeping the approval and verification stages that were identified in this assessment. The results serve as the basis for the later Information, Application and Technology Architecture reviews.
+2. Organization Profile
+Organization Name
+Travel GO – Smart Travel Agency
+Industry Sector
+Travel and tourism services (travel agency and tour operations).
+Size
+Small-to-medium sized travel agency operating from a head office, with a small team of booking officers, visa processing officers, finance staff, package/destination administrators and management. Serves individual travelers, families and small tour groups.
+Products / Services
+Domestic and international tour package bookings
+Visa type guidance, document handling and visa application processing
+Flight ticket information as part of tour packages
+Optional hotel accommodation offered as an add-on during booking
+Customer inquiry handling, reviews and ratings
+Organizational Structure
+Travel GO is organized around four functional areas that map to the system epics: Administration & User Management, Catalogue (Package/Destination/Hotel) Management, Booking & Customer Management, and Visa & Payment Management, with overall direction provided by senior management/ownership.
+Current Business Environment
+The agency operates in a competitive market shaped by online travel aggregators (OTAs), rising customer expectations for online self-service and real-time status tracking, and growing demand for combined package + visa + optional-hotel bookings handled through a single channel.
+Existing Information Systems
+Operations are currently supported mainly by manual paper-based processes, basic spreadsheets, email and phone communication with customers and partners. There is no centralized customer, booking or visa database and no role-based access control across departments.
+3. Business Problem Statement
+Many travel agencies, such as Travel GO, make use of manual methods or separate, individual systems when they are arranging tour bookings, processing visa applications and putting together travel packages. As a result, there are operational inefficiencies, inaccurate or out-of-date information, and a lack of consistency in customer service. The people who handle bookings and those who deal with visas have to spend a lot of time re-entering data onto spreadsheets and paper forms. Customers do not have the ability to look themselves up and check the status of their bookings or visa applications, and managers have very little insight into the performance of operations throughout the various departments.
+In order to enable customers to browse travel packages, book tours, apply for visas and keep track of their requests all via the internet, agency staff are to manage tour bookings, visa applications, customer records and travel packages using role-based access; this is anticipated to lead to greater operational efficiency, improved service quality and higher customer satisfaction.
+This assessment covers the customer's processes, booking, visa, payment (simulated) and administrative management, including information regarding flight tickets and optional hotel accommodation; hotel accommodation is not included in the standard package price and is available as an optional extra. The integration of a live payment gateway is not within the scope of this academic project; payment is instead represented as a simulated process.
+4. Stakeholder Analysis
+4.1 Stakeholder Identification
+Stakeholder
+Internal / External
+Role
+Customers / Travelers
+External
+Browse packages, book tours, apply for visas, make payments, track status
+Booking Officers / Travel Consultants
+Internal
+Manage tour bookings, review requests, confirm or cancel bookings
+Visa Processing Officers
+Internal
+Verify documents, process visa applications, approve or reject
+Finance / Payment Officers
+Internal
+Generate payment requests, confirm payments, issue receipts
+Admin / IT Staff
+Internal
+Manage user accounts, roles, permissions and system security
+Package & Destination Administrators
+Internal
+Create and manage destinations, packages, pricing and hotels
+Senior Management / Owners
+Internal
+Approve high-value exceptions, set strategic direction
+Hotel Partners / Airlines
+External
+Provide hotel/flight information used in packages
+Embassies / Visa Authorities
+External
+Hold final visa-issuance authority (outside the system)
+4.2 Stakeholder Matrix
+Stakeholder
+Interest
+Influence
+Impact
+Engagement
+Strategy
+Customers
+High
+Low–Med
+High
+Keep informed
+Feedback via reviews
+Booking Officers
+High
+Medium
+High
+Involve closely
+Train on new workflow
+Visa Officers
+High
+Medium
+High
+Involve closely
+Consult on verification
+Finance Officers
+Medium
+Medium
+Medium
+Keep informed
+Consult on payment
+Admin / IT
+High
+High
+High
+Manage closely
+Involve in access design
+Package Admins
+High
+Medium
+High
+Involve closely
+Consult on catalogue
+Senior Mgmt
+Medium
+High
+Medium
+Manage closely
+Secure sponsorship
+4.3 & 4.4 Classification and Impact
+Figure 1 Power–Interest Grid for TravelGo Stakeholders
+5. As-Is Business Process Assessment by Epic
+Each team member owns one epic and has completed the full process analysis (items 5–14) for that epic.
+Epic
+Process Analyzed
+Responsible Member
+EP01
+User Registration & Account Management
+Bandara U.G.V.R. (IT24101865)
+EP02
+Tour Package, Destination & Hotel Listing
+Abhimani N.H.A. (IT24102390)
+EP03
+Tour Package Booking Process
+Dissanayake S.D.D.H. (IT24104104)
+EP04
+Visa Application Processing Process
+De Silva H.U.S.T. (IT24101683)
+5.1 EP01 – User, Staff & System Administration
+Responsible: Bandara U.G.V.R. (IT24101865)
+5. Process Scope Definition
+Item
+Student Response
+Triggering Event
+A customer or staff member requests an account-related action, or admin needs to update company/system settings.
+Start Point
+An account request, account change request, or system information update is received by the admin.
+End Point
+The account or system information is successfully created, updated, activated, deactivated, or the request is rejected.
+Main Business Objective
+Centralized management of customer and staff accounts, access permissions, company information and basic system settings.
+Items Within Scope
+Registration, login, profile, customer & staff account management, role & permission assignment, activation/deactivation, company & system settings.
+Items Outside Scope
+Package, destination, visa, booking, payment and hotel management.
+6. Swim lanes
+Swimlane
+Main Responsibilities
+Customer / Staff Member
+Submit account requests, provide personal information, request updates, provide corrections, receive status.
+Admin / Authorized Staff
+Receive & review requests, verify info, check duplicates, create/update accounts, assign roles, activate/deactivate, manage settings.
+Management
+Review and approve sensitive role/permission requests and important system setting changes.
+System (future)
+Validate information, check existing records, store data, apply approved changes (currently mostly manual).
+7. Process Activities
+No.
+Activity
+Responsible
+01
+Submit account request
+Customer / Staff
+02
+Receive and record account request
+Admin
+03
+Review submitted information
+Admin
+04
+Request missing information
+Admin
+05
+Provide corrected information
+Customer / Staff
+06
+Validate submitted information
+Admin
+07
+Check existing records for duplicates
+Admin
+08
+Determine appropriate role and access level
+Admin
+09
+Escalate sensitive access request
+Admin
+10
+Review role/access request
+Management
+11
+Record user details and create account
+Admin
+12
+Activate account and assign access
+Admin
+13
+Notify requester of account status
+Admin
+14
+Process account update or deactivation
+Admin
+15
+Update or archive account record
+Admin
+8. Decision Points
+Decision Question
+Possible Outcomes
+Is the submitted information complete?
+[Complete] → Continue; [Incomplete] → Request missing information
+Is the submitted information valid?
+[Valid] → Continue; [Invalid] → Request correction or reject
+Does an existing user record already exist?
+[No Duplicate] → Continue; [Duplicate Found] → Update existing or reject
+Is the requested access sensitive?
+[Standard] → Admin assigns; [Sensitive] → Escalate to Management
+Does management approve the access?
+[Approved] → Continue; [Rejected] → Reject request
+New account or change request?
+[New Account] → Creation; [Update/Deactivation] → Modification
+9. Handovers and Waiting Points
+From
+To
+Information Transferred
+Possible Issue
+Customer/Staff
+Admin
+Account request + personal info
+Request delayed or lost
+Admin
+Customer/Staff
+Request for missing information
+User responds late
+Customer/Staff
+Admin
+Corrected information
+Repeated communication cycles
+Admin
+Management
+Sensitive access request
+Manager unavailable
+Management
+Admin
+Approval/rejection decision
+Decision not properly recorded
+Admin
+Customer/Staff
+Account status notification
+Notification delayed
+10. As-Is UML Activity Diagram
+Figure 2: EP01 – User, Staff & System Administration
+11. Diagram Validation
+Validation Question
+Yes
+No
+Comments
+Is the start of the process clear?
+✓
+Initial node present
+Are all major actors represented as swim lanes?
+✓
+Customer/Staff, Admin, Management
+Is every activity in the correct swim lane?
+✓
+Are activity labels clear and action-oriented?
+✓
+Verb–object style
+Are decision outcomes shown with guard conditions?
+✓
+[Complete], [Approved] etc.
+Are rejection paths represented?
+✓
+Are rework loops represented?
+✓
+Missing-info loop
+Are end points clearly shown?
+✓
+Two final nodes
+Does the diagram represent the AS-IS process accurately?
+✓
+Manual process
+12. Analysis of the Current Process
+No.
+Problem Identified
+Evidence
+Business Impact
+1
+Manual fragmented record keeping
+Details in spreadsheets, paper or separate files
+Data inconsistency, hard to locate info
+2
+Manual duplicate checking
+Admin must manually search existing records
+Duplicate accounts, extra effort
+3
+Delays from multiple handovers
+Requests move between customers, admin, management
+Account creation delayed
+4
+No clear access approval records
+Approvals via email or verbal
+Difficult to audit approvals
+5
+Repeated rework for incomplete info
+Missing info causes extra communication cycles
+Longer processing, user frustration
+13. Measurable Baseline Indicators (KPIs)
+KPI
+How It Could Be Measured
+Average account creation time
+Time from receiving request to activating the account
+% of requests returned for missing information
+Requests requiring missing info ÷ total requests × 100
+Average account update/deactivation time
+Time from receiving update request to completion
+Number of duplicate user records
+Count of duplicates found in periodic review
+Average management approval time
+Time from escalation to management decision
+% of requests requiring rework
+Requests with ≥1 correction cycle ÷ total × 100
+14. Process Assessment
+The current User, Staff & System Administration process operates mainly through manual procedures, spreadsheets, paper records, email and informal approval methods. When a customer or staff member requires an account, a request is submitted to an administrator who reviews the information, checks for missing details and duplicates, and determines the required role. Sensitive access requests may require management approval.
+Main delays occur during transfer of requests, correction of incomplete information, and management approval. Because communication is not centralized, requests may remain unanswered. Customers and newly recruited staff are most affected. Priority improvement areas are automated duplicate checking, structured request tracking, and clear digital approval records.
+5.2 EP02 – Package, Destination & Hotel Management 
+Responsible: Abhimani N.H.A. (IT24102390)
+5. Process Scope Definition
+Item
+Student Response
+Process name
+Tour Package, Destination and Hotel Management Process
+Triggering Event
+Admin/Staff needs to create or update destination, package or hotel information.
+Start Point
+Admin/Staff decides to maintain catalogue information (currently via spreadsheets or paper).
+End Point
+Selected destination, package or hotel information is created/updated and made available.
+Main Business Objective
+Maintain accurate, up-to-date destination, package and hotel information for reliable customer access.
+Items Within Scope
+Destination (country, city, description, images); Package (description, duration, price, availability, services, flight info); Hotel (name, location, description, images, price); customer search/view.
+Items Outside Scope
+Booking, visa, payment, user management, live flight booking, hotel reservation.
+6. Swim lanes
+Swimlane
+Main Responsibilities
+Admin / Staff (Package Admin)
+Create/update destinations, packages and hotels; maintain package  pricing, availability, included services and flight information; save and publish information .
+Customer / User
+Search and filter destinations and packages; view destination, package and hotel information (currently limited self-service).
+System 
+Save  entered  information, store and update catalogue records, retrieve relevant information, check package availability, and display destinations, packages and hotel information to customers.
+7. Process Activities
+No.
+Activity
+Responsible
+1
+Select management area (Destination / Package / Hotel)
+Admin/Staff
+2
+Create or update destination (country, city, description, images)
+Admin/Staff
+3
+Create or update tour package (description, duration, price, availability, services, flight)
+Admin/Staff
+4
+Create or update hotel (name, location, description, images, price)
+Admin/Staff
+5
+Submit catalogue information for validation
+Admin/Staff
+6
+Save / publish catalogue information
+System
+7
+Search / filter destinations or packages
+Customer
+8
+Display available destinations and related packages
+System
+9
+Select destination / tour package
+Customer 
+10
+Check package availability
+System
+11
+Display package details, services, flight information and price
+System
+12
+View destination / package / hotel details
+Customer
+13
+Retrieve and display hotels for the selected destination
+System 
+8. Decision Points
+Decision Question
+Possible Outcomes
+Which management area is selected?
+[Destination] / [Tour Package] / [Hotel]
+Create or Update action?
+[Create] → new record; [Update] → existing record
+Is the package currently available?
+[Yes] → Display package information; [No] → Display package unavailable 
+What information does the customer want?
+[Destination] / [Tour Package] / [Hotel]
+9. Handovers and Waiting Points
+From
+To
+Information Transferred
+Possible Issue
+Admin/Staff
+Records / Spreadsheet
+Destination / package / hotel data
+Incorrect or incomplete data
+Records
+Customer
+Catalogue information for viewing
+Outdated pricing or availability
+10. UML Activity DiagramFigure 3: EP02 – Package, Destination & Hotel ManagementFigure 3: EP02 – Package, Destination & Hotel Management
+Figure 3: EP02 – Package, Destination & Hotel Management
+Figure 3: EP02 – Package, Destination & Hotel Management
+11. Diagram Validation
+Validation Question
+Yes
+No
+Comments
+Is the start of the process clear?
+✓
+Initial node + select area
+Are all major actors represented as swim lanes?
+✓
+Admin/Staff, Customer, System
+Is every activity in the correct swim lane?
+✓
+Are activity labels clear and action-oriented?
+✓
+Create, Update, Search, View
+Are decision outcomes shown with guard conditions?
+✓
+[Destination], [Create], [Yes]
+Are alternative management areas represented?
+✓
+3 branches
+Is package availability represented?
+✓
+[Yes]/[No]
+Are end points clearly shown?
+✓
+Does the diagram represent the AS-IS process accurately?
+✓
+Manual catalogue maintenance
+12. Analysis of the Current Process
+No.
+Problem Identified
+Evidence
+Business Impact
+1
+Destination info becomes outdated
+Manual maintenance of details, descriptions, images
+Customers receive inaccurate information
+2
+Package info requires repeated manual updates
+Description, duration, pricing, availability maintained separately
+Higher admin workload, inconsistent data
+3
+Package availability not updated promptly
+Depends on staff keeping records current
+Customers see unavailable packages
+4
+Hotel information requires manual maintenance
+Name, location, images, prices updated by staff
+Outdated hotel info → extra inquiries
+5
+Information in disconnected/manual processes
+Paper, spreadsheets, email, phone
+Duplicate entry, inconsistencies, slower processing
+6
+Limited customer self-service access
+No centralized customer information platform
+Customers depend on staff for basic info
+7
+Pricing/availability can become inconsistent
+Package and hotel info maintained separately
+Customer dissatisfaction, operational errors
+13. Measurable Baseline Indicators (KPIs)
+KPI
+How It Could Be Measured
+Average time to create a destination listing
+Time from starting data entry to completing the record
+Average time to create/update a tour package
+Time from starting package maintenance to saving completed package
+Average time to update hotel information
+Time required to update hotel details, images and pricing
+Number of outdated package records
+Count of packages whose pricing/availability not updated within review period
+Number of outdated hotel records
+Count of hotel records with outdated pricing or descriptions
+Destination/package information error rate
+Records requiring correction ÷ total records reviewed × 100
+Average customer information-search time
+Time a customer takes to find required destination or package info
+Number of inquiries caused by missing information
+Count of customer inquiries requesting info that should be available
+14. Process Assessment
+The current Package, Destination and Hotel Management process relies heavily on staff to create, update and maintain travel information. Destination descriptions and images, package details, pricing, availability, included services, flight information and hotel information must be maintained accurately. Use of manual procedures and disconnected spreadsheets increases the risk of duplicated data, outdated information and inconsistent pricing or availability.
+Package and Destination Administrators and customers are the main affected parties. Administrators spend time maintaining multiple categories of information; customers may need to contact staff when information is incomplete or outdated. A centralized Travel GO platform will allow structured management functions for staff and reliable search/filter/view capabilities for customers. Baseline measurements should be collected for listing creation time, update frequency, error rates and information-related inquiries.
+5.3 EP03 – Booking & Customer Journey
+Responsible: Dissanayake S.D.D.H. (IT24104104)
+5. Process Scope Definition
+Item
+Student Response
+Process name
+Tour Package Booking Process
+Triggering Event
+Customer decides to book a tour package after viewing catalogue information.
+Start Point
+Customer selects a package and initiates a booking request (currently via phone/email/walk-in).
+End Point
+Booking is confirmed, cancelled or completed; customer may leave a review.
+Main Business Objective
+Enable customers to reserve tour packages and allow staff to review, confirm and track bookings efficiently.
+Items Within Scope
+Package selection, travel date & traveler details, optional hotel, booking creation/modification/cancellation, status management, history, inquiries, reviews, notifications.
+Items Outside Scope
+Creating packages (EP02), payment processing (EP04), visa processing (EP04), user account management (EP01).
+6. Swim lanes
+Swimlane
+Main Responsibilities
+Customer
+Select package, enter travel details, optionally add hotel, submit booking, view status, modify/cancel, submit inquiry/review.
+Travel Consultant / Booking Officer
+Receive booking requests, review details, confirm or reject, update status, handle inquiries.
+System (future)
+Record booking, maintain status history, send notifications (currently largely manual).
+7. Process Activities
+No.
+Activity
+Responsible
+1
+Select tour package and initiate booking
+Customer
+2
+Enter travel date, number of travelers and details
+Customer
+3
+Optionally select hotel accommodation
+Customer
+4
+Submit booking request (status = Pending)
+Customer
+5
+Review booking details
+Booking Officer
+6
+Confirm, request more info, or cancel booking
+Booking Officer
+7
+Notify customer of status change
+Booking Officer / System
+8
+View booking status and history
+Customer
+9
+Modify or cancel eligible booking
+Customer
+10
+Submit review and rating after trip
+Customer
+8. Decision Points
+Decision Question
+Possible Outcomes
+Does the customer want optional hotel?
+[Yes] → select hotel; [No] → continue without hotel
+Is the booking information complete and valid?
+[Complete] → proceed; [Incomplete] → request more information
+Does the officer confirm the booking?
+[Confirm] → Confirmed; [Cancel] → Cancelled; [Request info] → return to customer
+Is the booking still eligible for modification/cancellation?
+[Yes] → allow change; [No] → reject change request
+9. Handovers and Waiting Points
+From
+To
+Information Transferred
+Possible Issue
+Customer
+Booking Officer
+Booking request + traveler details
+Request lost or delayed (phone/email)
+Booking Officer
+Customer
+Request for more information
+Customer responds late
+Booking Officer
+Customer
+Confirmation / cancellation notice
+Notification delayed or missed
+10. UML Activity Diagram 
+Figure 4: 3 EP03 – Booking & Customer Journey
+11. Diagram Validation
+Validation Question
+Yes
+No
+Comments
+Is the start of the process clear?
+✓
+Initial node present
+Are all major actors represented as swim lanes?
+✓
+Customer, Booking Officer
+Is every activity in the correct swim lane?
+✓
+Are activity labels clear and action-oriented?
+✓
+Verb–object style
+Are decision outcomes shown with guard conditions?
+✓
+[Confirm], [Cancel], [Yes]
+Are rejection / cancellation paths represented?
+✓
+Are rework loops represented?
+✓
+Request-info loop
+Are end points clearly shown?
+✓
+Confirmed / Cancelled / Completed
+Does the diagram represent the AS-IS process accurately?
+✓
+Manual multi-channel booking
+12. Analysis of the Current Process
+No.
+Problem Identified
+Evidence
+Business Impact
+1
+Bookings received through multiple channels
+Phone, email, walk-in, messaging
+Requests can be lost or delayed
+2
+No single status view
+Status tracked in spreadsheets or notes
+Staff and customers lack real-time visibility
+3
+Confirmation delays
+Manual review and follow-up required
+Customer uncertainty and possible cancellations
+4
+Difficulty tracking booking history
+Records scattered across channels
+Hard to answer customer queries quickly
+5
+Customers cannot self-serve status checks
+Must call or email for updates
+Increased workload for Booking Officers
+13. Measurable Baseline Indicators (KPIs)
+KPI
+How It Could Be Measured
+Average time from booking request to confirmation
+Time between request receipt and status = Confirmed
+% of bookings requiring rework / more information
+Bookings returned for more info ÷ total bookings × 100
+Average response time to customer inquiries
+Time from inquiry receipt to first staff response
+Number of status-related customer calls/emails
+Count of contacts whose only purpose is status check
+Booking cancellation rate before confirmation
+Cancelled before confirmation ÷ total requests × 100
+14. Process Assessment
+The booking process is the core revenue activity of Travel GO. Currently, bookings arrive through multiple channels and are processed manually. There is no single authoritative status view, confirmation can be delayed, and customers must contact staff for updates. This creates extra work for Booking Officers and uncertainty for customers.
+Automating request capture, status tracking and notifications will significantly reduce delays and improve customer experience. Priority should be given to a structured online booking form, real-time status dashboard, and automated confirmation notifications. Baseline measurements of confirmation time and status-related contacts will help measure improvement after the new system is introduced.
+5.4 EP04 – Visa & Payment Management
+Responsible: De Silva H.U.S.T. (IT24101683) – Project Manager
+5. Process Scope Definition
+Item
+Student Response
+Process name
+Visa Application and Payment Processing Process
+Triggering Event
+Customer submits a visa application linked to a booking.
+Start Point
+Customer selects visa type and begins the application.
+End Point
+Visa is approved or rejected, and the final package payment is completed (if approved).
+Main Business Objective
+Manage visa applications with an upfront visa fee, process approval/rejection, and collect the final package payment after visa approval.
+Items Within Scope
+Visa type and required document - Customer visa application and document upload - Upfront visa fee payment request and payment - Staff review, approval or rejection - Documentation charge refund processing (upon rejection) - Customer status tracking - Final package payment after visa approval
+Items Outside Scope
+Embassy’s internal decision process - Live payment gateway - Creating bookings or packages
+6. Swim lanes
+Swimlane
+Main Responsibilities
+Applicant (Customer)
+Select visa type, upload required documents, complete two-stage payments (Upfront Fee & Final Package Balance), and track application status.
+Visa Processing System
+Validate document completeness, send missing document alerts, generate payment requests & PDF receipts, auto-update application statuses, and trigger cancellation/refund workflows.
+Visa Officer / Staff
+Review document validity/authenticity, set upfront charges, and enter official embassy visa decisions (Approve/Reject).
+Finance System
+Verify/confirm upfront & final payments, retry failed transactions, and process documentation charge refunds upon visa rejection.
+7. Process Activities
+No.
+Activity
+Responsible
+1
+Adds/updates Visa Types
+Staff
+2
+Submits visa application and uploads required documents
+Customer
+3
+Validates submitted documents and flags missing items
+Visa Processing System
+4
+Reviews documents and calculates upfront charges
+Staff
+5
+Pays upfront fee (Visa Fee + Documentation Charge)
+Customer
+6
+Verifies upfront payment and updates status to 'Visa Processing'
+Finance System
+7
+Enters embassy visa decision (Approve or Reject)
+Staff
+8
+Processes documentation charge refund & cancels booking (If Rejected)
+Customer
+9
+Pays the final package balance (If Approved)
+Customer
+10
+Confirms final payment, generates PDF receipt, and confirms booking
+Visa Processing System
+8. Decision Points
+Decision Question
+Possible Outcomes
+Are all required documents submitted?
+[Yes] → Proceed to staff document verification ; [No] → Send missing document alert to customer.
+Is the upfront payment successful?
+[Yes] → Lock charges, generate receipt, and start visa processing ; [No] → Trigger payment failure alert and offer retry option.
+Is the visa application Approved or Rejected?
+[Yes] → Set status to 'Visa Approved' & request final package payment ; [No] → Refund documentation charge only & cancel booking
+Has the final package payment been completed after approval?
+[Yes] → Generate final receipt PDF and set booking status to 'CONFIRMED’; [No] → Send payment failure alert & retain booking in pending state
+9. Handovers and Waiting Points
+From
+To
+Information Transferred
+Possible Issue
+Customer
+Visa Officer
+Visa application + uploaded documents
+Incomplete documents or poor-quality scans
+System
+Customer
+Missing document alerts / Upfront payment request
+Technical delivery failure or customer delays response
+Customer
+Finance System
+Upfront fee payment (Visa + Doc charge)
+Payment gateway timeout, card decline, or customer delay
+Finance System
+System
+Upfront payment status confirmation (Success/Failed)
+Delay in API status sync between Finance and System
+Visa Officer
+System
+Embassy visa decision (Approved / Rejected)
+Delay in receiving embassy update or manual entry delay
+System
+Finance System
+Refund request for documentation charge (If Rejected)
+Refund processing delay in Finance System
+Customer
+Finance System
+Final package balance payment (If Approved)
+Payment failure or delay near the 3-day travel deadline
+System
+Customer
+Final PDF receipt & Booking Confirmation notice
+Email/PDF generation system failure
+10. UML Activity Diagram 
+Figure 5: EP04 – Visa & Payment Management
+11. Diagram Validation
+Validation Question
+Yes
+No
+Comments
+Is the start of the process clear?
+Yes
+Initial node – visa type selection
+Are all major actors represented as swim lanes?
+Yes
+Includes Customer, Visa Processing System, Visa Officer, and Finance System
+Is every activity in the correct swim lane?
+Yes
+System automation, staff reviews, customer actions, and finance steps are properly mapped.
+Are activity labels clear and action-oriented?
+Yes
+All activities use action verbs
+Are decision outcomes shown with guard conditions?
+Yes
+[Yes]/[No], [Approved]/[Reject]
+Are rejection paths represented?
+Yes
+Includes visa rejection path
+Is the stock-availability decision represented?
+No
+physical stock is not applicable to visa processing
+Is the USD 5,000 approval threshold represented?
+No
+Upfront Fee vs Final Package Balance
+Is the insufficient-budget path represented?
+Yes
+Mapped as the "Payment Failed / Retry
+Is the payment-retry / reminder loop represented?
+Yes
+Mapped as the "Missing / Invalid Document Alert & Re-upload
+Are end points clearly shown?
+Yes
+Both successful booking confirmation and cancelled booking end states use final activity nodes.
+Does the diagram represent the scenario accurately?
+Yes
+Manual verification process
+12. Analysis of the Current Process
+No.
+Problem Identified
+Evidence
+Business Impact
+1
+Document completeness checked manually
+No automated checklist before officer review
+Slower first review, repeated back-and-forth
+2
+No prioritization of verification queue
+Applications reviewed in order emails arrive
+Urgent applications may be delayed unfairly
+3
+Payment and visa status in separate spreadsheets
+Finance and visa records not linked
+Status update delays after payment
+4
+No defined threshold for high-value fees
+High-value cases handled informally
+Inconsistent decision-making and delays
+5
+Applicants have no self-service status view
+Status inquiries handled by phone/email
+Increased workload for Visa Officers
+13. Measurable Baseline Indicators (KPIs)
+KPI
+How It Could Be Measured
+Average visa application processing time
+Time from submission to approval/rejection
+% of applications returned for missing documents
+Applications with missing-doc request ÷ total × 100
+Average visa-fee payment confirmation time
+Time between payment request and confirmed payment record
+Visa approval-to-rejection ratio
+Approved applications ÷ rejected applications (per period)
+Average time to notify applicant of final decision
+Time between officer decision and notification sent
+14. Process Assessment
+The current visa application process depends heavily on the Visa Officer manually checking document completeness and authenticity, with no automated checklist to catch missing items before the officer’s review begins. Every incomplete submission consumes a full review cycle before the applicant is told what is missing.
+Major delays occur at document verification and at reconciling payment confirmation with application status, since these are tracked in separate spreadsheets. Applicants and Visa Officers are the most affected. Manually cross-referencing payment records against visa applications creates no direct business value and is a strong candidate for automation. Priority should be given to automated document-completeness checking and linking payment confirmation directly to application status. Before designing the To-Be process, evidence should be collected on typical document-rejection rates, average processing times by visa type, and the frequency of high-value fee cases.
+Appendix A – Meeting Notes
+Item
+Details
+Meeting purpose
+Agree client organization (Travel GO), confirm four epics, allocate one epic to each member for individual process analysis.
+Attendees
+De Silva H.U.S.T., Bandara U.G.V.R., Dissanayake S.D.D.H., Abhimani N.H.A.
+Key decisions
+Travel GO confirmed as client; each member independently completes items 5–14 for their assigned epic; group jointly responsible for Executive Summary and Stakeholder Analysis (items 1–4).
+Epic allocation
+EP01 – Bandara; EP02 – Abhimani; EP03 – Dissanayake; EP04 – De Silva.
+Follow-up actions
+Each member drafts process scope, swim lanes, activities, decisions and handovers, then exchanges diagrams for peer validation.
+— End of Business Architecture Assessment Report —

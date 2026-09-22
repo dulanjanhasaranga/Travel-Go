@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Visa Applications - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        .data-table th {
+            background-color: var(--bg-subtle);
+            color: var(--text-heading);
+            font-weight: 700;
+            padding: 0.85rem 1.15rem;
+            border-bottom: 2px solid var(--border-subtle);
+            white-space: nowrap;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+        .data-table td {
+            padding: 1rem 1.15rem;
+            border-bottom: 1px solid var(--border-subtle);
+            vertical-align: middle;
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        .data-table tr:hover {
+            background-color: #F8FAFC;
+        }
+        .action-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        /* Custom Modal */
+        .custom-modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .custom-modal-backdrop.active {
+            display: flex;
+            animation: modalFadeIn 0.2s ease-out;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .custom-modal-box {
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 520px;
+            box-shadow: var(--shadow-2xl);
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .custom-modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-subtle);
+        }
+        .custom-modal-header h4 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        .custom-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            line-height: 1;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .custom-modal-body {
+            padding: 1.5rem;
+        }
+        .custom-modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            background: var(--bg-subtle);
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 0.4rem;
+        }
+        .form-control-custom {
+            width: 100%;
+            padding: 0.65rem 0.85rem;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container section">
+            <!-- Header Section -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <span class="badge badge-info" style="margin-bottom: 0.5rem;">CLIENT PORTAL</span>
+                    <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">My Visa Applications</h1>
+                    <p style="color: var(--text-muted); font-size: 1rem;">Monitor officer verification, submit required documentation, and view embassy status updates.</p>
+                </div>
+                <div>
+                    <a th:href="@{/customer/dashboard}" class="btn btn-outline btn-sm">
+                        &larr; Back to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            <div th:if="${successMessage}" class="alert alert-success">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <div th:text="${successMessage}">Operation successful</div>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div th:text="${errorMessage}">Error occurred</div>
+            </div>
+
+            <!-- Quick Apply Banner for Bookings Without Visa -->
+            <div class="card" th:if="${bookingsWithoutVisa != null and not #lists.isEmpty(bookingsWithoutVisa)}" 
+                 style="margin-bottom: 2.5rem; padding: 1.75rem; background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%); border: 1px solid #BAE6FD;">
+                <div style="display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap;">
+                    <div style="width: 44px; height: 44px; background: var(--brand-primary); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: #FFFFFF; flex-shrink: 0;">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <div style="flex: 1; min-width: 260px;">
+                        <h3 style="margin: 0 0 0.4rem 0; color: #0369A1; font-size: 1.15rem;">Request Visa Services for Your Booked Trips</h3>
+                        <p style="margin: 0 0 1rem 0; color: #0C4A6E; font-size: 0.88rem;">
+                            You have confirmed or pending bookings that do not have a visa application on file. Apply now to get your documents verified by our specialized visa team.
+                        </p>
+                        <form th:action="@{/customer/visas/apply}" method="post" style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end;">
+                            <div style="flex: 2; min-width: 220px;">
+                                <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #0369A1; margin-bottom: 0.25rem;">Select Booking</label>
+                                <select name="bookingId" class="form-control-custom" style="background: #FFFFFF;" required>
+                                    <option th:each="b : ${bookingsWithoutVisa}" 
+                                            th:value="${b.id}" 
+                                            th:text="'#' + ${b.id} + ' - ' + ${b.tourPackage.name} + ' (' + ${b.travelDate} + ')'">
+                                    </option>
+                                </select>
+                            </div>
+                            <div style="flex: 1; min-width: 150px;">
+                                <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #0369A1; margin-bottom: 0.25rem;">Visa Category</label>
+                                <select name="visaType" class="form-control-custom" style="background: #FFFFFF;" required>
+                                    <option value="VISIT">Tourist / Visit Visa</option>
+                                    <option value="WORK">Business / Work Visa</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="padding: 0.65rem 1.25rem;">
+                                Submit Visa Application
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- Existing Applications List -->
+            <div class="card" style="padding: 1.75rem;">
+                <h3 style="margin-bottom: 1.25rem; font-size: 1.25rem;">Your Submitted Applications</h3>
+
+                <!-- Modern Status Cards -->
+                <div th:if="${not #lists.isEmpty(visaApplications)}">
+                    <div th:each="visa : ${visaApplications}" class="status-card reveal-up" 
+                         th:classappend="${visa.status.name() == 'APPROVED'} ? 'status-approved' : (${visa.status.name() == 'REJECTED'} ? 'status-danger' : (${visa.status.name() == 'PROCESSING' or visa.status.name() == 'DOCUMENTS_VERIFIED'} ? 'status-processing' : 'status-warning'))"
+                         data-animate="fade-up">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--text-heading);" th:text="${visa.booking.tourPackage.name}">European Classical Journey</h4>
+                                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+                                    Booking <span style="font-weight: 700;" th:text="'#' + ${visa.booking.id}">#1</span> &bull; 
+                                    Travel: <span style="font-weight: 600;" th:text="${visa.booking.travelDate}">2026-10-15</span>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span class="badge"
+                                      th:classappend="${visa.status.name() == 'APPROVED'} ? 'badge-success' : (${visa.status.name() == 'REJECTED'} ? 'badge-danger' : (${visa.status.name() == 'PROCESSING' or visa.status.name() == 'DOCUMENTS_VERIFIED'} ? 'badge-info' : 'badge-warning'))"
+                                      th:text="${visa.status.name() == 'DOCUMENTS_REQUIRED' ? 'Additional documents required' : #strings.replace(visa.status.name(), '_', ' ')}">
+                                    STATUS
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Visa Progress Timeline -->
+                        <div class="glass-stepper reveal-up" style="margin-top: 1rem; margin-bottom: 1.5rem;" data-animate="fade-up">
+                            <div class="step-item" th:classappend="${visa.status.name() != 'PENDING_DOCUMENTS' and visa.status.name() != 'DOCUMENTS_SUBMITTED' and visa.status.name() != 'DOCUMENTS_REQUIRED'} ? 'completed' : 'active'">
+                                <div class="step-bubble">
+                                    <svg th:if="${visa.status.name() != 'PENDING_DOCUMENTS' and visa.status.name() != 'DOCUMENTS_SUBMITTED' and visa.status.name() != 'DOCUMENTS_REQUIRED'}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                    <span th:if="${visa.status.name() == 'PENDING_DOCUMENTS' or visa.status.name() == 'DOCUMENTS_SUBMITTED' or visa.status.name() == 'DOCUMENTS_REQUIRED'}">1</span>
+                                </div>
+                                <div class="step-content">
+                                    <span class="step-title">Documents</span>
+                                </div>
+                            </div>
+                            
+                            <div class="step-divider" th:classappend="${visa.status.name() != 'PENDING_DOCUMENTS' and visa.status.name() != 'DOCUMENTS_SUBMITTED' and visa.status.name() != 'DOCUMENTS_REQUIRED'} ? 'filled' : ''"></div>
+                            
+                            <div class="step-item" th:classappend="${visa.status.name() == 'DOCUMENTS_VERIFIED' or visa.status.name() == 'PAYMENT_PENDING' or visa.status.name() == 'EXPIRED'} ? 'active' : (${visa.status.name() == 'PROCESSING' or visa.status.name() == 'APPROVED' or visa.status.name() == 'REJECTED'} ? 'completed' : '')">
+                                <div class="step-bubble">
+                                    <svg th:if="${visa.status.name() == 'PROCESSING' or visa.status.name() == 'APPROVED' or visa.status.name() == 'REJECTED'}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                    <span th:unless="${visa.status.name() == 'PROCESSING' or visa.status.name() == 'APPROVED' or visa.status.name() == 'REJECTED'}">2</span>
+                                </div>
+                                <div class="step-content">
+                                    <span class="step-title">Verified & Paid</span>
+                                </div>
+                            </div>
+                            
+                            <div class="step-divider" th:classappend="${visa.status.name() == 'PROCESSING' or visa.status.name() == 'APPROVED' or visa.status.name() == 'REJECTED'} ? 'filled' : ''"></div>
+                            
+                            <div class="step-item" th:classappend="${visa.status.name() == 'PROCESSING'} ? 'active' : (${visa.status.name() == 'APPROVED' or visa.status.name() == 'REJECTED'} ? 'completed' : '')">
+                                <div class="step-bubble">
+                                    <svg th:if="${visa.status.name() == 'APPROVED' or visa.status.name() == 'REJECTED'}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                    <span th:unless="${visa.status.name() == 'APPROVED' or visa.status.name() == 'REJECTED'}">3</span>
+                                </div>
+                                <div class="step-content">
+                                    <span class="step-title">Embassy</span>
+                                </div>
+                            </div>
+                            
+                            <div class="step-divider" th:classappend="${visa.status.name() == 'APPROVED' or visa.status.name() == 'REJECTED'} ? 'filled' : ''"></div>
+                            
+                            <div class="step-item" th:classappend="${visa.status.name() == 'APPROVED'} ? 'completed' : (${visa.status.name() == 'REJECTED'} ? 'failed' : '')">
+                                <div class="step-bubble" th:styleappend="${visa.status.name() == 'REJECTED'} ? 'background-color: #EF4444; border-color: #EF4444; color: white;' : ''">
+                                    <svg th:if="${visa.status.name() == 'APPROVED'}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                    <svg th:if="${visa.status.name() == 'REJECTED'}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    <span th:unless="${visa.status.name() == 'APPROVED' or visa.status.name() == 'REJECTED'}">4</span>
+                                </div>
+                                <div class="step-content">
+                                    <span class="step-title" th:text="${visa.status.name() == 'REJECTED' ? 'Rejected' : 'Approved'}">Approved</span>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-main); border-radius: var(--radius-md);">
+                            <div>
+                                <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 0.2rem;">Visa Reference</div>
+                                <div style="font-size: 0.95rem; font-weight: 700; color: var(--brand-accent);" th:text="'#VISA-' + ${visa.id}">#VISA-1</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 0.2rem;">Visa Type</div>
+                                <div style="font-size: 0.95rem; font-weight: 600;" th:text="${visa.visaType}">VISIT</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 0.2rem;">Submitted On</div>
+                                <div style="font-size: 0.95rem; font-weight: 600;" th:text="${#temporals.format(visa.createdAt, 'yyyy-MM-dd')}">2026-09-09</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 0.2rem;">Fees</div>
+                                <div style="font-size: 0.95rem; font-weight: 600;">
+                                    Gov: <span th:text="${visa.visaCharge != null} ? '$' + ${visa.visaCharge} : 'TBD'">$0</span> | 
+                                    Agency: <span th:text="${visa.documentationCharge != null} ? '$' + ${visa.documentationCharge} : 'TBD'">$0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:if="${visa.officerRemarks != null}" class="context-banner banner-blue" style="margin-bottom: 1.5rem; padding: 1rem;">
+                            <div class="context-banner-icon" style="width: 32px; height: 32px;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                            <div style="font-size: 0.85rem;">
+                                <strong style="display: block; margin-bottom: 0.1rem;">Officer Remarks</strong>
+                                <span th:text="${visa.officerRemarks}">Remarks here</span>
+                            </div>
+                        </div>
+
+                        <div class="action-group" style="padding-top: 1rem; border-top: 1px solid var(--border-subtle);">
+                            <button th:if="${visa.status.name() == 'PENDING_DOCUMENTS' or visa.status.name() == 'DOCUMENTS_SUBMITTED' or visa.status.name() == 'DOCUMENTS_REQUIRED'}" 
+                                    class="btn btn-primary open-modal-btn" 
+                                    th:data-target="'uploadModal' + ${visa.id}">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                </svg>
+                                Upload Document
+                            </button>
+                            <a th:href="@{/customer/bookings/{id}(id=${visa.booking.id})}" class="btn btn-outline">
+                                View Booking details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div th:if="${#lists.isEmpty(visaApplications)}" style="text-align: center; padding: 3.5rem 1.5rem;">
+                    <div style="width: 56px; height: 56px; background: var(--bg-subtle); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; color: var(--text-muted);">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 28px; height: 28px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <h4>No Visa Applications Filed</h4>
+                    <p style="color: var(--text-muted); max-width: 440px; margin: 0 auto 1.5rem;">
+                        You have not submitted any visa assistance requests. If you have booked a tour package, select it above or visit your bookings page to apply.
+                    </p>
+                    <a th:href="@{/packages}" class="btn btn-primary btn-sm">Explore Tour Packages</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Upload Document Modals Layer -->
+    <div th:each="visa : ${visaApplications}">
+        <div class="custom-modal-backdrop glass-modal-backdrop" th:id="'uploadModal' + ${visa.id}">
+            <div class="custom-modal-box glass-modal-box">
+                <form th:action="@{/customer/visas/{id}/documents(id=${visa.id})}" method="post" enctype="multipart/form-data">
+                    <div class="custom-modal-header" style="background: transparent; border-bottom: 1px solid rgba(15, 23, 42, 0.1);">
+                        <div>
+                            <h4>Upload Required Visa Document</h4>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);" th:text="'Ref: #VISA-' + ${visa.id} + ' &bull; ' + ${visa.booking.tourPackage.name}">Ref #VISA-1</div>
+                        </div>
+                        <button type="button" class="custom-modal-close close-modal-btn">&times;</button>
+                    </div>
+                    <div class="custom-modal-body">
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                            Upload clear, scanned copies of your passport bio page, financial statements, or travel insurance certificates.
+                        </p>
+                        
+                        <div class="form-floating" style="margin-bottom: 1.25rem;">
+                            <input type="text" name="documentName" id="docNameInput" class="input-field-custom" placeholder=" " required>
+                            <label for="docNameInput">Document Description (e.g. Passport Bio)</label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight: 600; color: var(--brand-primary);">Select File (PDF, JPG, PNG)</label>
+                            <input type="file" name="file" class="form-control-custom" style="background: rgba(255, 255, 255, 0.5); padding: 0.85rem;" accept=".pdf,.jpg,.jpeg,.png" required>
+                        </div>
+                    </div>
+                    <div class="custom-modal-footer" style="background: transparent; border-top: 1px solid rgba(15, 23, 42, 0.1);">
+                        <button type="button" class="btn btn-outline close-modal-btn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Upload & Submit for Review</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+
+    <script>
+        document.querySelectorAll('.open-modal-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                const modal = document.getElementById(targetId);
+                if (modal) {
+                    modal.classList.add('active');
+                }
+            });
+        });
+
+        document.querySelectorAll('.close-modal-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const modal = btn.closest('.custom-modal-backdrop');
+                if (modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        document.querySelectorAll('.custom-modal-backdrop').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.custom-modal-backdrop.active').forEach(m => m.classList.remove('active'));
+            }
+        });
+    </script>
+</body>
+</html>

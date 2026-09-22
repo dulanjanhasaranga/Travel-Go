@@ -1,0 +1,48 @@
+{
+  "fileKey": "yMLOgkExi9HM1cHV30llPu",
+  "url": "https://www.figma.com/design/yMLOgkExi9HM1cHV30llPu",
+  "foundations": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"collections\":[\"VariableCollectionId:2:2\",\"VariableCollectionId:2:3\"],\"variables\":[{\"name\":\"brand-primary\",\"primitive\":\"VariableID:2:4\",\"semantic\":\"VariableID:2:5\"},{\"name\":\"brand-accent\",\"primitive\":\"VariableID:2:6\",\"semantic\":\"VariableID:2:7\"},{\"name\":\"brand-accent-hover\",\"primitive\":\"VariableID:2:8\",\"semantic\":\"VariableID:2:9\"},{\"name\":\"brand-secondary\",\"primitive\":\"VariableID:2:10\",\"semantic\":\"VariableID:2:11\"},{\"name\":\"bg-main\",\"primitive\":\"VariableID:2:12\",\"semantic\":\"VariableID:2:13\"},{\"name\":\"bg-surface\",\"primitive\":\"VariableID:2:14\",\"semantic\":\"VariableID:2:15\"},{\"name\":\"bg-subtle\",\"primitive\":\"VariableID:2:16\",\"semantic\":\"VariableID:2:17\"},{\"name\":\"text-heading\",\"primitive\":\"VariableID:2:18\",\"semantic\":\"VariableID:2:19\"},{\"name\":\"text-body\",\"primitive\":\"VariableID:2:20\",\"semantic\":\"VariableID:2:21\"},{\"name\":\"text-muted\",\"primitive\":\"VariableID:2:22\",\"semantic\":\"VariableID:2:23\"},{\"name\":\"text-inverse\",\"primitive\":\"VariableID:2:24\",\"semantic\":\"VariableID:2:25\"},{\"name\":\"border-subtle\",\"primitive\":\"VariableID:2:26\",\"semantic\":\"VariableID:2:27\"},{\"name\":\"success\",\"primitive\":\"VariableID:2:28\",\"semantic\":\"VariableID:2:29\"},{\"name\":\"danger\",\"primitive\":\"VariableID:2:30\",\"semantic\":\"VariableID:2:31\"},{\"name\":\"warning\",\"primitive\":\"VariableID:2:32\",\"semantic\":\"VariableID:2:33\"},{\"name\":\"space-1\",\"primitive\":\"VariableID:2:34\",\"semantic\":\"VariableID:2:35\"},{\"name\":\"space-2\",\"primitive\":\"VariableID:2:36\",\"semantic\":\"VariableID:2:37\"},{\"name\":\"space-3\",\"primitive\":\"VariableID:2:38\",\"semantic\":\"VariableID:2:39\"},{\"name\":\"space-4\",\"primitive\":\"VariableID:2:40\",\"semantic\":\"VariableID:2:41\"},{\"name\":\"space-6\",\"primitive\":\"VariableID:2:42\",\"semantic\":\"VariableID:2:43\"},{\"name\":\"space-8\",\"primitive\":\"VariableID:2:44\",\"semantic\":\"VariableID:2:45\"},{\"name\":\"radius-sm\",\"primitive\":\"VariableID:2:46\",\"semantic\":\"VariableID:2:47\"},{\"name\":\"radius-md\",\"primitive\":\"VariableID:2:48\",\"semantic\":\"VariableID:2:49\"},{\"name\":\"radius-lg\",\"primitive\":\"VariableID:2:50\",\"semantic\":\"VariableID:2:51\"},{\"name\":\"radius-card\",\"primitive\":\"VariableID:2:52\",\"semantic\":\"VariableID:2:53\"}],\"createdNodeIds\":[]}"
+      }
+    ],
+    "isError": false
+  },
+  "captureId": "ac17f303-9b25-4c3b-bc74-4a0a9cc36e72",
+  "scope": [
+    "Button",
+    "Input",
+    "Card",
+    "Badge",
+    "Navigation",
+    "Table",
+    "Dialog",
+    "Booking progress"
+  ],
+  "status": "Blocked by Figma Starter MCP tool-call limit",
+  "pages": {
+    "Foundations": "0:1",
+    "Components": "6:2",
+    "Screens": "6:3"
+  },
+  "foundationFrame": "6:4",
+  "components": {
+    "Button": "8:8",
+    "Input": "9:6",
+    "Card": "10:4"
+  },
+  "photos": {
+    "Paris": "2c07db238c48d04925e720f1b2d0da7c8950f1d7"
+  },
+  "unfinished": [
+    "Badge",
+    "Navigation",
+    "Table",
+    "Dialog",
+    "Booking Progress",
+    "Desktop/tablet/mobile screens"
+  ],
+  "captureStatus": "Not submitted; temporary capture script removed"
+}

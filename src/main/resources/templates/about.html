@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container section">
+            <div class="section-header">
+                <span class="section-tag">Agency Story</span>
+                <h1 class="section-title">About TravelGO</h1>
+                <p class="section-subtitle">A modern, integrated travel agency management platform built for transparency and unforgettable adventures</p>
+            </div>
+
+            <figure class="reveal" style="margin:0 0 2rem;"><img th:src="@{/images/paris.jpg}" srcset="/images/paris.jpg 1400w, /images/paris-4k.jpg 3840w" sizes="100vw" alt="The Eiffel Tower and River Seine in Paris at sunset" width="1400" height="931" style="width:100%;height:320px;object-fit:cover;border-radius:20px;" loading="lazy"><figcaption style="font-size:0.8rem;color:var(--text-muted);padding-top:8px;">A different perspective. Paris, France.</figcaption></figure>
+            <div class="card" style="margin-bottom: 3rem;">
+                <div class="card-body" style="padding: 3rem;">
+                    <h3 style="margin-bottom: 1rem;">Who We Are</h3>
+                    <p style="color: var(--text-body); font-size: 1.05rem; line-height: 1.8; margin-bottom: 2rem;"
+                       th:text="${settings != null ? settings.companyDescription : 'TravelGO is an end-to-end travel agency management ecosystem designed to streamline bookings, transparent tour packages, visa document processing, and role-based staff operations.'}">
+                        TravelGO is a trusted travel agency platform.
+                    </p>
+
+                    <h3 style="margin-bottom: 1rem;">Our Core Principles</h3>
+                    <div class="grid grid-3" style="margin-top: 1.5rem;">
+                        <div style="background: var(--bg-subtle); padding: 1.5rem; border-radius: var(--radius-md);">
+                            <h4 style="color: var(--brand-accent); margin-bottom: 0.5rem;">01. Complete Clarity</h4>
+                            <p style="font-size: 0.88rem; color: var(--text-muted);">
+                                Review your package and optional hotel costs before booking. Visa and documentation charges are quoted separately after document review.
+                            </p>
+                        </div>
+
+                        <div style="background: var(--bg-subtle); padding: 1.5rem; border-radius: var(--radius-md);">
+                            <h4 style="color: var(--brand-secondary); margin-bottom: 0.5rem;">02. Personal Support</h4>
+                            <p style="font-size: 0.88rem; color: var(--text-muted);">
+                                Dedicated travel consultants and visa officers guide your travel plans from preparation to return.
+                            </p>
+                        </div>
+
+                        <div style="background: var(--bg-subtle); padding: 1.5rem; border-radius: var(--radius-md);">
+                            <h4 style="color: var(--success); margin-bottom: 0.5rem;">03. Everything in One Place</h4>
+                            <p style="font-size: 0.88rem; color: var(--text-muted);">
+                                Keep your bookings, travel documents and payment updates together, with a clear next step for your journey.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

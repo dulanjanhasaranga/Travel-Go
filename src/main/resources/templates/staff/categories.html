@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package Categories - TravelGO Staff</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Dedicated Consultant Sidebar -->
+        <div th:replace="~{fragments/consultant-sidebar :: consultant-sidebar('categories')}"></div>
+
+        <!-- Main Workspace Area -->
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <span>Travel Consultant Workspace</span>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Categories</span>
+                        </div>
+                        <h2 class="topbar-title">Tour Package Categories & Themes</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="openAddCatModal()" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        + Add Category
+                    </button>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Flash Alerts -->
+                <div th:if="${successMessage}" class="alert alert-success" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span th:text="${successMessage}">Operation successful</span>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <span th:text="${errorMessage}">Error occurred</span>
+                </div>
+
+                <!-- KPI Overview Cards -->
+                <div class="stats-grid" style="margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Total Categories</span>
+                            <div class="stat-icon stat-icon-purple">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="${#lists.size(categories)}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: #7E22CE; font-weight: 600;">Active Themes</span>
+                            <span>Package groupings</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Public Category Badges</span>
+                            <div class="stat-icon stat-icon-green">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: #059669;" th:text="${#lists.size(categories.?[active == true])}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: #059669; font-weight: 600;">Active Badges</span>
+                            <span>Available on storefront</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categories Table Container -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-heading); display: flex; align-items: center; gap: 0.5rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; color: #7E22CE;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                </svg>
+                                Package Categories (<span th:text="${#lists.size(categories)}">0</span>)
+                            </h3>
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">Organize customer travel options by vacation type</span>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="openAddCatModal()" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;">
+                            + Add Category
+                        </button>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Category Name</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="cat : ${categories}">
+                                    <td style="font-family: monospace; font-weight: 700; color: var(--text-muted);" th:text="'#' + ${cat.id}">#1</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                            <div style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: #F3E8FF; color: #7E22CE; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                                                <svg class="icon-lg" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 13 13 20a2 2 0 0 1-3 0L3 13V3h10l7 7a2 2 0 0 1 0 3Z"/><circle cx="7.5" cy="7.5" r="1"/></svg>
+                                            </div>
+                                            <strong style="color: var(--text-heading); font-size: 0.92rem;" th:text="${cat.name}">Category Name</strong>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="max-width: 450px; font-size: 0.85rem; color: var(--text-muted);"
+                                             th:text="${cat.description != null and !#strings.isEmpty(cat.description) ? cat.description : '—'}">Category details</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge" th:classappend="${cat.active} ? 'badge-success' : 'badge-danger'"
+                                              th:text="${cat.active ? 'ACTIVE' : 'INACTIVE'}">ACTIVE</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <button type="button" class="btn btn-outline btn-sm"
+                                                style="padding: 0.25rem 0.6rem; font-size: 0.78rem;"
+                                                th:attr="onclick=|openEditCatModal(${cat.id}, '${#strings.escapeJavaScript(cat.name)}', '${#strings.escapeJavaScript(cat.description != null ? cat.description : '')}')|">
+                                            Edit
+                                        </button>
+                                        <form th:if="${!cat.active}" th:action="@{/staff/categories/{id}/activate(id=${cat.id})}" method="post" style="display:inline"><button class="btn btn-outline btn-sm" type="submit">Activate</button></form>
+<form th:if="${cat.active}" th:action="@{/staff/categories/{id}/delete(id=${cat.id})}" method="post" style="display: inline;"
+                                              onsubmit="return confirm('Are you sure you want to deactivate this category?');">
+                                            <button type="submit" class="btn btn-sm btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">
+                                                Deactivate
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div th:if="${#lists.isEmpty(categories)}" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+                            <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-heading);">No categories found</div>
+                            <p>Click <strong>+ Add Category</strong> to organize packages.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide Panel: Add Category -->
+        <div id="addSlidePanelBackdrop" class="slide-backdrop" onclick="closeAddCatModal()"></div>
+        <div id="addSlidePanel" class="slide-panel">
+            <div class="slide-panel-header">
+                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #1E293B; display: flex; align-items: center; gap: 0.65rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #7E22CE;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    Add Tour Category
+                </h3>
+                <button type="button" class="btn btn-outline btn-sm" onclick="closeAddCatModal()" style="padding: 0.4rem; border-color: transparent;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <form th:action="@{/staff/categories/create}" method="post" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+                <div class="slide-panel-body">
+                    <div class="form-group">
+                        <label class="form-label">Category Name *</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Honeymoon Getaways, Luxury Cruises..." required />
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Brief summary of package offerings under this category..."></textarea>
+                    </div>
+                </div>
+                <div class="slide-panel-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeAddCatModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;">
+                        Save Category
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Slide Panel: Edit Category -->
+        <div id="editSlidePanelBackdrop" class="slide-backdrop" onclick="closeEditCatModal()"></div>
+        <div id="editSlidePanel" class="slide-panel">
+            <div class="slide-panel-header">
+                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #1E293B; display: flex; align-items: center; gap: 0.65rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #7E22CE;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit Tour Category
+                </h3>
+                <button type="button" class="btn btn-outline btn-sm" onclick="closeEditCatModal()" style="padding: 0.4rem; border-color: transparent;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <form id="editCategoryForm" method="post" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+                <div class="slide-panel-body">
+                    <div class="form-group">
+                        <label class="form-label">Category Name *</label>
+                        <input type="text" id="editCatName" name="name" class="form-control" required maxlength="255" />
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Description</label>
+                        <textarea id="editCatDesc" name="description" class="form-control" rows="3" maxlength="255"></textarea>
+                    </div>
+                </div>
+                <div class="slide-panel-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeEditCatModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openAddCatModal() {
+            document.getElementById('addSlidePanelBackdrop').classList.add('open');
+            document.getElementById('addSlidePanel').classList.add('open');
+        }
+        function closeAddCatModal() {
+            document.getElementById('addSlidePanelBackdrop').classList.remove('open');
+            document.getElementById('addSlidePanel').classList.remove('open');
+        }
+        
+        function openEditCatModal(id, name, description) {
+            document.getElementById('editCategoryForm').action = '/staff/categories/' + id + '/edit';
+            document.getElementById('editCatName').value = name;
+            document.getElementById('editCatDesc').value = description;
+            
+            document.getElementById('editSlidePanelBackdrop').classList.add('open');
+            document.getElementById('editSlidePanel').classList.add('open');
+        }
+        function closeEditCatModal() {
+            document.getElementById('editSlidePanelBackdrop').classList.remove('open');
+            document.getElementById('editSlidePanel').classList.remove('open');
+        }
+    </script>
+<script th:src="@{/js/main.js}"></script></body>
+</html>

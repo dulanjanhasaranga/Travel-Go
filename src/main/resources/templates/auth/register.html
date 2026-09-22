@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - TravelGO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body class="auth-page-body">
+
+    <div class="auth-page-wrapper">
+        <div class="auth-split-card" style="min-height: 720px;">
+
+            <!-- LEFT PANEL: Visual Showcase & Brand Story -->
+            <div class="auth-visual-panel">
+                <div class="visual-header">
+                    <a th:href="@{/}" class="auth-brand-logo">
+                        <span class="official-mark"><img th:src="@{/images/travelgo-logo.png}" alt="" width="100" height="100"></span>
+                        <span class="auth-brand-name">Travel<span>GO</span></span>
+                    </a>
+
+                    <a th:href="@{/}" class="btn-back-website">
+                        <span>Back to website</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="visual-footer">
+                    <h2 class="visual-quote">
+                        Your Journey Begins Here,
+                        <span>Explore Without Limits</span>
+                    </h2>
+                    <div class="slider-indicators" aria-hidden="true">
+                        <div class="indicator-pill active"></div>
+                        <div class="indicator-pill"></div>
+                        <div class="indicator-pill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: Registration Form -->
+            <div class="auth-form-panel">
+                <div class="auth-form-container">
+
+                    <!-- Header -->
+                    <div class="form-header">
+                        <h1 class="form-title">Create an account</h1>
+                        <p class="form-subtitle">
+                            Already have an account?
+                            <a th:href="@{/auth/login}">Log in</a>
+                        </p>
+                    </div>
+
+                    <!-- Flash Error Alert -->
+                    <div th:if="${errorMessage}" class="auth-alert auth-alert-danger">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span th:text="${errorMessage}"></span>
+                    </div>
+
+                    <!-- Registration Form -->
+                    <form th:action="@{/auth/register}" th:object="${registerRequest}" method="post" class="auth-form">
+
+                        <!-- Name Field -->
+                        <div class="form-field-group">
+                            <label class="field-label" for="name">Full Name *</label>
+                            <div class="input-icon-wrapper">
+                                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <input type="text" id="name" th:field="*{name}" class="auth-input" placeholder="e.g. Fletcher Morgan" required autocomplete="name">
+                            </div>
+                            <div class="auth-field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+
+                        <!-- Email Field -->
+                        <div class="form-field-group">
+                            <label class="field-label" for="email">Email Address *</label>
+                            <div class="input-icon-wrapper">
+                                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                <input type="email" autocomplete="email" id="email" th:field="*{email}" class="auth-input" placeholder="name@example.com" required>
+                            </div>
+                            <div class="auth-field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+
+                        <!-- Phone Field -->
+                        <div class="form-field-group">
+                            <label class="field-label" for="phone">Phone Number</label>
+                            <div class="input-icon-wrapper">
+                                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                </svg>
+                                <input type="tel" autocomplete="tel" id="phone" th:field="*{phone}" class="auth-input" placeholder="+1 (555) 000-0000">
+                            </div>
+                            <div class="auth-field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                        </div>
+
+                        <!-- Password & Confirm Password in 2 columns -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                            <div class="form-field-group">
+                                <label class="field-label" for="password">Password *</label>
+                                <div class="input-icon-wrapper">
+                                    <input type="password" autocomplete="new-password" id="password" th:field="*{password}" class="auth-input" style="padding-left: 14px;" placeholder="6+ chars" required>
+                                </div>
+                                <div class="auth-field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+
+                            <div class="form-field-group">
+                                <label class="field-label" for="confirmPassword">Confirm *</label>
+                                <div class="input-icon-wrapper">
+                                    <input type="password" autocomplete="new-password" id="confirmPassword" th:field="*{confirmPassword}" class="auth-input" style="padding-left: 14px;" placeholder="Re-enter" required>
+                                </div>
+                                <div class="auth-field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                            </div>
+                        </div>
+                        <p style="font-size:.8rem;color:#586e82;line-height:1.6;">Have a question before joining? <a th:href="@{/contact}">Contact our travel team</a>.</p>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn-auth-submit" style="margin-top: 0.25rem;">
+                            <span>Create account</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+<script th:src="@{/js/main.js}"></script></body>
+</html>

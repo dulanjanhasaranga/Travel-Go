@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<div th:fragment="bell" sec:authorize="isAuthenticated()" class="notification-shell">
+    <link rel="stylesheet" th:href="@{/css/notifications.css}">
+    <script defer th:src="@{/js/notifications.js}"></script>
+    <details class="notification-center" th:attr="data-feed-url=@{/notifications/feed},data-read-all-url=@{/notifications/read-all}">
+        <summary class="notification-toggle" aria-label="Notifications" th:attr="aria-label=${notificationSummary.unreadCount > 0 ? 'Notifications, ' + notificationSummary.unreadCount + ' unread' : 'Notifications'}" title="Notifications">
+            <svg class="icon-nav" aria-hidden="true" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+            <span class="notification-count" th:text="${notificationSummary.unreadCount > 99 ? '99+' : notificationSummary.unreadCount}" th:hidden="${notificationSummary.unreadCount == 0}" aria-hidden="true">0</span>
+            <span class="notification-sr" data-unread-label th:text="${notificationSummary.unreadCount + ' unread'}"></span>
+        </summary>
+        <section class="notification-popover" aria-label="Recent notifications">
+            <div class="notification-popover-header"><h2>Notifications</h2><a th:href="@{/notifications}">View all</a></div>
+            <p class="notification-feedback" role="status" aria-live="polite" hidden></p>
+            <div class="notification-recent">
+                <form th:each="item : ${notificationSummary.items}" th:action="@{/notifications/{id}/read(id=${item.id})}" method="post" class="notification-item" th:classappend="${!item.read} ? 'is-unread' : ''">
+                    <button type="submit" class="notification-open">
+                        <span class="notification-item-heading"><strong th:text="${item.title}"></strong><span th:unless="${item.read}" class="notification-dot" aria-label="Unread"></span></span>
+                        <span class="notification-message" th:text="${item.message}"></span>
+                        <time th:datetime="${item.createdAt}" th:text="${#temporals.format(item.createdAt, 'dd MMM, HH:mm')}"></time>
+                    </button>
+                </form>
+                <p class="notification-empty" th:if="${#lists.isEmpty(notificationSummary.items)}">You're all caught up. Updates about your travel and support will appear here.</p>
+            </div>
+            <form class="notification-mark-all" th:action="@{/notifications/read-all}" method="post">
+                <button type="submit" th:disabled="${notificationSummary.unreadCount == 0}">Mark all as read</button>
+            </form>
+        </section>
+    </details>
+</div>
+</body></html>

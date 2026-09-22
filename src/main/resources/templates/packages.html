@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Packages & Pricing - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container section reveal">
+            <div class="section-header">
+                <span class="section-tag">Find your next journey</span>
+                <h1 class="section-title">Curated Tour Packages</h1>
+                <p class="section-subtitle">Select your dream destination, customize optional hotel accommodations, and apply for your visa all in one seamless flow.</p>
+            </div>
+
+<section class="surface catalogue-filters" aria-label="Find a package">
+                <form th:action="@{/packages}" method="get" class="filter-grid">
+                    <label for="packageSearch">Package or keyword<input id="packageSearch" class="form-control" name="search" th:value="${search}" maxlength="120" placeholder="Name, activity or category"></label>
+                    <label for="packageDestination">Destination<input id="packageDestination" class="form-control" name="destinationQuery" th:value="${destinationQuery}" list="destination-suggestions" maxlength="255" placeholder="Start typing a city or country" autocomplete="off"></label>
+                    <datalist id="destination-suggestions"><option th:each="d : ${destinations}" th:value="${d.city + ', ' + d.country}"></option></datalist>
+                    <label for="packageCategory">Package type<select id="packageCategory" name="categoryId" class="form-control"><option value="">All types</option><option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}" th:selected="${selectedCategoryId == cat.id}"></option></select></label>
+                    <label for="maxPrice">Maximum price per person ($)<input id="maxPrice" class="form-control" type="number" name="maxPrice" min="0" step="0.01" th:value="${maxPrice}" placeholder="Any budget"></label>
+                    <label for="minDays">Minimum days<input id="minDays" class="form-control" type="number" name="minDays" min="1" max="365" th:value="${minDays}" placeholder="Any"></label>
+                    <label for="maxDays">Maximum days<input id="maxDays" class="form-control" type="number" name="maxDays" min="1" max="365" th:value="${maxDays}" placeholder="Any"></label>
+                    <label for="travelers">Travelers per booking<input id="travelers" class="form-control" type="number" name="travelers" min="1" max="1000" th:value="${travelers}" placeholder="Any group size"></label>
+                    <label for="travelDate">Start date from<input id="travelDate" class="form-control" type="date" name="travelDate" th:value="${travelDate}"></label>
+                    <label for="packageSort">Sort packages<select id="packageSort" class="form-control" name="sort"><option value="newest" th:selected="${sort == 'newest'}">Newest first</option><option value="oldest" th:selected="${sort == 'oldest'}">Oldest first</option><option value="price-asc" th:selected="${sort == 'price-asc'}">Price: low to high</option><option value="price-desc" th:selected="${sort == 'price-desc'}">Price: high to low</option><option value="duration" th:selected="${sort == 'duration'}">Shortest first</option><option value="name" th:selected="${sort == 'name'}">Name: A–Z</option></select></label>
+                    <div class="filter-actions"><button type="submit" class="btn btn-primary">Find packages</button><a th:href="@{/packages}" class="btn btn-outline">Clear filters</a></div>
+                </form>
+                <p class="muted filter-note">All results are published packages. Group size checks the package limit; dates and supplier availability are confirmed by your consultant.</p>
+            </section>
+            <div class="catalogue-results"><p role="status" th:text="${resultCount + (resultCount == 1 ? ' package found' : ' packages found')}"></p><span class="muted">Package prices exclude optional hotels and separately quoted visa fees.</span></div>
+            <!-- Dynamic Package Grid -->
+            <div class="grid grid-3" th:if="${not #lists.isEmpty(packages)}">
+                <div class="card" th:each="pkg : ${packages}" style="display: flex; flex-direction: column;">
+                    <div class="card-image-wrap">
+                        <img th:with="displayImage=${@travelImages.resolve(pkg.image)}, imageSources=${@travelImages.srcset(pkg.image)}" th:src="${displayImage}" th:attr="srcset=${imageSources}" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                             th:alt="${pkg.name}" 
+                             class="card-img"
+                             onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                        <span class="badge badge-info card-img-badge" th:text="${pkg.durationDays + ' Days'}">7 Days</span>
+                        <span class="card-img-price" th:text="'$' + ${#numbers.formatDecimal(pkg.basePrice, 1, 'COMMA', 2, 'POINT')}">$1,299</span>
+                    </div>
+
+                    <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; gap: 0.5rem;">
+                            <span class="badge badge-primary" th:text="${pkg.category != null ? pkg.category.name : 'General Tour'}">Category</span>
+                            <span style="font-size: 0.8rem; color: var(--brand-accent); font-weight: 600;" th:text="${pkg.destination != null ? pkg.destination.city + ', ' + pkg.destination.country : ''}">Destination</span>
+                        </div>
+
+                        <h3 th:text="${pkg.name}" style="margin-bottom: 0.5rem; font-size: 1.15rem;">Package Name</h3>
+                        
+                        <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1rem; line-height: 1.5;" 
+                           th:text="${pkg.description != null ? pkg.description : 'Comprehensive itinerary featuring guided exploration, cultural immersion, and leisure time.'}">
+                            Description
+                        </p>
+
+                        <div class="hotel-note">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            <span>Hotel Accommodation: Optional Add-on</span>
+                        </div>
+
+                        <ul class="inclusions-list" style="margin-bottom: 1.5rem;">
+                            <li>
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                <strong>Flight:</strong>&nbsp;<span th:text="${pkg.flightDetails != null and !pkg.flightDetails.isEmpty() ? pkg.flightDetails : 'Confirm flight arrangements with our team'}">Flight Details</span>
+                            </li>
+                            <li>
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                <strong>Visa:</strong>&nbsp;<span>Full Officer Guidance & Assistance</span>
+                            </li>
+                            <li>
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                <strong>Tours:</strong>&nbsp;<span th:text="${pkg.includedServices != null and !pkg.includedServices.isEmpty() ? pkg.includedServices : 'Ask our team for confirmed inclusions'}">Tours & Activities</span>
+                            </li>
+                        </ul>
+
+                        <div style="margin-top: auto; display: flex; gap: 0.5rem;">
+                            <a th:href="@{/packages/{id}(id=${pkg.id})}" class="btn btn-outline">View details</a>
+                            <a th:href="@{/packages/{id}/book(id=${pkg.id})}" class="btn btn-primary" style="flex: 1; text-align: center; justify-content: center;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; margin-right: 0.35rem;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<nav th:if="${pageCount > 1}" class="catalogue-pagination" aria-label="Package results pages">
+                <a class="btn btn-outline" th:if="${currentPage > 1}" th:href="@{/packages(search=${search},destinationId=${selectedDestinationId},destinationQuery=${destinationQuery},categoryId=${selectedCategoryId},maxPrice=${maxPrice},minDays=${minDays},maxDays=${maxDays},travelers=${travelers},sort=${sort},page=${currentPage - 1})}">Previous</a>
+                <span th:text="${'Page ' + currentPage + ' of ' + pageCount}"></span>
+                <a class="btn btn-outline" th:if="${currentPage < pageCount}" th:href="@{/packages(search=${search},destinationId=${selectedDestinationId},destinationQuery=${destinationQuery},categoryId=${selectedCategoryId},maxPrice=${maxPrice},minDays=${minDays},maxDays=${maxDays},travelers=${travelers},sort=${sort},page=${currentPage + 1})}">Next</a>
+            </nav>
+            <!-- Empty State -->
+            <div th:if="${#lists.isEmpty(packages)}" class="card" style="text-align: center; padding: 4rem 2rem; max-width: 600px; margin: 0 auto;">
+                <div style="width: 64px; height: 64px; background: var(--bg-subtle); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--text-muted);">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 32px; height: 32px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                </div>
+                <h3>No Packages Found</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">We couldn't find any tour packages matching your search criteria. Try adjusting your filters or search terms.</p>
+                <a th:href="@{/packages}" class="btn btn-primary">View All Packages</a>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top-btn" aria-label="Scroll to top">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+    </button>
+
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

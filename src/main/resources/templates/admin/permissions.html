@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permission Registry - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('permissions')}"></div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <a th:href="@{/admin/dashboard}">Admin</a>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Security</span>
+                        </div>
+                        <h2 class="topbar-title">Permission Registry Catalog</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <a th:href="@{/admin/roles}" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        Manage Role Assignments
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h4 style="margin: 0;">Registered System Permissions (<span th:text="${#lists.size(permissions)}">0</span>)</h4>
+                        <span style="font-size: 0.82rem; color: var(--text-muted);">Database: `permissions` entity with modular domain segregation</span>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Functional Domain</th>
+                                <th>Permission Key</th>
+                                <th>Scope Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="perm : ${permissions}">
+                                <td>
+                                    <span class="badge badge-info" th:text="${perm.module}">USER</span>
+                                </td>
+                                <td>
+                                    <code style="font-size: 0.88rem; font-weight: 700; color: var(--brand-accent);" th:text="${perm.permissionName}">USER_VIEW</code>
+                                </td>
+                                <td th:text="${perm.description}">View users list</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

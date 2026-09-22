@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Staff Account - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('staff')}"></div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <a th:href="@{/admin/staff}">Staff Directory</a>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;" th:text="${staffUser.name}">Edit Staff</span>
+                        </div>
+                        <h2 class="topbar-title">Edit Staff Profile</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <a th:href="@{/admin/staff}" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Staff List
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="card" style="max-width: 650px; margin: 0 auto;">
+                    <div class="table-header">
+                        <h4 style="margin: 0;">Update Staff Details</h4>
+                        <span class="badge" th:classappend="${staffUser.active} ? 'badge-success' : 'badge-danger'"
+                              th:text="${staffUser.active ? 'ACTIVE' : 'DEACTIVATED'}">ACTIVE</span>
+                    </div>
+
+                    <div class="card-body">
+                        <form th:action="@{/admin/staff/{id}/update(id=${staffUser.id})}" method="post">
+                            <div class="form-group">
+                                <label class="form-label">Email Address (Read Only)</label>
+                                <input type="text" class="form-control" th:value="${staffUser.email}" disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Full Name *</label>
+                                <input type="text" name="name" class="form-control" th:value="${staffUser.name}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Assigned Role *</label>
+                                <select name="roleName" class="form-control">
+                                    <option th:each="r : ${roles}" th:value="${r.roleName}" th:text="${r.roleName} + ' — ' + ${r.description}" th:selected="${r.id == staffUser.role.id}"></option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Contact Phone</label>
+                                <input type="text" name="phone" class="form-control" th:value="${staffUser.phone}">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Address / Office Branch</label>
+                                <textarea name="address" class="form-control" th:text="${staffUser.address}"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                </svg>
+                                Save Changes
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

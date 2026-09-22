@@ -1,0 +1,168 @@
+/* 
+ * TravelGO Modern Navigation & Page Transitions
+ * Built for smooth, fast, and accessible navigation.
+ */
+
+/* -----------------------------------------
+   1. PAGE LOADING PROGRESS BAR
+----------------------------------------- */
+.page-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: transparent;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.page-progress-bar::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--brand-accent, #0284C7);
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+}
+
+.page-progress-bar.is-loading {
+    opacity: 1;
+}
+
+.page-progress-bar.is-loading::before {
+    animation: progress-indeterminate 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes progress-indeterminate {
+    0% {
+        transform: scaleX(0);
+        transform-origin: left;
+    }
+    49% {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+    51% {
+        transform: scaleX(1);
+        transform-origin: right;
+    }
+    100% {
+        transform: scaleX(0);
+        transform-origin: right;
+    }
+}
+
+/* -----------------------------------------
+   2. PAGE CONTENT TRANSITIONS
+----------------------------------------- */
+main, .main-content, .admin-main, .staff-main {
+    transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+    will-change: opacity, transform;
+}
+
+/* State when the old page is leaving */
+.is-leaving {
+    opacity: 0 !important;
+    transform: translateY(-5px) !important;
+}
+
+/* State when the new page is entering */
+.is-entering {
+    opacity: 0;
+    transform: translateY(10px);
+    /* The router will remove this class quickly to let it fade back to default (opacity 1, translateY 0) */
+}
+
+/* -----------------------------------------
+   3. NAVIGATION ACTIVE STATES (NAVBAR)
+----------------------------------------- */
+#primary-navigation .nav-link {
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+/* The animated underline indicator */
+#primary-navigation .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--brand-accent, #0284C7);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#primary-navigation .nav-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+#primary-navigation .nav-link.active::after,
+#primary-navigation .nav-link[aria-current="page"]::after {
+    transform: scaleX(1);
+    transform-origin: left;
+    background-color: var(--brand-primary, #0f172a);
+}
+
+#primary-navigation .nav-link.active,
+#primary-navigation .nav-link[aria-current="page"] {
+    font-weight: 700;
+    color: var(--brand-primary, #0f172a);
+}
+
+/* -----------------------------------------
+   4. BUTTON & LINK MICRO-INTERACTIONS
+----------------------------------------- */
+.btn {
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn:active {
+    transform: scale(0.97) translateY(0);
+}
+
+/* Dashboard nav pills */
+.nav-pills a {
+    position: relative;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.nav-pills a:active {
+    transform: scale(0.97);
+}
+
+/* -----------------------------------------
+   5. SIDEBAR NAVIGATION 
+----------------------------------------- */
+.sidebar-menu a {
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.sidebar-menu a:active {
+    transform: translateX(2px);
+}
+
+/* -----------------------------------------
+   6. ACCESSIBILITY / REDUCED MOTION
+----------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .is-leaving, .is-entering {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}

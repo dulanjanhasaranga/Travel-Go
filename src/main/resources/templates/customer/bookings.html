@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        .data-table th {
+            background-color: var(--bg-subtle);
+            color: var(--text-heading);
+            font-weight: 700;
+            padding: 0.85rem 1.15rem;
+            border-bottom: 2px solid var(--border-subtle);
+            white-space: nowrap;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+        .data-table td {
+            padding: 1rem 1.15rem;
+            border-bottom: 1px solid var(--border-subtle);
+            vertical-align: middle;
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        .data-table tr:hover {
+            background-color: #F8FAFC;
+        }
+        .action-group {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container section">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <span class="badge badge-info" style="margin-bottom: 0.5rem;">CLIENT PORTAL</span>
+                    <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">My Tour Bookings</h1>
+                    <p style="color: var(--text-muted); font-size: 1rem;">Review reservations, flight itineraries, hotel add-ons, and visa requests.</p>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <a th:href="@{/packages}" class="btn btn-primary btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; margin-right: 0.35rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Book New Package
+                    </a>
+                    <a th:href="@{/customer/dashboard}" class="btn btn-outline btn-sm">Dashboard</a>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            <div th:if="${successMessage}" class="alert alert-success">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <div th:text="${successMessage}">Operation successful</div>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div th:text="${errorMessage}">Error occurred</div>
+            </div>
+
+            <!-- Bookings Card -->
+            <div class="card" style="padding: 1.75rem;">
+                <h3 style="margin-bottom: 1.25rem; font-size: 1.25rem;">Active & Previous Itineraries</h3>
+
+                <div class="table-container" th:if="${not #lists.isEmpty(bookings)}">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Tour Package</th>
+                                <th>Travel Date</th>
+                                <th>Travelers</th>
+                                <th>Total Package Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="booking : ${bookings}">
+                                <td>
+                                    <span class="badge badge-info" th:text="${@bookingSummary.forBooking(booking).status}"></span><br><strong style="color: var(--brand-accent);" th:text="'#BKG-' + ${booking.id}">#BKG-1</strong>
+                                </td>
+                                <td>
+                                    <div style="font-weight: 700; color: var(--text-heading);" th:text="${booking.tourPackage.name}">European Classical Journey</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);" 
+                                         th:text="${booking.tourPackage.destination.city + ', ' + booking.tourPackage.destination.country}">
+                                        Paris, France
+                                    </div>
+                                </td>
+                                <td style="font-weight: 600;" th:text="${booking.travelDate}">2026-10-15</td>
+                                <td>
+                                    <span style="font-weight: 600;" th:text="${booking.numberOfTravelers}">2</span> 
+                                    <span style="color: var(--text-muted); font-size: 0.8rem;" th:text="${booking.numberOfTravelers == 1 ? 'Person' : 'People'}">People</span>
+                                </td>
+                                <td>
+                                    <strong style="font-size: 1rem; color: var(--text-heading);" th:text="'$' + ${#numbers.formatDecimal(booking.totalPackageAmount, 1, 'COMMA', 2, 'POINT')}">$2,598.00</strong>
+                                </td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${booking.bookingStatus.name() == 'CONFIRMED'} ? 'badge-success' : (${booking.bookingStatus.name() == 'CANCELLED'} ? 'badge-danger' : (${booking.bookingStatus.name() == 'PENDING'} ? 'badge-warning' : 'badge-info'))"
+                                          th:text="${booking.bookingStatus}">
+                                        STATUS
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-group">
+                                        <a th:href="@{/customer/bookings/{id}(id=${booking.id})}" class="btn btn-outline btn-sm">
+                                            View Details
+                                        </a>
+
+                                        <a th:href="@{/customer/payments/checkout/{id}(id=${booking.id})}" class="btn btn-primary btn-sm" th:if="${booking.bookingStatus.name() == 'PENDING'}">
+                                            Payment Status
+                                        </a>
+
+                                        <form th:action="@{/customer/bookings/{id}/cancel(id=${booking.id})}" method="post" style="display: inline;" th:if="${editableBookingIds.contains(booking.id)}">
+                                            <button type="submit" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: var(--danger-border);" onclick="return confirm('Are you sure you want to cancel this booking?');">
+                                                Cancel
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div th:if="${#lists.isEmpty(bookings)}" style="text-align: center; padding: 3.5rem 1.5rem;">
+                    <div style="width: 56px; height: 56px; background: var(--bg-subtle); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; color: var(--text-muted);">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 28px; height: 28px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <h4>No Travel Bookings Yet</h4>
+                    <p style="color: var(--text-muted); max-width: 440px; margin: 0 auto 1.5rem;">
+                        You haven't reserved any tours yet. Explore our curated packages to discover exciting worldwide destinations!
+                    </p>
+                    <a th:href="@{/packages}" class="btn btn-primary">Browse Tour Packages</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

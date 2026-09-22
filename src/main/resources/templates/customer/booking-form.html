@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Package - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 0.45rem;
+        }
+        .form-control-custom {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #FFFFFF;
+            transition: all var(--transition-fast);
+        }
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.9rem;
+        }
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+        .summary-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .summary-value {
+            color: var(--text-heading);
+            font-weight: 600;
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container section">
+            <!-- Header Section -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <span class="badge badge-primary" style="margin-bottom: 0.5rem;" th:text="${tourPackage.category.name}">CATEGORY</span>
+                    <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;" th:text="${tourPackage.name}">European Classical Journey</h1>
+                    <p style="color: var(--text-muted); font-size: 1rem;">
+                        <span th:text="${tourPackage.destination.city + ', ' + tourPackage.destination.country}">Paris, France</span> &bull; 
+                        <span th:text="${tourPackage.durationDays + ' Days Expedition'}">7 Days Expedition</span>
+                    </p>
+                </div>
+                <div>
+                    <a th:href="@{/packages}" class="btn btn-outline btn-sm">
+                        &larr; Back to Packages
+                    </a>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div th:text="${errorMessage}">Error occurred</div>
+            </div>
+
+            <ol class="journey-steps" aria-label="Booking stages"><li aria-current="step">1. Date &amp; travelers</li><li>2. Review request</li><li>3. Visa &amp; upfront payment</li><li>4. Approval &amp; final payment</li><li>5. Confirmation</li></ol>
+            <!-- Two Column Layout -->
+            <div class="grid grid-2" style="gap: 2.5rem; align-items: flex-start;">
+
+                <!-- Package Summary & Inclusions -->
+                <div>
+                    <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;">
+                        <h3 style="margin-bottom: 1.25rem; font-size: 1.25rem;">Tour Package Overview</h3>
+                        
+                        <p style="color: var(--text-body); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;" 
+                           th:text="${tourPackage.description}">
+                            Package description details.
+                        </p>
+
+                        <div class="summary-row">
+                            <span class="summary-label">Destination</span>
+                            <span class="summary-value" th:text="${tourPackage.destination.city + ', ' + tourPackage.destination.country}">Paris, France</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Duration</span>
+                            <span class="summary-value" th:text="${tourPackage.durationDays + ' Days / ' + (tourPackage.durationDays - 1) + ' Nights'}">7 Days</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Base Rate</span>
+                            <span class="summary-value" style="color: var(--brand-primary); font-size: 1.1rem;" 
+                                  th:text="'$' + ${#numbers.formatDecimal(tourPackage.basePrice, 1, 'COMMA', 2, 'POINT')} + ' / person'">
+                                $1,299.00 / person
+                            </span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Group Maximum</span>
+                            <span class="summary-value" th:text="${tourPackage.maxCapacity + ' Travelers Max'}">20 Travelers</span>
+                        </div>
+                    </div>
+
+                    <!-- Inclusions & Policies -->
+                    <div class="card" style="padding: 2rem;">
+                        <h4 style="margin-bottom: 1rem; font-size: 1.1rem;">Included Services & Perks</h4>
+                        <ul class="inclusions-list" style="margin-bottom: 1.5rem;">
+                            <li>
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                <strong>Flights:</strong>&nbsp;<span th:text="${tourPackage.flightDetails != null and !tourPackage.flightDetails.isEmpty() ? tourPackage.flightDetails : 'Standard Return Flights Included'}">Flight Details</span>
+                            </li>
+                            <li>
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                <strong>Visa Support:</strong>&nbsp;<span>Full Document Review & Application Handling</span>
+                            </li>
+                            <li>
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                <strong>Excursions:</strong>&nbsp;<span th:text="${tourPackage.includedServices != null and !tourPackage.includedServices.isEmpty() ? tourPackage.includedServices : 'Guided tours & landmark admission'}">Excursion Details</span>
+                            </li>
+                        </ul>
+
+                        <div class="hotel-note">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            <span>Hotel Accommodation is an optional add-on available during checkout.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Booking Reservation Form -->
+                <div class="card" style="padding: 2.25rem;">
+                    <h3 style="margin-bottom: 0.5rem; font-size: 1.3rem;">Customize Your Reservation</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.75rem;">
+                        Select your preferred departure date and traveler group size.
+                    </p>
+
+                    <form th:action="@{/customer/bookings/create}" method="post"><input type="hidden" name="requestToken" th:value="${requestToken}">
+                        <input type="hidden" name="packageId" th:value="${tourPackage.id}">
+
+                        <div class="form-group">
+                            <label class="form-label">Departure / Travel Date</label>
+                            <select name="travelDate" class="form-control-custom" required>
+                                <option value="">Select an available departure</option>
+                                <option th:each="departure : ${departures}"
+                                        th:value="${departure.departureDate}"
+                                        th:text="${#temporals.format(departure.departureDate, 'MMM dd, yyyy')} + ' - ' + ${departure.availableSeats} + ' seats available'">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Number of Travelers 
+                                <span style="color: var(--text-muted); font-weight: normal;">(Max: <span th:text="${tourPackage.maxCapacity}">20</span>)</span>
+                            </label>
+                            <input type="number" id="travelerInput" name="numberOfTravelers" class="form-control-custom" 
+                                   min="1" th:max="${tourPackage.maxCapacity}" value="1" required>
+                        </div>
+
+                        <!-- Dynamic Traveler Forms Container -->
+                        <div id="travelerFormsContainer" style="margin-bottom: 1.5rem; padding-top: 1rem; border-top: 1px dashed var(--border-subtle);">
+                            <!-- Forms injected via JS -->
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Optional Hotel Accommodation</label>
+                            <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                                <select name="hotelId" id="hotelSelect" class="form-control-custom" style="flex: 1;">
+                                    <option value="">No Hotel Add-on (I'll arrange my own stay)</option>
+                                    <option th:each="hotel : ${hotels}" th:attr="data-rate=${hotel.pricePerNight}, data-stars=${hotel.starRating}, data-address=${hotel.address}, data-desc=${hotel.description}, data-image=${@travelImages.resolve(hotel.image)}, data-name=${hotel.name}"
+                                            th:value="${hotel.id}"
+                                            th:text="${hotel.name + ' (' + hotel.starRating + '★) - $' + hotel.pricePerNight + '/night'}">
+                                    </option>
+                                </select>
+                                <button type="button" id="btnHotelPreview" class="btn btn-outline" style="padding: 0.75rem 1rem;" disabled>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                </button>
+                            </div>
+                            <small style="display: block; color: var(--text-muted); margin-top: 0.35rem; font-size: 0.8rem;">
+                                Hotel pricing is per room/night and calculated based on traveler group size.
+                            </small>
+                        </div>
+
+                        <!-- Real-time Price Estimation Box -->
+                        <div style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.75rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                <span style="color: var(--text-muted);">Package Rate:</span>
+                                <span>$<span th:text="${tourPackage.basePrice}">1299</span> / person</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                <span style="color: var(--text-muted);">Travelers:</span>
+                                <span id="displayTravelers">1</span>
+                            </div>
+                            <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; margin-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                                <strong style="font-size: 1.05rem;">Package + hotel estimate:</strong>
+                                <strong style="font-size: 1.35rem; color: var(--brand-primary);" id="displayTotal">
+                                    $<span th:text="${tourPackage.basePrice}">1299.00</span>
+                                </strong>
+                            </div>
+                        </div>
+
+                        <p class="muted">Visa and documentation charges will be quoted after verification. No payment is collected when you submit this request.</p><p id="hotelEstimate" aria-live="polite"></p>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.9rem; font-size: 1.05rem; justify-content: center;">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; margin-right: 0.5rem;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Review booking request
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const basePrice = /*[[${tourPackage.basePrice}]]*/ 0;
+        const travelerInput = document.getElementById('travelerInput');
+        const displayTravelers = document.getElementById('displayTravelers');
+        const displayTotal = document.getElementById('displayTotal');
+        const container = document.getElementById('travelerFormsContainer');
+
+        function generateTravelerForms(count) {
+            const previous = [...container.children].map(row => [...row.querySelectorAll('input,select')].map(input => input.value));
+            container.innerHTML = '';
+            for (let i = 1; i <= count; i++) {
+                const formHtml = `
+                    <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1.25rem; margin-bottom: 1rem;">
+                        <h5 style="margin-bottom: 1rem; color: var(--brand-primary);">Traveler ${i} Details</h5>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label class="form-label" for="traveler-name-${i}">Full Name as per Passport</label>
+                            <input type="text" id="traveler-name-${i}" name="travelerNames" class="form-control-custom" required>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <label class="form-label" for="traveler-passport-${i}">Passport Number</label>
+                                <input type="text" id="traveler-passport-${i}" name="travelerPassports" class="form-control-custom" required>
+                            </div>
+                            <div>
+                                <label class="form-label" for="traveler-dob-${i}">Date of Birth</label>
+                                <input type="date" id="traveler-dob-${i}" name="travelerDobs" class="form-control-custom" required>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label class="form-label" for="traveler-gender-${i}">Gender</label>
+                                <select id="traveler-gender-${i}" name="travelerGenders" class="form-control-custom" required>
+                                    <option value="">Select</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label" for="traveler-nationality-${i}">Nationality</label>
+                                <input type="text" id="traveler-nationality-${i}" name="travelerNationalities" class="form-control-custom" required>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', formHtml);
+                if (previous[i-1]) [...container.lastElementChild.querySelectorAll('input,select')].forEach((input,j) => input.value = previous[i-1][j]);
+            }
+        }
+
+        if (travelerInput && displayTravelers && displayTotal) {
+            // Initialize with 1 traveler
+            generateTravelerForms(1);
+
+            travelerInput.addEventListener('input', () => {
+                const count = Math.max(1, Math.min(Number(travelerInput.max), parseInt(travelerInput.value) || 1));
+                displayTravelers.textContent = count;
+                const total = (count * basePrice).toFixed(2);
+                displayTotal.textContent = '$' + total;
+                
+                generateTravelerForms(count);
+            });
+        }
+        const hotelSelect = document.querySelector('[name="hotelId"]');
+        const duration = /*[[${tourPackage.durationDays}]]*/ 1;
+        function updateEstimate() {
+            const count = Math.max(1, Math.min(Number(travelerInput.max), Number(travelerInput.value) || 1));
+            const nights = Math.max(1, duration - 1), rooms = Math.ceil(count / 2);
+            const rate = Number(hotelSelect.selectedOptions[0]?.dataset.rate || 0);
+            document.getElementById('hotelEstimate').textContent = rate ? `${rooms} room(s) × ${nights} night(s) × $${rate.toFixed(2)} = $${(rate * rooms * nights).toFixed(2)} hotel estimate` : 'No hotel add-on selected.';
+            displayTotal.textContent = '$' + (count * basePrice + rate * rooms * nights).toFixed(2);
+        }
+        travelerInput.addEventListener('input', updateEstimate);
+        hotelSelect.addEventListener('change', () => {
+            updateEstimate();
+            const btnPreview = document.getElementById('btnHotelPreview');
+            btnPreview.disabled = !hotelSelect.value;
+        });
+        updateEstimate();
+        
+        // Hotel Preview Modal Logic
+        const hotelDialog = document.createElement('dialog');
+        hotelDialog.className = 'review-dialog';
+        hotelDialog.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 id="hotelModalName" style="margin: 0;">Hotel Details</h2>
+                <button type="button" class="btn btn-outline" style="padding: 0.25rem 0.5rem;" onclick="this.closest('dialog').close()">&times;</button>
+            </div>
+            <img id="hotelModalImage" src="" alt="Hotel" style="width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <span id="hotelModalStars" class="badge badge-primary"></span>
+                <span id="hotelModalPrice" class="badge badge-info"></span>
+            </div>
+            <p id="hotelModalAddress" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;"></p>
+            <p id="hotelModalDesc" style="line-height: 1.5;"></p>
+        `;
+        document.body.append(hotelDialog);
+        
+        document.getElementById('btnHotelPreview').addEventListener('click', () => {
+            const opt = hotelSelect.selectedOptions[0];
+            if (!opt || !opt.value) return;
+            document.getElementById('hotelModalName').textContent = opt.dataset.name;
+            document.getElementById('hotelModalImage').src = opt.dataset.image;
+            document.getElementById('hotelModalStars').textContent = opt.dataset.stars + ' Stars';
+            document.getElementById('hotelModalPrice').textContent = '$' + opt.dataset.rate + ' / night';
+            document.getElementById('hotelModalAddress').textContent = '📍 ' + opt.dataset.address;
+            document.getElementById('hotelModalDesc').textContent = opt.dataset.desc;
+            hotelDialog.showModal();
+        });
+
+        const bookingForm = travelerInput.closest('form');
+        bookingForm.dataset.reviewBooking = 'true';
+        const dialog = document.createElement('dialog');
+        dialog.className = 'review-dialog';
+        dialog.innerHTML = '<h2>Review your booking request</h2><p class="review-copy"></p><p>Your request will be pending. Upload documents next; visa approval and successful final payment are required for confirmation.</p><div class="dialog-actions"><button type="button" class="btn btn-outline" data-edit>Back to edit</button><button type="button" class="btn btn-primary" data-confirm>Submit booking request</button></div>';
+        document.body.append(dialog);
+        let reviewed = false;
+        bookingForm.addEventListener('submit', event => {
+            if (reviewed) return;
+            event.preventDefault();
+            dialog.querySelector('.review-copy').textContent = `${travelerInput.value} traveler(s), departing ${bookingForm.querySelector('[name="travelDate"]').value}. Package and hotel estimate: ${displayTotal.textContent}. Visa charges are additional.`;
+            dialog.showModal();
+        });
+        dialog.querySelector('[data-edit]').addEventListener('click', () => dialog.close());
+        dialog.querySelector('[data-confirm]').addEventListener('click', (e) => { 
+            reviewed = true; 
+            const btn = e.currentTarget;
+            btn.textContent = 'Processing...';
+            btn.disabled = true;
+            dialog.querySelector('[data-edit]').disabled = true;
+            bookingForm.requestSubmit(bookingForm.querySelector('button[type="submit"]')); 
+        });
+        /*]]>*/
+    </script>
+</body>
+</html>

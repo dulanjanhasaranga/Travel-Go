@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Notifications - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="stylesheet" th:href="@{/css/notifications.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="container notification-inbox">
+    <div class="notification-page-heading">
+        <div><span class="eyebrow">Your updates</span><h1>Notifications</h1><p><strong th:text="${notificationSummary.unreadCount}">0</strong> unread · Travel updates and messages, all in one place.</p></div>
+        <form th:action="@{/notifications/read-all}" method="post"><button class="btn btn-outline" type="submit" th:disabled="${notificationSummary.unreadCount == 0}">Mark all as read</button></form>
+    </div>
+    <nav class="notification-filters" aria-label="Notification categories">
+        <a th:each="filter : ${ {'all','booking','visa','payment','support','package'} }" th:href="@{/notifications(category=${filter},unread=${unreadOnly})}" th:attr="aria-current=${category == filter ? 'page' : null}" th:text="${#strings.capitalize(filter)}">All</a>
+        <a th:href="@{/notifications(category=${category},unread=${!unreadOnly})}" th:attr="aria-current=${unreadOnly ? 'page' : null}" th:text="${unreadOnly ? 'Unread only ✓' : 'Unread only'}">Unread only</a>
+    </nav>
+    <section class="notification-list" aria-label="Notification list">
+        <article class="notification-card" th:each="item : ${notificationPage.content}" th:classappend="${!item.read} ? 'is-unread' : ''">
+            <div class="notification-card-head"><div><span class="notification-card-meta" th:text="${#strings.replace(item.type, '_', ' ')}"></span><h2 th:text="${item.title}"></h2></div><time th:datetime="${item.createdAt}" th:text="${#temporals.format(item.createdAt, 'dd MMM yyyy, HH:mm')}"></time></div>
+            <p th:text="${item.message}"></p>
+            <div class="notification-card-actions">
+                <form th:if="${item.url != '/notifications'}" th:action="@{/notifications/{id}/read(id=${item.id})}" method="post"><button type="submit" class="btn btn-outline btn-sm">View details</button></form>
+                <form th:unless="${item.read}" th:action="@{/notifications/{id}/read(id=${item.id})}" method="post"><input type="hidden" name="destination" value="stay"><button type="submit" class="btn btn-ghost btn-sm">Mark as read</button></form>
+                <span class="notification-card-meta" th:if="${item.read}">Read</span>
+            </div>
+        </article>
+        <div class="notification-list-empty" th:if="${notificationPage.empty}"><h2>No notifications here</h2><p th:text="${unreadOnly ? 'You have no unread updates in this category. New activity will appear here.' : 'Booking updates, visa progress, payment confirmations and support replies appear here when there is new activity.'}"></p><a th:href="@{/notifications}" class="btn btn-outline" th:if="${category != 'all' || unreadOnly}">Show all notifications</a></div>
+    </section>
+    <nav class="notification-pagination" aria-label="Notification pages" th:if="${notificationPage.totalPages > 1}">
+        <a th:if="${notificationPage.hasPrevious()}" th:href="@{/notifications(category=${category},unread=${unreadOnly},page=${notificationPage.number - 1})}" class="btn btn-outline btn-sm">Previous</a>
+        <span th:text="${'Page ' + (notificationPage.number + 1) + ' of ' + notificationPage.totalPages}"></span>
+        <a th:if="${notificationPage.hasNext()}" th:href="@{/notifications(category=${category},unread=${unreadOnly},page=${notificationPage.number + 1})}" class="btn btn-outline btn-sm">Next</a>
+    </nav>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/js/main.js}"></script></body>
+</html>

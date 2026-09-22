@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Operations & Ledger - TravelGO Staff</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Visa Officer Sidebar -->
+        <div th:replace="~{fragments/visa-sidebar :: visa-sidebar('payments')}"></div>
+
+        <!-- Main Content Area -->
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <span>Visa Officer Workspace</span>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Financial & Payment Center</span>
+                        </div>
+                        <h2 class="topbar-title">Payment Ledger & Processing Hub</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="openRecordModal()">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Record Offline / Previous Payment
+                    </button>
+                    <a th:href="@{/staff/visas}" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Visa Queue
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Flash Alerts -->
+                <div th:if="${successMessage}" class="alert alert-success" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span th:text="${successMessage}">Operation successful</span>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <span th:text="${errorMessage}">Error occurred</span>
+                </div>
+
+                <!-- Financial Metric Cards -->
+                <div class="stats-grid">
+                    <!-- Total Revenue -->
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Total Revenue Collected</span>
+                            <div class="stat-icon stat-icon-green">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--success);" th:text="'$' + ${#numbers.formatDecimal(totalRevenue != null ? totalRevenue : 0, 1, 2)}">$0.00</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--success); font-weight: 600;" th:text="${paidPaymentsCount} + ' Paid'">0 Paid</span>
+                            <span>Settled transactions across all types</span>
+                        </div>
+                    </div>
+
+                    <!-- Pending Receivables -->
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Pending Receivables</span>
+                            <div class="stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: #0284C7;" th:text="'$' + ${#numbers.formatDecimal(pendingReceivables != null ? pendingReceivables : 0, 1, 2)}">$0.00</div>
+                        <div class="stat-footer">
+                            <span style="color: #0284C7; font-weight: 600;" th:text="${pendingPaymentsCount} + ' Invoices'">0 Invoices</span>
+                            <span>Awaiting customer or manual clearance</span>
+                        </div>
+                    </div>
+
+                    <!-- Visa Fees Total -->
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Visa & Doc Payments</span>
+                            <div class="stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="'$' + ${#numbers.formatDecimal(visaPaymentsTotal != null ? visaPaymentsTotal : 0, 1, 2)}">$0.00</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--text-heading); font-weight: 600;">Visa Office</span>
+                            <span>Embassy charges & document processing</span>
+                        </div>
+                    </div>
+
+                    <!-- Full Package Total -->
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Package Payments</span>
+                            <div class="stat-icon stat-icon-green">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="'$' + ${#numbers.formatDecimal(packagePaymentsTotal != null ? packagePaymentsTotal : 0, 1, 2)}">$0.00</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--success); font-weight: 600;">Final Tour</span>
+                            <span>Confirmed travel package settlements</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters & Search Navigation -->
+                <div class="filter-nav">
+                    <div class="filter-pills">
+                        <a th:href="@{/staff/payments(tab='all', search=${searchQuery})}" class="filter-pill" th:classappend="${activeTab == 'all' or activeTab == null} ? 'active' : ''">All Records</a>
+                        <a th:href="@{/staff/payments(tab='visa', search=${searchQuery})}" class="filter-pill" th:classappend="${activeTab == 'visa'} ? 'active' : ''">Visa & Docs</a>
+                        <a th:href="@{/staff/payments(tab='package', search=${searchQuery})}" class="filter-pill" th:classappend="${activeTab == 'package'} ? 'active' : ''">Full Package</a>
+                        <a th:href="@{/staff/payments(tab='pending', search=${searchQuery})}" class="filter-pill" th:classappend="${activeTab == 'pending'} ? 'active' : ''">Pending Clearance</a>
+                        <a th:href="@{/staff/payments(tab='paid', search=${searchQuery})}" class="filter-pill" th:classappend="${activeTab == 'paid'} ? 'active' : ''">Paid & Settled</a>
+                        <a th:href="@{/staff/payments(tab='history', search=${searchQuery})}" class="filter-pill" th:classappend="${activeTab == 'history'} ? 'active' : ''">Audit Log</a>
+                    </div>
+                    <form th:action="@{/staff/payments}" method="get" class="search-box">
+                        <input type="hidden" name="tab" th:value="${activeTab}" />
+                        <input type="text" name="search" th:value="${searchQuery}" placeholder="Search ref, customer, booking #..." />
+                        <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                        <a th:if="${searchQuery != null and !searchQuery.isEmpty()}" th:href="@{/staff/payments(tab=${activeTab})}" class="btn btn-outline btn-sm">Clear</a>
+                    </form>
+                </div>
+
+                <!-- Payments Data Table -->
+                <div class="table-container">
+                    <div class="table-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-heading); display: flex; align-items: center; gap: 0.5rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0284C7;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                                Transaction Ledger & Settlement Records
+                            </h3>
+                            <span style="font-size: 0.82rem; color: var(--text-muted);" th:text="${#lists.size(payments)} + ' transactions listed'">0 transactions</span>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <a th:href="@{/staff/reports/payments(format='excel')}" class="btn btn-outline btn-sm" style="padding: 0.3rem 0.75rem; border-color: #10B981; color: #10B981; display: flex; align-items: center; gap: 0.35rem; font-weight: 600; text-decoration: none;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                Export Excel
+                            </a>
+                            <a th:href="@{/staff/reports/payments(format='pdf')}" class="btn btn-outline btn-sm" style="padding: 0.3rem 0.75rem; border-color: #EF4444; color: #EF4444; display: flex; align-items: center; gap: 0.35rem; font-weight: 600; text-decoration: none;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                Export PDF
+                            </a>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto; width: 100%;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 14%;">Transaction Ref</th>
+                                    <th style="width: 18%;">Payer / Customer</th>
+                                    <th style="width: 20%;">Tour Booking</th>
+                                    <th style="width: 13%;">Payment Scope</th>
+                                    <th style="width: 10%;">Amount</th>
+                                    <th style="width: 10%;">Method</th>
+                                    <th style="width: 7%;">Status</th>
+                                    <th style="width: 8%; text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(payments)}">
+                                    <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px; margin-bottom: 0.5rem; opacity: 0.4;">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                        </svg>
+                                        <p style="margin: 0; font-weight: 500;">No payment transactions found.</p>
+                                    </td>
+                                </tr>
+                                <tr th:each="payment : ${payments}">
+                                    <td>
+                                        <div class="cell-highlight" th:text="${payment.transactionReference != null ? payment.transactionReference : 'TXN-#' + payment.id}">TXN-000</div>
+                                        <div class="cell-subtext" th:text="${payment.paidAt != null ? #temporals.format(payment.paidAt, 'yyyy-MM-dd HH:mm') : #temporals.format(payment.createdAt, 'yyyy-MM-dd HH:mm')}">2026-09-09</div>
+                                    </td>
+                                    <td>
+                                        <div class="cell-highlight" th:text="${payment.booking != null and payment.booking.user != null ? payment.booking.user.name : 'Unknown User'}">Customer Name</div>
+                                        <div class="cell-subtext" th:text="${payment.booking != null and payment.booking.user != null ? payment.booking.user.email : '-'}">email@example.com</div>
+                                    </td>
+                                    <td>
+                                        <div class="cell-highlight" style="color: #0284C7;" th:text="${payment.booking != null and payment.booking.tourPackage != null ? payment.booking.tourPackage.name : 'Booking #' + (payment.booking != null ? payment.booking.id : '-')}">European Tour</div>
+                                        <span class="badge badge-info" th:if="${payment.booking != null}" th:text="${@bookingSummary.forBooking(payment.booking).status}"></span><div class="cell-subtext" th:text="'Booking Ref #' + ${payment.booking != null ? payment.booking.id : '-'}">Booking #1</div>
+                                    </td>
+                                    <td>
+                                        <span th:if="${payment.paymentType != null and payment.paymentType.name() == 'VISA_DOCUMENTATION'}" class="payment-type-badge badge-visa-doc">
+                                            Visa & Docs
+                                        </span>
+                                        <span th:if="${payment.paymentType != null and payment.paymentType.name() == 'FULL_PACKAGE'}" class="payment-type-badge badge-full-package">
+                                            Full Package
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span style="font-weight: 800; font-size: 0.95rem; color: var(--text-heading);" th:text="'$' + ${#numbers.formatDecimal(payment.amount, 1, 2)}">$0.00</span>
+                                    </td>
+                                    <td>
+                                        <span style="font-size: 0.8rem; color: var(--text-heading); background: #F1F5F9; padding: 0.25rem 0.55rem; border-radius: var(--radius-sm); font-weight: 500;" th:text="${payment.paymentMethod != null ? payment.paymentMethod : 'Online'}">Bank Transfer</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" 
+                                              th:classappend="${payment.paymentStatus.name() == 'PAID' ? 'badge-success' : (payment.paymentStatus.name() == 'PENDING' ? 'badge-warning' : (payment.paymentStatus.name() == 'REFUNDED' ? 'badge-info' : 'badge-danger'))}"
+                                              th:text="${payment.paymentStatus}">
+                                            PAID
+                                        </span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <button type="button" class="btn btn-outline btn-sm" style="padding: 0.25rem 0.65rem;"
+                                                th:if="${payment.paymentStatus.name() == 'PENDING'}" th:data-id="${payment.id}"
+                                                th:data-ref="${payment.transactionReference}"
+                                                th:data-status="${payment.paymentStatus}"
+                                                th:data-type="${payment.paymentType}"
+                                                th:data-amount="${payment.amount}"
+                                                onclick="openUpdateModal(this.getAttribute('data-id'), this.getAttribute('data-ref'), this.getAttribute('data-status'), this.getAttribute('data-type'), this.getAttribute('data-amount'))">
+                                            Update Status
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 1: Record Offline / Previous Payment -->
+    <div id="recordModal" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0284C7;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Record Payment Entry
+                </h3>
+                <button type="button" class="btn btn-outline btn-sm" onclick="closeRecordModal()" style="padding: 0.2rem 0.5rem;">✕</button>
+            </div>
+            <form th:action="@{/staff/payments/record}" method="post">
+                <div class="modal-body">
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0; margin-bottom: 1.25rem;">
+                        Manually register a previous offline payment, wire transfer, or direct deposit into the system ledger.
+                    </p>
+
+                    <div class="form-group">
+                        <label>Select Associated Booking *</label>
+                        <select name="bookingId" class="form-control" required>
+                            <option value="">-- Select Customer Booking --</option>
+                            <option th:each="b : ${bookings}" th:value="${b.id}"
+                                    th:text="'Booking #' + ${b.id} + ' - ' + ${b.user.name} + ' (' + ${b.tourPackage.name} + ') - $' + ${b.totalPackageAmount}">
+                                Booking #1 - John Doe ($1200)
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Payment Scope *</label>
+                            <select name="paymentType" class="form-control" required>
+                                <option value="VISA_DOCUMENTATION">Visa & Documentation Charge</option>
+                                <option value="FULL_PACKAGE">Full Tour Package Payment</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount ($) *</label>
+                            <input type="number" step="0.01" name="amount" class="form-control" placeholder="0.00" required />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Payment Method *</label>
+                            <select name="paymentMethod" class="form-control" required>
+                                <option value="Bank Transfer">Bank Transfer / Wire</option>
+                                <option value="Credit / Debit Card">Credit / Debit Card</option>
+                                <option value="Cash Deposit">Cash Deposit</option>
+                                <option value="Direct Deposit">Direct Deposit</option>
+                                <option value="Online Gateway">Online Gateway</option>
+                                <option value="Cheque">Bank Cheque</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Transaction Reference #</label>
+                            <input type="text" name="transactionReference" class="form-control" placeholder="e.g. TXN-998822 or Slip #" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Initial Payment Status *</label>
+                        <select name="paymentStatus" class="form-control" required>
+                            <option value="PAID">PAID (Clear and Settle Immediately)</option>
+                            <option value="PENDING">PENDING (Awaiting Clearing / Verification)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Staff Audit Remarks</label>
+                        <textarea name="remarks" class="form-control" rows="2" placeholder="e.g. Verified against bank slip dated 2026-09-08..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="closeRecordModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Save & Register Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Update Payment Status -->
+    <div id="updateModal" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0284C7;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Update Payment Status
+                </h3>
+                <button type="button" class="btn btn-outline btn-sm" onclick="closeUpdateModal()" style="padding: 0.2rem 0.5rem;">✕</button>
+            </div>
+            <form id="updateForm" method="post">
+                <div class="modal-body">
+                    <div style="background: #F8FAFC; padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem; border: 1px solid var(--border-subtle);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Transaction Ref:</span>
+                            <span id="updateRefDisplay" style="font-weight: 700;">-</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Payment Type:</span>
+                            <span id="updateTypeDisplay" style="font-weight: 600;">-</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Amount:</span>
+                            <span id="updateAmountDisplay" style="font-weight: 700; color: var(--success);">-</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>New Payment Status *</label>
+                        <select id="newStatusSelect" name="newStatus" class="form-control" required>
+                            <option value="PAID">PAID (Confirm Settlement)</option>
+                            <option value="EXPIRED">EXPIRED (Only after its deadline)</option>
+                            
+                            <option value="FAILED">FAILED (Mark Transaction as Failed)</option>
+                        </select>
+                        <small style="display: block; color: var(--text-muted); font-size: 0.75rem; margin-top: 0.35rem;">
+                            Marking a Full Package payment as PAID automatically confirms the customer's booking.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Updated Transaction Reference</label>
+                        <input type="text" id="updateRefInput" name="transactionReference" class="form-control" />
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Audit Remarks / Reason</label>
+                        <textarea name="remarks" class="form-control" rows="2" placeholder="e.g. Cleared via customer bank statement reference..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="closeUpdateModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Update Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openRecordModal() {
+            document.getElementById('recordModal').style.display = 'flex';
+        }
+        function closeRecordModal() {
+            document.getElementById('recordModal').style.display = 'none';
+        }
+
+        function openUpdateModal(id, ref, status, type, amount) {
+            var form = document.getElementById('updateForm');
+            form.action = '/staff/payments/' + id + '/status';
+            document.getElementById('updateRefDisplay').innerText = ref || ('TXN-#' + id);
+            document.getElementById('updateRefInput').value = ref || '';
+            document.getElementById('updateTypeDisplay').innerText = type === 'FULL_PACKAGE' ? 'Full Tour Package' : 'Visa & Documentation';
+            document.getElementById('updateAmountDisplay').innerText = '$' + (amount ? parseFloat(amount).toFixed(2) : '0.00');
+            document.getElementById('newStatusSelect').value = status || 'PAID';
+            document.getElementById('updateModal').style.display = 'flex';
+        }
+        function closeUpdateModal() {
+            document.getElementById('updateModal').style.display = 'none';
+        }
+
+        // Close modals on clicking outside
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('recordModal')) closeRecordModal();
+            if (event.target == document.getElementById('updateModal')) closeUpdateModal();
+        }
+    </script>
+<script th:src="@{/js/main.js}"></script></body>
+</html>

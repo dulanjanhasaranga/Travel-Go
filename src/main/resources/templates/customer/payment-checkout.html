@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment checkout — TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        .checkout-page-container {
+            padding: 2rem 0 4.5rem;
+            min-height: calc(100vh - 220px);
+        }
+
+        /* Top Breadcrumbs & Trust Banner */
+        .checkout-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.75rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .checkout-breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .checkout-breadcrumbs a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+        .checkout-breadcrumbs a:hover {
+            color: var(--brand-accent);
+        }
+        .checkout-breadcrumbs svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-subtle);
+        }
+        .trust-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #ECFDF5 0%, #E0F2FE 100%);
+            border: 1px solid #A7F3D0;
+            padding: 0.4rem 0.95rem;
+            border-radius: var(--radius-full);
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #065F46;
+        }
+        .trust-pill svg {
+            width: 16px;
+            height: 16px;
+            color: #059669;
+        }
+
+        /* Stepper Navigation */
+        .glass-stepper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 100px;
+            padding: 1rem 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow-x: auto;
+        }
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            z-index: 2;
+            white-space: nowrap;
+        }
+        .step-bubble {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            font-family: var(--font-heading);
+            background: var(--bg-subtle);
+            color: var(--text-muted);
+            border: 2px solid var(--border-strong);
+            transition: all var(--transition-base);
+        }
+        .step-bubble svg {
+            width: 16px;
+            height: 16px;
+        }
+        .step-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .step-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+        .step-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-heading);
+        }
+        .step-item.completed .step-bubble {
+            background: var(--success);
+            color: #FFFFFF;
+            border-color: var(--success);
+            box-shadow: 0 0 0 4px var(--success-bg);
+        }
+        .step-item.completed .step-title {
+            color: var(--success);
+        }
+        .step-item.active .step-bubble {
+            background: var(--brand-accent);
+            color: #FFFFFF;
+            border-color: var(--brand-accent);
+            box-shadow: 0 0 0 4px var(--brand-accent-light);
+        }
+        .step-item.active .step-title {
+            color: var(--brand-accent);
+        }
+        .step-divider {
+            flex: 1;
+            height: 2px;
+            background: var(--border-subtle);
+            margin: 0 1rem;
+            min-width: 25px;
+        }
+        .step-divider.filled {
+            background: var(--success);
+        }
+
+        /* Main Layout Grid */
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1.55fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        @media (max-width: 1024px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Payment Box Container */
+        .payment-box {
+            background: #FFFFFF;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        .payment-box-header {
+            padding: 1.5rem 1.75rem 1.25rem;
+            border-bottom: 1px solid var(--border-subtle);
+            background: linear-gradient(180deg, #FFFFFF 0%, var(--bg-subtle) 100%);
+        }
+        .payment-box-body {
+            padding: 1.75rem;
+        }
+
+        /* Context Notice Banner */
+        .context-banner {
+            border-radius: var(--radius-lg);
+            padding: 1.15rem 1.35rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .context-banner.banner-amber {
+            background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+            border: 1px solid #FDE68A;
+            color: #92400E;
+        }
+        .context-banner.banner-green {
+            background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+            border: 1px solid #A7F3D0;
+            color: #065F46;
+        }
+        .context-banner.banner-blue {
+            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+            border: 1px solid #BAE6FD;
+            color: #0369A1;
+        }
+        .context-banner-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: #FFFFFF;
+            box-shadow: var(--shadow-sm);
+        }
+        .banner-amber .context-banner-icon { color: #D97706; }
+        .banner-green .context-banner-icon { color: #059669; }
+        .banner-blue .context-banner-icon { color: #0284C7; }
+        .context-banner-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Method Selection Tabs */
+        .method-selector-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.85rem;
+            margin-bottom: 1.75rem;
+        }
+        @media (max-width: 640px) {
+            .method-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .method-card {
+            border: 2px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 1rem 0.9rem;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            background: #FFFFFF;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            user-select: none;
+        }
+        .method-card:hover {
+            border-color: var(--brand-accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        .method-card.active {
+            border-color: var(--brand-accent);
+            background: linear-gradient(180deg, #F0F9FF 0%, #FFFFFF 100%);
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.18);
+        }
+        .method-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .method-icon-wrap {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: var(--bg-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-heading);
+            transition: all var(--transition-fast);
+        }
+        .method-card.active .method-icon-wrap {
+            background: var(--brand-accent);
+            color: #FFFFFF;
+        }
+        .method-icon-wrap svg {
+            width: 18px;
+            height: 18px;
+        }
+        .method-check {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border-strong);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            font-size: 11px;
+            font-weight: bold;
+            transition: all var(--transition-fast);
+        }
+        .method-card.active .method-check {
+            background: var(--brand-accent);
+            border-color: var(--brand-accent);
+            color: #FFFFFF;
+        }
+        .method-name {
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: var(--text-heading);
+        }
+        .method-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        /* Form Controls */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        @media (max-width: 580px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Big High-Impact Pay Buttons */
+        .pay-submit-btn {
+            width: 100%;
+            padding: 1.1rem 2rem;
+            font-size: 1.05rem;
+            font-weight: 800;
+            font-family: var(--font-heading);
+            color: #FFFFFF;
+            background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            box-shadow: 0 10px 20px -5px rgba(2, 132, 199, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all var(--transition-base);
+        }
+        .pay-submit-btn:hover {
+            background: linear-gradient(135deg, #0369A1 0%, #075985 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px -5px rgba(2, 132, 199, 0.5);
+        }
+        .pay-submit-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Bank Wire Info Card */
+        .bank-info-card {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.35rem;
+            margin-bottom: 1.25rem;
+        }
+        .bank-data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.65rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.88rem;
+        }
+        .bank-data-row:last-child {
+            border-bottom: none;
+        }
+        .bank-data-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .bank-data-val {
+            font-weight: 700;
+            color: var(--text-heading);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .copy-btn {
+            background: var(--brand-accent-light);
+            border: 1px solid #BAE6FD;
+            color: var(--brand-accent);
+            cursor: pointer;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            transition: background var(--transition-fast);
+        }
+        .copy-btn:hover {
+            background: #BAE6FD;
+        }
+
+        /* Digital Wallet Buttons */
+        .wallet-options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+        .wallet-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 0.9rem;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: 1px solid var(--border-strong);
+            background: #FFFFFF;
+            transition: all var(--transition-base);
+            width: 100%;
+        }
+        .wallet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        .wallet-apple {
+            background: #000000;
+            color: #FFFFFF;
+            border-color: #000000;
+        }
+        .wallet-google {
+            background: #FFFFFF;
+            color: #3C4043;
+        }
+        .wallet-paypal {
+            background: #FFC439;
+            color: #003087;
+            border-color: #E0A800;
+        }
+
+        /* Security Badges Row */
+        .security-badges-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+        @media (max-width: 640px) {
+            .security-badges-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .sec-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .sec-item svg {
+            width: 15px;
+            height: 15px;
+            color: var(--success);
+            flex-shrink: 0;
+        }
+
+        /* Sidebar Order Summary */
+        .order-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 2rem;
+        }
+        .summary-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+        .summary-header {
+            padding: 1.35rem 1.5rem;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            color: #FFFFFF;
+        }
+        .summary-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #38BDF8;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        .summary-pkg-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            line-height: 1.3;
+            margin-bottom: 0.4rem;
+        }
+        .summary-destination {
+            font-size: 0.85rem;
+            color: #94A3B8;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .summary-destination svg {
+            width: 14px;
+            height: 14px;
+            color: #38BDF8;
+        }
+        .summary-body {
+            padding: 1.5rem;
+        }
+
+        /* Trip Quick Meta */
+        .trip-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 1.25rem;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .meta-item-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: var(--brand-accent-light);
+            color: var(--brand-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .meta-item-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+        .meta-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .meta-val {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-heading);
+        }
+
+        /* Price Breakdown List */
+        .breakdown-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.88rem;
+            color: var(--text-body);
+        }
+        .breakdown-row.muted {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+        .breakdown-val {
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+
+        /* Highlight Total Box */
+        .total-highlight-box {
+            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+            border: 1.5px solid #BAE6FD;
+            border-radius: var(--radius-lg);
+            padding: 1.15rem 1.35rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .total-label-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+        .total-superlabel {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--brand-accent);
+        }
+        .total-mainlabel {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--brand-primary);
+        }
+        .total-amount-display {
+            font-size: 1.75rem;
+            font-weight: 800;
+            font-family: var(--font-heading);
+            color: var(--brand-accent);
+            letter-spacing: -0.02em;
+        }
+
+        /* Payment History Table */
+        .history-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.35rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .history-card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.65rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.85rem;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        /* Concierge Support Card */
+        .concierge-card {
+            background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%);
+            border: 1px solid #E9D5FF;
+            border-radius: var(--radius-lg);
+            padding: 1.15rem 1.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+        .concierge-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #9333EA;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .concierge-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+        .concierge-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #581C87;
+            margin-bottom: 0.15rem;
+        }
+        .concierge-desc {
+            font-size: 0.78rem;
+            color: #7E22CE;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+
+    <script>
+        function selectPaymentMethod(element, method) {
+            // Update active state on tab buttons
+            var cards = document.querySelectorAll('.method-card');
+            for (var i = 0; i < cards.length; i++) {
+                cards[i].classList.remove('active');
+            }
+            if (element) {
+                element.classList.add('active');
+            }
+
+            // Show selected panel
+            var cardPanel = document.getElementById('creditCardPanel');
+            var wirePanel = document.getElementById('bankWirePanel');
+            var walletPanel = document.getElementById('digitalWalletPanel');
+
+            if (cardPanel) cardPanel.style.display = (method === 'Credit Card') ? 'block' : 'none';
+            if (wirePanel) wirePanel.style.display = (method === 'Bank Transfer') ? 'block' : 'none';
+            if (walletPanel) walletPanel.style.display = (method === 'Online') ? 'block' : 'none';
+        }
+
+        function formatCardNumber(input) {
+            var val = input.value.replace(/\D/g, '');
+            if (val.length > 16) val = val.slice(0, 16);
+            var parts = [];
+            for (var i = 0; i < val.length; i += 4) {
+                parts.push(val.substring(i, i + 4));
+            }
+            input.value = parts.join(' ');
+        }
+
+        function formatExpiryDate(input) {
+            var val = input.value.replace(/\D/g, '');
+            if (val.length >= 2) {
+                val = val.slice(0, 2) + '/' + val.slice(2, 4);
+            }
+            input.value = val;
+        }
+
+        function copyText(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(function() {
+                    alert('Copied to clipboard: ' + text);
+                }).catch(function() {
+                    prompt('Copy reference code:', text);
+                });
+            } else {
+                prompt('Copy reference code:', text);
+            }
+        }
+
+        function handlePaymentSubmit(form) {
+            var btn = form.querySelector('.pay-submit-btn');
+            if (btn) {
+                btn.innerHTML = '<svg style="animation: spin 1s linear infinite; width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 8px;" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" style="opacity: 0.25;"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" style="opacity: 0.75;"></path></svg> <span>Processing simulated payment...</span>';
+                btn.style.pointerEvents = 'none';
+                btn.style.opacity = '0.85';
+            }
+        }
+    </script>
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="main-content">
+    <div class="container checkout-page-container">
+
+        <!-- Top Breadcrumbs & Trust Banner -->
+        <div class="checkout-topbar">
+            <div class="checkout-breadcrumbs">
+                <a th:href="@{/customer/dashboard}">Dashboard</a>
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                <a th:href="@{/customer/bookings}">My Bookings</a>
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                <span style="color: var(--text-heading); font-weight: 600;" th:text="'Booking #BKG-' + ${booking.id}">Booking #BKG-2</span>
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                <span style="color: var(--brand-accent); font-weight: 700;">Payment checkout</span>
+            </div>
+            <div class="trust-pill">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                Simulated Payment Checkout
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        <div th:if="${successMessage}" class="alert alert-success" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+            <svg style="width: 20px; height: 20px; color: var(--success); flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <span th:text="${successMessage}">Payment processed successfully!</span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+            <svg style="width: 20px; height: 20px; color: var(--danger); flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span th:text="${errorMessage}">Payment error occurred.</span>
+        </div>
+
+        <!-- Checkout Stepper Tracker -->
+        <div class="glass-stepper reveal-up" data-animate="fade-up">
+            <div class="step-item completed">
+                <div class="step-bubble">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <div class="step-content">
+                    <span class="step-label">Step 1</span>
+                    <span class="step-title">Booking Placed</span>
+                </div>
+            </div>
+
+            <div class="step-divider" th:classappend="${visaApplication != null ? 'filled' : ''}"></div>
+
+            <div class="step-item" 
+                 th:classappend="${canPayVisa} ? 'active' : (${visaApplication != null and (visaApplication.status.name() == 'APPROVED' or visaApplication.status.name() == 'PROCESSING')} ? 'completed' : '')">
+                <div class="step-bubble">
+                    <span th:if="${visaApplication == null or visaApplication.status.name() == 'PENDING_DOCUMENTS'}">2</span>
+                    <svg th:if="${visaApplication != null and (visaApplication.status.name() == 'APPROVED' or visaApplication.status.name() == 'PROCESSING')}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    <svg th:if="${canPayVisa}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <div class="step-content">
+                    <span class="step-label">Step 2</span>
+                    <span class="step-title">Visa & Documentation</span>
+                </div>
+            </div>
+
+            <div class="step-divider" th:classappend="${visaApplication != null and visaApplication.status.name() == 'APPROVED' ? 'filled' : ''}"></div>
+
+            <div class="step-item" 
+                 th:classappend="${canPayBalance} ? (${booking.bookingStatus.name() == 'CONFIRMED'} ? 'completed' : 'active') : ''">
+                <div class="step-bubble">
+                    <svg th:if="${booking.bookingStatus.name() == 'CONFIRMED'}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    <span th:unless="${booking.bookingStatus.name() == 'CONFIRMED'}">3</span>
+                </div>
+                <div class="step-content">
+                    <span class="step-label">Step 3</span>
+                    <span class="step-title">Package Payment</span>
+                </div>
+            </div>
+
+            <div class="step-divider" th:classappend="${booking.bookingStatus.name() == 'CONFIRMED' ? 'filled' : ''}"></div>
+
+            <div class="step-item" th:classappend="${booking.bookingStatus.name() == 'CONFIRMED'} ? 'completed' : ''">
+                <div class="step-bubble">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                </div>
+                <div class="step-content">
+                    <span class="step-label">Step 4</span>
+                    <span class="step-title">Trip Ready</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Checkout Grid -->
+        <div class="checkout-grid">
+
+            <!-- LEFT COLUMN: Payment Processing Terminal -->
+            <div>
+                <!-- SCENARIO 1: Visa & Documentation Fee Payment Pending -->
+                <p class="context-banner">Payments are simulated for this academic project. Use dummy payment details only.</p>
+                <p th:if="${!canPayVisa and !canPayBalance}" class="context-banner">No payment is currently available. Check your visa stage, existing payments, and deadlines. Ask your visa officer to reissue an expired upfront quote.</p>
+                <div th:if="${canPayVisa}" class="payment-box">
+                    <div class="payment-box-header">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+                            <div>
+                                <span class="badge badge-warning" style="margin-bottom: 0.35rem; font-size: 0.75rem;">ACTION REQUIRED</span>
+                                <h3 style="margin: 0; font-size: 1.4rem;">Visa & Documentation Payment</h3>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Payable Now</div>
+                                <div style="font-size: 1.6rem; font-weight: 800; color: var(--brand-accent);" 
+                                     th:text="'$' + ${#numbers.formatDecimal(totalVisaCharge, 1, 'COMMA', 2, 'POINT')}">
+                                    $120.00
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payment-box-body">
+                        <!-- Context Notice -->
+                        <div class="context-banner banner-amber">
+                            <div class="context-banner-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <strong style="font-size: 0.95rem; display: block; margin-bottom: 0.2rem;">Consular Processing Window Active</strong>
+                                <p style="margin: 0; font-size: 0.85rem; line-height: 1.45;">
+                                    Your application dossier has been prepared by our Visa Officer. Complete this payment to begin official embassy submission.
+                                    <span style="font-weight: 700; color: #B45309;">Payment deadline: <span th:text="${visaApplication.paymentExpiresAt}"></span></span>
+                                </p>
+                            </div>
+                        </div>
+
+                        
+                        <form th:action="@{/customer/payments/process}" method="post" id="cardPaymentForm" onsubmit="handlePaymentSubmit(this)">
+                            <input type="hidden" name="bookingId" th:value="${booking.id}">
+                            <input type="hidden" name="paymentType" value="VISA_DOCUMENTATION">
+                            <input type="hidden" name="amount" th:value="${totalVisaCharge}">
+                            <input type="hidden" name="paymentMethod" value="Stripe Checkout">
+
+                            <button type="submit" class="pay-submit-btn">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                <span>Proceed to Secure Checkout ($<span th:text="${#numbers.formatDecimal(totalVisaCharge, 1, 'COMMA', 2, 'POINT')}">120.00</span> USD)</span>
+                            </button>
+                        </form>
+
+                        <!-- Trust & Compliance Badges -->
+                        <div class="security-badges-bar">
+                            <div class="sec-item">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                <span>Simulated payment</span>
+                            </div>
+                            <div class="sec-item">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                <span>PCI-DSS Tier 1</span>
+                            </div>
+                            <div class="sec-item">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                <span>Payment History</span>
+                            </div>
+                            <div class="sec-item">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+                                <span>Escrow Protected</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                
+                <!-- SCENARIO 1.5: Package Deposit Payment -->
+                <div th:if="${canPayDeposit}" class="payment-box">
+                    <div class="payment-box-header">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+                            <div>
+                                <span class="badge badge-warning" style="margin-bottom: 0.35rem; font-size: 0.75rem;">DEPOSIT REQUIRED</span>
+                                <h3 style="margin: 0; font-size: 1.4rem;">Package Deposit (20%)</h3>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Deposit Amount Due</div>
+                                <div style="font-size: 1.6rem; font-weight: 800; color: var(--brand-accent);" 
+                                     th:text="'$' + ${#numbers.formatDecimal(totalDepositCharge, 1, 'COMMA', 2, 'POINT')}">
+                                    $200.00
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payment-box-body">
+                        <!-- Context Notice -->
+                        <div class="context-banner banner-blue">
+                            <div class="context-banner-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <strong style="font-size: 0.95rem; display: block; margin-bottom: 0.2rem;">Secure Your Booking</strong>
+                                <p style="margin: 0; font-size: 0.85rem; line-height: 1.45;">
+                                    A 20% deposit is required to lock in your seats while your visa is being processed. 
+                                </p>
+                            </div>
+                        </div>
+
+                        
+                        <form th:action="@{/customer/payments/process}" method="post" id="depositPaymentForm" onsubmit="handlePaymentSubmit(this)">
+                            <input type="hidden" name="bookingId" th:value="${booking.id}">
+                            <input type="hidden" name="paymentType" value="PACKAGE_DEPOSIT">
+                            <input type="hidden" name="amount" th:value="${totalDepositCharge}">
+                            <input type="hidden" name="paymentMethod" value="Stripe Checkout">
+
+                            <button type="submit" class="pay-submit-btn" style="background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                <span>Pay Deposit $<span th:text="${#numbers.formatDecimal(totalDepositCharge, 1, 'COMMA', 2, 'POINT')}">200.00</span> USD via Stripe</span>
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+
+
+                <!-- SCENARIO 2: Full Package Final Payment -->
+                <div th:if="${canPayBalance}" class="payment-box">
+                    <div class="payment-box-header">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+                            <div>
+                                <span class="badge badge-success" style="margin-bottom: 0.35rem; font-size: 0.75rem;">FINAL CLEARANCE</span>
+                                <h3 style="margin: 0; font-size: 1.4rem;">Package Balance Settlement</h3>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Final Amount Due</div>
+                                <div style="font-size: 1.6rem; font-weight: 800; color: var(--success);" 
+                                     th:text="'$' + ${#numbers.formatDecimal(totalBalanceCharge, 1, 'COMMA', 2, 'POINT')}">
+                                    $21,686.00
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payment-box-body">
+                        <!-- Context Notice -->
+                        <div class="context-banner banner-green">
+                            <div class="context-banner-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <strong style="font-size: 0.95rem; display: block; margin-bottom: 0.2rem;">Travel Clearance Approved</strong>
+                                <p style="margin: 0; font-size: 0.85rem; line-height: 1.45;">
+                                    All consular and visa prerequisites have been satisfied. Complete your package settlement to issue airline tickets and final travel itinerary.
+                                    <span th:if="${booking.packagePaymentDeadline != null}" style="font-weight: 700;">
+                                        Due before: <span th:text="${#temporals.format(booking.packagePaymentDeadline, 'yyyy-MM-dd HH:mm')}">2026-09-17 00:00</span>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        
+                        <form th:action="@{/customer/payments/process}" method="post" id="fullPaymentForm" onsubmit="handlePaymentSubmit(this)">
+                            <input type="hidden" name="bookingId" th:value="${booking.id}">
+                            <input type="hidden" name="paymentType" value="PACKAGE_BALANCE">
+                            <input type="hidden" name="amount" th:value="${totalBalanceCharge}">
+                            <input type="hidden" name="paymentMethod" value="Stripe Checkout">
+
+                            <button type="submit" class="pay-submit-btn" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                <span>Settle Package Balance ($<span th:text="${#numbers.formatDecimal(totalBalanceCharge, 1, 'COMMA', 2, 'POINT')}">1000.00</span> USD) via Stripe</span>
+                            </button>
+                        </form>
+
+                        <!-- Trust & Compliance Badges -->
+                        <div class="security-badges-bar">
+                            <div class="sec-item">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                <span>Simulated payment</span>
+                            </div>
+                            <div class="sec-item">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                <span>PCI-DSS Tier 1</span>
+                            </div>
+                            <div class="sec-item">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                <span>Instant Confirmation</span>
+                            </div>
+                            <div class="sec-item">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+                                <span>Full Protection</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCENARIO 3: Visa Application In Review / Awaiting Staff Action -->
+                <div th:if="${visaApplication != null and (visaApplication.status.name() == 'PENDING_DOCUMENTS' or visaApplication.status.name() == 'PROCESSING')}" class="payment-box">
+                    <div class="payment-box-header">
+                        <h3 style="margin: 0; font-size: 1.35rem;">Visa application status</h3>
+                    </div>
+                    <div class="payment-box-body">
+                        <div class="context-banner banner-blue">
+                            <div class="context-banner-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <strong style="font-size: 0.95rem; display: block; margin-bottom: 0.2rem;" th:text="${#strings.replace(visaApplication.status.name(), '_', ' ')}">Application status</strong>
+                                <p style="margin: 0; font-size: 0.85rem; line-height: 1.45;">
+                                    Open your visa application to check uploaded documents, officer instructions and the next action. Payment becomes available only after verification and a quote, or after visa approval for the final balance.
+                                </p>
+                            </div>
+                        </div>
+                        <a th:href="@{/customer/bookings/{id}(id=${booking.id})}" class="btn btn-outline" style="width: 100%; justify-content: center;">
+                            View Booking & Visa Tracking Details
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Back Navigation -->
+                <div style="margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                    <a th:href="@{/customer/bookings}" class="btn btn-outline btn-sm">
+                        &larr; Back to My Bookings
+                    </a>
+                    <span style="font-size: 0.82rem; color: var(--text-muted);">
+                        Need assistance? <a th:href="@{/contact}" style="color: var(--brand-accent); font-weight: 600; text-decoration: none;">Contact Support</a>
+                    </span>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Order Summary & Itemized Breakdown -->
+            <div class="order-sidebar">
+
+                <!-- Primary Order Summary Card -->
+                <div class="summary-card">
+                    <div class="summary-header">
+                        <span class="summary-tag" th:text="${booking.tourPackage != null and booking.tourPackage.category != null ? booking.tourPackage.category.name : 'TOUR PACKAGE'}">
+                            CULTURAL TOUR
+                        </span>
+                        <div class="summary-pkg-title" th:text="${booking.tourPackage.name}">
+                            Tokyo & Kyoto Cultural Tour
+                        </div>
+                        <div class="summary-destination">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span th:text="${booking.tourPackage.destination != null ? booking.tourPackage.destination.city + ', ' + booking.tourPackage.destination.country : 'Japan'}">Tokyo, Japan</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-body">
+                        <!-- Quick Trip Meta -->
+                        <div class="trip-meta-grid">
+                            <div class="meta-item">
+                                <div class="meta-item-icon">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="meta-label">Travel Date</div>
+                                    <div class="meta-val" th:text="${booking.travelDate}">2026-09-20</div>
+                                </div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-item-icon">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="meta-label">Party Size</div>
+                                    <div class="meta-val" th:text="${booking.numberOfTravelers} + ' Travelers'">14 Travelers</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Itemized Breakdown -->
+                        <div class="breakdown-list">
+                            <div class="breakdown-row">
+                                <span>Base Package Rate</span>
+                                <span class="breakdown-val" th:text="'$' + ${#numbers.formatDecimal(booking.packageUnitPrice, 1, 'COMMA', 2, 'POINT')} + ' / person'">$1,549.00</span>
+                            </div>
+                            <div class="breakdown-row">
+                                <span th:text="'Package and Hotel (' + ${booking.numberOfTravelers} + ' travelers)'">Package Subtotal</span>
+                                <span class="breakdown-val" th:text="'$' + ${#numbers.formatDecimal(totalBalanceCharge, 1, 'COMMA', 2, 'POINT')}">$21,686.00</span>
+                            </div>
+
+                            <!-- Visa Charges if any -->
+                            <div th:if="${visaApplication != null and visaApplication.visaCharge != null}" class="breakdown-row muted">
+                                <span>Government Visa Fee</span>
+                                <span class="breakdown-val" th:text="'$' + ${#numbers.formatDecimal(visaApplication.visaCharge, 1, 'COMMA', 2, 'POINT')}">$80.00</span>
+                            </div>
+                            <div th:if="${visaApplication != null and visaApplication.documentationCharge != null}" class="breakdown-row muted">
+                                <span>Consular Documentation Fee</span>
+                                <span class="breakdown-val" th:text="'$' + ${#numbers.formatDecimal(visaApplication.documentationCharge, 1, 'COMMA', 2, 'POINT')}">$40.00</span>
+                            </div>
+                            <div class="breakdown-row muted">
+                                <span>Booking Status</span>
+                                <span class="badge" 
+                                      th:classappend="${booking.bookingStatus.name() == 'CONFIRMED' ? 'badge-success' : 'badge-warning'}" 
+                                      th:text="${booking.bookingStatus}">
+                                    PENDING
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Highlight Total Payable Now Box -->
+                        <div class="total-highlight-box" th:if="${canPayVisa or canPayDeposit or canPayBalance}">
+                            <div class="total-label-wrap">
+                                <span class="total-superlabel">Due in Current Step</span>
+                                <span class="total-mainlabel" 
+                                      th:text="${canPayVisa} ? 'Visa & Processing Fee' : (${canPayDeposit} ? 'Package Deposit' : 'Full Package Balance')">
+                                    Payable Amount
+                                </span>
+                            </div>
+                            <div class="total-amount-display"
+                                 th:if="${canPayVisa}"
+                                 th:text="'$' + ${#numbers.formatDecimal(totalVisaCharge, 1, 'COMMA', 2, 'POINT')}">
+                                $120.00
+                            </div>
+                            <div class="total-amount-display"
+                                 th:if="${!canPayVisa and canPayDeposit}"
+                                 th:text="'$' + ${#numbers.formatDecimal(totalDepositCharge, 1, 'COMMA', 2, 'POINT')}">
+                                $200.00
+                            </div>
+                            <div class="total-amount-display"
+                                 th:if="${!canPayVisa and !canPayDeposit and canPayBalance}"
+                                 th:text="'$' + ${#numbers.formatDecimal(totalBalanceCharge, 1, 'COMMA', 2, 'POINT')}">
+                                $21,686.00
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Payment History Card -->
+                <div class="history-card" th:if="${payments != null and !payments.isEmpty()}">
+                    <div class="history-card-title">
+                        <span>Payment History</span>
+                        <span class="badge badge-info" th:text="${payments.size()} + ' Records'">1 Record</span>
+                    </div>
+                    <div>
+                        <div th:each="p : ${payments}" class="history-item">
+                            <div>
+                                <strong style="color: var(--text-heading); display: block;" th:text="${p.paymentType}">VISA_DOCUMENTATION</strong>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);" 
+                                      th:text="${p.transactionReference != null ? p.transactionReference : 'Pending'}">TXN-REF</span>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 700; color: var(--text-heading);" th:text="'$' + ${#numbers.formatDecimal(p.amount, 1, 'COMMA', 2, 'POINT')}">$120.00</div>
+                                <span class="badge" 
+                                      th:classappend="${p.paymentStatus.name() == 'PAID'} ? 'badge-success' : (${p.paymentStatus.name() == 'EXPIRED'} ? 'badge-danger' : 'badge-warning')" 
+                                      th:text="${p.paymentStatus}" style="font-size: 0.7rem; padding: 0.15rem 0.5rem;">PAID</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 24/7 Concierge Support Card -->
+                <div class="concierge-card">
+                    <div class="concierge-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="concierge-title">Need Payment Assistance?</div>
+                        <div class="concierge-desc">Contact our travel team through the Contact page for help with your payment.</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+<section class="container surface"><h2>Booking payment status</h2><span class="badge badge-info" th:text="${@bookingSummary.forBooking(booking).status}"></span><p><a th:href="@{/customer/bookings/{id}(id=${booking.id})}">View booking and payment records →</a></p></section></main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/js/main.js}"></script></body>
+</html>
+

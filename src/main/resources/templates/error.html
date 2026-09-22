@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: var(--bg-alt); text-align: center; padding: 2rem;">
+    <div class="card" style="max-width: 500px; padding: 3rem 2rem;">
+        <div style="font-size: 3.5rem; margin-bottom: 1rem;">⚠️</div>
+        <h1 style="font-size: 1.8rem; margin-bottom: 1rem; color: var(--danger);">Something went wrong</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;" th:text="${errorMessage != null ? errorMessage : 'An unexpected error occurred. Please try again later.'}">
+            An unexpected error occurred.
+        </p>
+        <div>
+            <a th:href="@{/}" class="btn btn-primary">Return to Home</a>
+        </div>
+    </div>
+<script th:src="@{/js/main.js}"></script></body>
+</html>

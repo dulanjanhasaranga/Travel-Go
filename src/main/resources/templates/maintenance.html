@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheduled Maintenance - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: var(--bg-alt); text-align: center; padding: 2rem;">
+    <div class="card" style="max-width: 550px; padding: 3rem 2rem;">
+        <div style="font-size: 3.5rem; margin-bottom: 1rem;">🛠️</div>
+        <h1 style="font-size: 2rem; margin-bottom: 1rem; color: var(--primary-dark);">Website Under Maintenance</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;" 
+           th:text="${settings != null ? settings.maintenanceMessage : 'We are currently performing scheduled system updates. Please check back soon.'}">
+            We are currently performing scheduled maintenance. Please check back soon.
+        </p>
+        <div>
+            <a th:href="@{/auth/login}" class="btn btn-outline btn-sm">Administrator Login</a>
+        </div>
+    </div>
+<script th:src="@{/js/main.js}"></script></body>
+</html>

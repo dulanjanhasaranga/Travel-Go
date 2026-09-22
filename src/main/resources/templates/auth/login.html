@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+ <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <title>Sign in | TravelGO</title>
+ <link rel="stylesheet" th:href="@{/css/login.css}">
+ <link rel="stylesheet" th:href="@{/css/brand.css}">
+ <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+ <main class="signin-shell">
+  <section class="signin-story" aria-label="TravelGO travel inspiration">
+   <a th:href="@{/}" class="signin-brand"><span class="official-mark"><img th:src="@{/images/travelgo-logo.png}" alt="" width="100" height="100"></span><span>Travel<b>GO</b></span></a>
+   <div class="story-copy"><span class="eyebrow">A little closer to your next adventure</span><h2>New places.<br>Lasting memories.</h2><p>From the first idea to the final details, your next journey starts here.</p></div>
+   <div class="story-note">Explore destinations. Plan your journey. Travel with confidence.</div>
+  </section>
+  <section class="signin-main" aria-labelledby="signin-title">
+   <a th:href="@{/}" class="back-link">&#8592; Back to website</a>
+   <div class="signin-form-wrap">
+    <span class="eyebrow">Your journey continues</span>
+    <h1 id="signin-title">Welcome back.</h1>
+    <p class="signin-intro">Sign in to manage your bookings, follow your visa application and plan what comes next.</p>
+    <div th:if="${param.roleUnavailable}" class="signin-alert" role="alert">Your account does not have a supported workspace role. Ask an administrator to review its role assignment.</div>
+    <form th:if="${param.roleUnavailable}" th:action="@{/auth/logout}" method="post"><button type="submit" class="signin-submit">Sign out of this account</button></form>
+    <div th:if="${param.sessionChanged}" class="signin-alert" role="alert">Your account access or password changed. Please sign in again.</div>
+    <div th:if="${param.error}" class="signin-alert" role="alert">We couldn’t sign you in. Check your email and password, or contact us if your account is suspended.</div>
+    <div th:if="${param.logout}" class="signin-alert success" role="status">You have been safely signed out.</div>
+    <div th:if="${param.denied}" class="signin-alert" role="alert">Your account does not have access to that page.</div>
+    <div th:if="${successMessage}" class="signin-alert success" role="status" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="signin-alert" role="alert" th:text="${errorMessage}"></div>
+    <form th:action="@{/auth/login}" method="post" class="signin-form" id="loginForm">
+     <label for="email">Email address</label>
+     <input type="email" id="email" name="email" required autocomplete="username" placeholder="you@example.com" autocapitalize="none" spellcheck="false">
+     <label for="password">Password</label>
+     <div class="password-field"><input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password"><button type="button" class="password-toggle" aria-label="Show password" aria-controls="password" aria-pressed="false">Show</button></div>
+     <a th:href="@{/auth/forgot-password}">Forgot your password?</a>
+     <button type="submit" class="signin-submit">Sign in &#8594;</button>
+    </form>
+    <p class="signup-note">New to TravelGO? <a th:href="@{/auth/register}">Create an account</a></p>
+    <section th:if="${demoChoices != null and !#lists.isEmpty(demoChoices)}" class="demo-access" aria-labelledby="demo-access-title">
+     <div class="demo-heading"><h2 id="demo-access-title">Quick Demo Access</h2><span class="demo-mode-badge">Demo mode</span></div>
+     <p>Explore each workspace using a dedicated demo account. Changes are saved to this demonstration database.</p>
+     <div class="demo-access-grid">
+      <form th:each="choice : ${demoChoices}" th:action="@{/auth/demo-login}" method="post">
+       <input type="hidden" name="account" th:value="${choice.key}">
+       <button type="submit" class="demo-access-button">
+        <span class="demo-button-title"><span th:text="${'Login as ' + choice.label}">Login as Customer</span><svg class="icon-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="demo-button-description" th:text="${choice.description}">Explore your workspace</span>
+       </button>
+      </form>
+     </div>
+     <p class="demo-note">Local university demonstration · Simulated payments</p>
+    </section>
+    <div class="signin-help">Need help accessing your account?<br><a th:href="@{/contact}">Contact our travel team</a></div>
+   </div>
+   <div class="signin-bottom">TravelGO &middot; Your travel, thoughtfully organised.</div>
+  </section>
+ </main>
+ <script th:src="@{/js/login.js}" defer></script>
+<script th:src="@{/js/main.js}"></script></body>
+</html>

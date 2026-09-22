@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frequently Asked Questions - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container section">
+            <div class="section-header">
+                <span class="section-tag">Knowledge Base</span>
+                <h1 class="section-title">Frequently Asked Questions</h1>
+                <p class="section-subtitle">Key answers regarding package pricing, hotel policies, visa processing, and account access</p>
+            </div>
+
+            <div style="max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- FAQ 1 -->
+                <div class="card">
+                    <div class="card-body" style="padding: 2rem;">
+                        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                            <div class="stat-icon stat-icon-amber" style="width: 36px; height: 36px; flex-shrink: 0;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.2rem; color: var(--text-heading); margin-bottom: 0.5rem;">Do tour package prices include hotel accommodation?</h3>
+                                <p style="color: var(--text-body); line-height: 1.7; margin: 0;">
+                                    <strong>No.</strong> In accordance with our core business rules, package prices do <strong>not</strong> include hotel accommodation. Tour package prices cover round-trip flights, visa guidance, and guided activities. Hotel accommodation is an <strong>optional add-on</strong> that travelers can customize during booking based on their preferred star rating.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="card">
+                    <div class="card-body" style="padding: 2rem;">
+                        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                            <div class="stat-icon stat-icon-blue" style="width: 36px; height: 36px; flex-shrink: 0;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.2rem; color: var(--text-heading); margin-bottom: 0.5rem;">What is included in the base tour package price?</h3>
+                                <p style="color: var(--text-body); line-height: 1.7; margin: 0;">
+                                    Every standard tour package includes return economy flights, standard visa assistance support, skip-the-line entrance tickets for key attractions, and private ground transportation between scheduled itinerary highlights.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="card">
+                    <div class="card-body" style="padding: 2rem;">
+                        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                            <div class="stat-icon stat-icon-green" style="width: 36px; height: 36px; flex-shrink: 0;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.2rem; color: var(--text-heading); margin-bottom: 0.5rem;">Can visitors browse destination and tour information without logging in?</h3>
+                                <p style="color: var(--text-body); line-height: 1.7; margin: 0;">
+                                    <strong>Yes!</strong> All visitors can freely browse destinations, examine package prices, read visa criteria, check agency contact information, and review business hours without creating an account or logging in.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="card">
+                    <div class="card-body" style="padding: 2rem;">
+                        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                            <div class="stat-icon stat-icon-amber" style="width: 36px; height: 36px; flex-shrink: 0;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.2rem; color: var(--text-heading); margin-bottom: 0.5rem;">How is visa document verification handled?</h3>
+                                <p style="color: var(--text-body); line-height: 1.7; margin: 0;">
+                                    Visa processing is managed independently through our dedicated Visa Management module. Certified Visa Officers inspect uploaded documents against destination country regulations before embassy submission.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${userRole == 'VISA_OFFICER'} ? 'Visa Operations Center - TravelGO' : (${userRole == 'TRAVEL_CONSULTANT'} ? 'Package Manager Command Center - TravelGO' : 'Staff Portal - TravelGO')">Staff Portal - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+
+    <!-- ╔═════════════════════════════════════════════════════════════╗
+         ║        VISA OFFICER — Executive Workspace (Admin Layout)    ║
+         ╚═════════════════════════════════════════════════════════════╝ -->
+    <div th:if="${userRole == 'VISA_OFFICER'}" class="admin-layout">
+        <!-- Dedicated Visa Officer Sidebar -->
+        <div th:replace="~{fragments/visa-sidebar :: visa-sidebar('dashboard')}"></div>
+
+        <!-- Main Workspace Area -->
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <span>Visa Officer Workspace</span>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Executive Control Center</span>
+                        </div>
+                        <h2 class="topbar-title">Operations & Payment Command Center</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <span class="badge badge-success">
+                        <svg width="10" height="10" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
+                        Officer Online
+                    </span>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="openRecordModal()">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Record Payment
+                    </button>
+                    <a th:href="@{/staff/payments}" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        Payment Center
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Flash Alerts -->
+                <div th:if="${successMessage}" class="alert alert-success" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span th:text="${successMessage}">Operation successful</span>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <span th:text="${errorMessage}">Error occurred</span>
+                </div>
+
+                <!-- 1. Visa Operations Metrics (Row 1) -->
+                <div class="hub-section-header" style="margin-top: 0;">
+                    <h3 class="hub-section-title">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Visa Operations Performance
+                    </h3>
+                    <a th:href="@{/staff/visas}" style="font-size: 0.82rem; color: #0284C7; font-weight: 600; text-decoration: none;">View Visa Queue &rarr;</a>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Total Applications</span>
+                            <div class="stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="${totalCount}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--text-heading); font-weight: 600;">Active Pipeline</span>
+                            <span>All visa submissions recorded</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Pending Verification</span>
+                            <div class="stat-icon stat-icon-red">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: #D97706;" th:text="${pendingCount}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: #D97706; font-weight: 600;">Action Required</span>
+                            <span>Awaiting officer review</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Embassy Processing</span>
+                            <div class="stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: #7E22CE;" th:text="${processingCount}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: #7E22CE; font-weight: 600;">In Progress</span>
+                            <span>Fee paid & embassy clearance</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Approved Visas</span>
+                            <div class="stat-icon stat-icon-green">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--success);" th:text="${approvedCount}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--success); font-weight: 600;" th:text="${rejectedCount} + ' Rejected'">0 Rejected</span>
+                            <span>Successfully granted clearances</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Financial & Payment Metrics (Row 2) -->
+                <div class="hub-section-header">
+                    <h3 class="hub-section-title">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Financial & Payment Control Ledger
+                    </h3>
+                    <a th:href="@{/staff/payments}" style="font-size: 0.82rem; color: #0284C7; font-weight: 600; text-decoration: none;">View Payment Center &rarr;</a>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Total Revenue Settled</span>
+                            <div class="stat-icon stat-icon-green">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--success);" th:text="'$' + ${#numbers.formatDecimal(totalRevenue != null ? totalRevenue : 0, 1, 2)}">$0.00</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--success); font-weight: 600;">Completed</span>
+                            <span>All verified customer payments</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Pending Receivables</span>
+                            <div class="stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: #0284C7;" th:text="'$' + ${#numbers.formatDecimal(pendingReceivables != null ? pendingReceivables : 0, 1, 2)}">$0.00</div>
+                        <div class="stat-footer">
+                            <span style="color: #0284C7; font-weight: 600;">Invoices</span>
+                            <span>Pending customer settlement</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Visa & Documentation Fees</span>
+                            <div class="stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="'$' + ${#numbers.formatDecimal(visaPaymentsTotal != null ? visaPaymentsTotal : 0, 1, 2)}">$0.00</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--text-heading); font-weight: 600;">Visa Office</span>
+                            <span>Application and embassy revenue</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Full Package Payments</span>
+                            <div class="stat-icon stat-icon-green">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="'$' + ${#numbers.formatDecimal(packagePaymentsTotal != null ? packagePaymentsTotal : 0, 1, 2)}">$0.00</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--success); font-weight: 600;">Bookings</span>
+                            <span>Confirmed tour package proceeds</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Operations & Financial Command Center (Quick Actions) -->
+                <div class="hub-section-header">
+                    <h3 class="hub-section-title">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Command & Control Hub
+                    </h3>
+                </div>
+
+                <div class="command-hub-grid">
+                    <a th:href="@{/staff/visas}" class="command-card">
+                        <div class="command-icon icon-amber">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <div class="command-text">
+                            <h4>Review Pending Docs
+                                <span class="command-badge" th:text="${pendingCount}">0</span>
+                            </h4>
+                            <p>Verify uploaded passports, photos, and records</p>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/staff/visas}" class="command-card">
+                        <div class="command-icon icon-purple">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </div>
+                        <div class="command-text">
+                            <h4>Process Embassy Visas</h4>
+                            <p>Advance verified and paid applications</p>
+                        </div>
+                    </a>
+
+                    <div class="command-card" onclick="openRecordModal()">
+                        <div class="command-icon icon-blue">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                            </svg>
+                        </div>
+                        <div class="command-text">
+                            <h4>Record Previous Payment</h4>
+                            <p>Log bank transfer, wire, cash, or offline slip</p>
+                        </div>
+                    </div>
+
+                    <a th:href="@{/staff/payments(tab='package')}" class="command-card">
+                        <div class="command-icon icon-green">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="command-text">
+                            <h4>Confirm Package Payments</h4>
+                            <p>Update full payment status and confirm bookings</p>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/staff/payments(tab='visa')}" class="command-card">
+                        <div class="command-icon icon-blue">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                        </div>
+                        <div class="command-text">
+                            <h4>Visa Documentation Fees</h4>
+                            <p>Verify fee clearance for active applications</p>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/staff/payments(tab='history')}" class="command-card">
+                        <div class="command-icon icon-slate">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="command-text">
+                            <h4>Full Transaction Ledger</h4>
+                            <p>Audit historical logs and financial statements</p>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- 4. Real-time Grid: Recent Visa Applications -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0284C7;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Active Visa Applications
+                        </h3>
+                        <a th:href="@{/staff/visas}" style="font-size: 0.82rem; color: #0284C7; font-weight: 600; text-decoration: none;">View All Visas &rarr;</a>
+                    </div>
+
+                    <div style="overflow-x: auto; width: 100%;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%;">Ref ID</th>
+                                    <th style="width: 22%;">Applicant</th>
+                                    <th style="width: 26%;">Tour Package</th>
+                                    <th style="width: 11%;">Scope</th>
+                                    <th style="width: 13%;">Status</th>
+                                    <th style="width: 18%; text-align: right;">Quick Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(recentApplications)}">
+                                    <td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+                                        No recent visa applications recorded.
+                                    </td>
+                                </tr>
+                                <tr th:each="visa : ${recentApplications}">
+                                    <td>
+                                        <a th:href="@{/staff/visas}" class="cell-highlight" style="color: #0284C7; text-decoration: none;" th:text="'#VISA-' + ${visa.id}">#VISA-1</a>
+                                    </td>
+                                    <td>
+                                        <div class="cell-highlight" th:text="${visa.booking.user.name}">John Doe</div>
+                                        <div class="cell-subtext" th:text="${visa.booking.user.email}">john@example.com</div>
+                                    </td>
+                                    <td>
+                                        <div class="cell-highlight" th:text="${visa.booking.tourPackage.name}">European Classical Journey</div>
+                                        <div class="cell-subtext" th:text="${visa.booking.tourPackage.destination.city + ', ' + visa.booking.tourPackage.destination.country}">Paris, France</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-info" th:text="${visa.visaType}">VISIT</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" 
+                                              th:classappend="${visa.status.name() == 'APPROVED'} ? 'badge-success' : (${visa.status.name() == 'REJECTED'} ? 'badge-danger' : (${visa.status.name() == 'PROCESSING' or visa.status.name() == 'DOCUMENTS_VERIFIED'} ? 'badge-info' : 'badge-warning'))"
+                                              th:text="${visa.status}">
+                                            STATUS
+                                        </span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <div style="display: flex; gap: 0.35rem; justify-content: flex-end; align-items: center;">
+                                            <a th:href="@{/staff/visas}" class="btn btn-outline btn-sm" style="padding: 0.25rem 0.55rem;">Manage</a>
+
+                                            <!-- Quick verify -->
+                                            <form th:if="${visa.status.name() == 'PENDING_DOCUMENTS' or visa.status.name() == 'DOCUMENTS_SUBMITTED'}"
+                                                  th:action="@{/staff/visas/{id}/verify-all(id=${visa.id})}" method="post" style="display:inline;">
+                                                <input type="hidden" name="redirect" value="dashboard" />
+                                                <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.25rem 0.55rem; background: #059669; border-color: #059669;"
+                                                        onclick="return confirm('Verify all documents for this application?');">Verify</button>
+                                            </form>
+                                            <!-- Quick process -->
+                                            <form th:if="${visa.status.name() == 'EXPIRED' or (visa.status.name() == 'PAYMENT_PENDING' and visa.paymentExpiresAt != null and !visa.paymentExpiresAt.isAfter(workflowNow))}"
+                    th:action="@{/staff/visas/{id}/reissue(id=${visa.id})}" method="post">
+                    <button class="btn btn-outline btn-sm" type="submit">Reissue unchanged charges for 24 hours</button>
+                </form>
+                                            <!-- Quick approve -->
+                                            <form th:if="${visa.status.name() == 'PROCESSING'}"
+                                                  th:action="@{/staff/visas/{id}/approve(id=${visa.id})}" method="post" style="display:inline;">
+                                                <input type="hidden" name="redirect" value="dashboard" />
+                                                <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.25rem 0.55rem; background: #059669; border-color: #059669;"
+                                                        onclick="return confirm('Grant final approval for this visa?');">Approve</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 5. Real-time Grid: Recent Payment Transactions -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0284C7;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                            Recent Payment Transactions & Status Updates
+                        </h3>
+                        <a th:href="@{/staff/payments}" style="font-size: 0.82rem; color: #0284C7; font-weight: 600; text-decoration: none;">View All Ledger Entries &rarr;</a>
+                    </div>
+
+                    <div style="overflow-x: auto; width: 100%;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 14%;">Transaction Ref</th>
+                                    <th style="width: 18%;">Payer / Customer</th>
+                                    <th style="width: 20%;">Tour Package</th>
+                                    <th style="width: 13%;">Scope</th>
+                                    <th style="width: 11%;">Amount</th>
+                                    <th style="width: 10%;">Method</th>
+                                    <th style="width: 7%;">Status</th>
+                                    <th style="width: 7%; text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(recentPayments)}">
+                                    <td colspan="8" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+                                        No recent payment transactions recorded.
+                                    </td>
+                                </tr>
+                                <tr th:each="payment : ${recentPayments}">
+                                    <td>
+                                        <div class="cell-highlight" th:text="${payment.transactionReference != null ? payment.transactionReference : 'TXN-#' + payment.id}">TXN-000</div>
+                                        <div class="cell-subtext" th:text="${payment.paidAt != null ? #temporals.format(payment.paidAt, 'yyyy-MM-dd HH:mm') : #temporals.format(payment.createdAt, 'yyyy-MM-dd HH:mm')}">2026-09-09</div>
+                                    </td>
+                                    <td>
+                                        <div class="cell-highlight" th:text="${payment.booking != null and payment.booking.user != null ? payment.booking.user.name : 'Customer'}">Customer</div>
+                                        <div class="cell-subtext" th:text="${payment.booking != null and payment.booking.user != null ? payment.booking.user.email : '-'}">email</div>
+                                    </td>
+                                    <td>
+                                        <div class="cell-highlight" th:text="${payment.booking != null and payment.booking.tourPackage != null ? payment.booking.tourPackage.name : 'Booking #' + (payment.booking != null ? payment.booking.id : '-')}">Tour</div>
+                                        <span class="badge badge-info" th:if="${payment.booking != null}" th:text="${@bookingSummary.forBooking(payment.booking).status}"></span><div class="cell-subtext" th:text="${'Booking #' + (payment.booking != null ? payment.booking.id : '-')}">Booking #1</div>
+                                    </td>
+                                    <td>
+                                        <span th:if="${payment.paymentType != null and payment.paymentType.name() == 'VISA_DOCUMENTATION'}" class="payment-type-badge badge-visa-doc">
+                                            Visa & Docs
+                                        </span>
+                                        <span th:if="${payment.paymentType != null and payment.paymentType.name() == 'FULL_PACKAGE'}" class="payment-type-badge badge-full-package">
+                                            Full Package
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span style="font-weight: 800; font-size: 0.95rem; color: var(--text-heading);" th:text="'$' + ${#numbers.formatDecimal(payment.amount, 1, 2)}">$0.00</span>
+                                    </td>
+                                    <td>
+                                        <span style="font-size: 0.8rem; background: #F1F5F9; padding: 0.25rem 0.55rem; border-radius: var(--radius-sm); font-weight: 500;" th:text="${payment.paymentMethod != null ? payment.paymentMethod : 'Online'}">Bank Transfer</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" 
+                                              th:classappend="${payment.paymentStatus.name() == 'PAID' ? 'badge-success' : (payment.paymentStatus.name() == 'PENDING' ? 'badge-warning' : (payment.paymentStatus.name() == 'REFUNDED' ? 'badge-info' : 'badge-danger'))}"
+                                              th:text="${payment.paymentStatus}">
+                                            PAID
+                                        </span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <button type="button" class="btn btn-outline btn-sm" style="padding: 0.25rem 0.65rem;"
+                                                th:if="${payment.paymentStatus.name() == 'PENDING'}" th:data-id="${payment.id}"
+                                                th:data-ref="${payment.transactionReference}"
+                                                th:data-status="${payment.paymentStatus}"
+                                                th:data-type="${payment.paymentType}"
+                                                th:data-amount="${payment.amount}"
+                                                onclick="openUpdateModal(this.getAttribute('data-id'), this.getAttribute('data-ref'), this.getAttribute('data-status'), this.getAttribute('data-type'), this.getAttribute('data-amount'))">
+                                            Update
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ╔═════════════════════════════════════════════════════════════╗
+         ║    FALLBACK — Preserved Original Workspace Layout             ║
+         ╚═════════════════════════════════════════════════════════════╝ -->
+    <div th:if="${userRole != 'VISA_OFFICER' and userRole != 'TRAVEL_CONSULTANT'}">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+        <main class="main-content">
+            <div class="container section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <span class="badge badge-warning" style="margin-bottom: 0.5rem;" th:text="${currentUser != null ? currentUser.role.roleName : 'STAFF'}">STAFF PORTAL</span>
+                        <h1>Staff Operational Workspace</h1>
+                        <p style="color: var(--text-muted); font-size: 1.05rem;">
+                            Logged in as: <strong th:text="${currentUser != null ? currentUser.name : 'Staff Specialist'}">Staff Specialist</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <div class="card-body" style="padding: 2rem;">
+                            <div class="stat-icon stat-icon-blue" style="margin-bottom: 1.25rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                            </div>
+                            <h3>Tour Package Consulting</h3>
+                            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
+                                Review package inventory, assist clients with flight routing, and manage customized excursion itineraries.
+                            </p>
+                            <a th:href="@{/packages}" class="btn btn-outline btn-sm">Browse Packages Catalog &rarr;</a>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body" style="padding: 2rem;">
+                            <div class="stat-icon stat-icon-amber" style="margin-bottom: 1.25rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            </div>
+                            <h3>Visa Documentation Guidance</h3>
+                            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
+                                Assist travelers with visa requirements, embassy guidelines, and checklist submission support.
+                            </p>
+                            <a th:href="@{/staff/visas}" class="btn btn-primary btn-sm">Access Visa Operations &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div th:replace="~{fragments/footer :: footer}"></div>
+    </div>
+
+    <!-- Modals for Visa Officer Workspace -->
+    <div th:if="${userRole == 'VISA_OFFICER'}">
+        <!-- Modal 1: Record Offline / Previous Payment -->
+        <div id="recordModal" class="modal-backdrop">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h3>
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0284C7;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Record Payment Entry
+                    </h3>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="closeRecordModal()" style="padding: 0.2rem 0.5rem;">✕</button>
+                </div>
+                <form th:action="@{/staff/payments/record}" method="post">
+                    <div class="modal-body">
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0; margin-bottom: 1.25rem;">
+                            Manually register an offline payment, wire transfer, or direct deposit into the system ledger.
+                        </p>
+
+                        <div class="form-group">
+                            <label>Select Associated Booking *</label>
+                            <select name="bookingId" class="form-control" required>
+                                <option value="">-- Select Customer Booking --</option>
+                                <option th:each="b : ${bookings}" th:value="${b.id}"
+                                        th:text="'Booking #' + ${b.id} + ' - ' + ${b.user.name} + ' (' + ${b.tourPackage.name} + ') - $' + ${b.totalPackageAmount}">
+                                    Booking #1 - John Doe ($1200)
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Payment Scope *</label>
+                                <select name="paymentType" class="form-control" required>
+                                    <option value="VISA_DOCUMENTATION">Visa & Documentation Charge</option>
+                                    <option value="FULL_PACKAGE">Full Tour Package Payment</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount ($) *</label>
+                                <input type="number" step="0.01" name="amount" class="form-control" placeholder="0.00" required />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Payment Method *</label>
+                                <select name="paymentMethod" class="form-control" required>
+                                    <option value="Bank Transfer">Bank Transfer / Wire</option>
+                                    <option value="Credit / Debit Card">Credit / Debit Card</option>
+                                    <option value="Cash Deposit">Cash Deposit</option>
+                                    <option value="Direct Deposit">Direct Deposit</option>
+                                    <option value="Online Gateway">Online Gateway</option>
+                                    <option value="Cheque">Bank Cheque</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Transaction Reference #</label>
+                                <input type="text" name="transactionReference" class="form-control" placeholder="e.g. TXN-998822 or Slip #" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Payment Status *</label>
+                            <select name="paymentStatus" class="form-control" required>
+                                <option value="PAID">PAID (Clear and Settle Immediately)</option>
+                                <option value="PENDING">PENDING (Awaiting Clearing / Verification)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Staff Audit Remarks</label>
+                            <textarea name="remarks" class="form-control" rows="2" placeholder="e.g. Verified against bank slip dated 2026-09-08..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="closeRecordModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Save & Register Payment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal 2: Update Payment Status -->
+        <div id="updateModal" class="modal-backdrop">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h3>
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0284C7;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Update Payment Status
+                    </h3>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="closeUpdateModal()" style="padding: 0.2rem 0.5rem;">✕</button>
+                </div>
+                <form id="updateForm" method="post">
+                    <div class="modal-body">
+                        <div style="background: #F8FAFC; padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem; border: 1px solid var(--border-subtle);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Transaction Ref:</span>
+                                <span id="updateRefDisplay" style="font-weight: 700;">-</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Payment Type:</span>
+                                <span id="updateTypeDisplay" style="font-weight: 600;">-</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Amount:</span>
+                                <span id="updateAmountDisplay" style="font-weight: 700; color: var(--success);">-</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>New Payment Status *</label>
+                            <select id="newStatusSelect" name="newStatus" class="form-control" required>
+                                <option value="PAID">PAID (Confirm Settlement)</option>
+                                <option value="EXPIRED">EXPIRED (Only after its deadline)</option>
+                                
+                                <option value="FAILED">FAILED (Mark Transaction as Failed)</option>
+                            </select>
+                            <small style="display: block; color: var(--text-muted); font-size: 0.75rem; margin-top: 0.35rem;">
+                                Marking a Full Package payment as PAID automatically confirms the customer's booking.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Updated Transaction Reference</label>
+                            <input type="text" id="updateRefInput" name="transactionReference" class="form-control" />
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Audit Remarks / Reason</label>
+                            <textarea name="remarks" class="form-control" rows="2" placeholder="e.g. Cleared via customer bank statement reference..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="closeUpdateModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Update Status</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+
+        <script>
+            function openRecordModal() {
+                document.getElementById('recordModal').style.display = 'flex';
+            }
+            function closeRecordModal() {
+                document.getElementById('recordModal').style.display = 'none';
+            }
+
+            function openUpdateModal(id, ref, status, type, amount) {
+                var form = document.getElementById('updateForm');
+                form.action = '/staff/payments/' + id + '/status';
+                document.getElementById('updateRefDisplay').innerText = ref || ('TXN-#' + id);
+                document.getElementById('updateRefInput').value = ref || '';
+                document.getElementById('updateTypeDisplay').innerText = type === 'FULL_PACKAGE' ? 'Full Tour Package' : 'Visa & Documentation';
+                document.getElementById('updateAmountDisplay').innerText = '$' + (amount ? parseFloat(amount).toFixed(2) : '0.00');
+                document.getElementById('newStatusSelect').value = status || 'PAID';
+                document.getElementById('updateModal').style.display = 'flex';
+            }
+            function closeUpdateModal() {
+                document.getElementById('updateModal').style.display = 'none';
+            }
+
+
+
+            window.onclick = function(event) {
+                if (event.target == document.getElementById('recordModal')) closeRecordModal();
+                if (event.target == document.getElementById('updateModal')) closeUpdateModal();
+                if (event.target && event.target.classList.contains('modal-backdrop')) {
+                    event.target.style.display = 'none';
+                }
+            }
+        </script>
+    </div>
+
+    <!-- ╔═════════════════════════════════════════════════════════════╗
+         ║   PACKAGE MANAGER — Package Operations Command Center        ║
+         ╚═════════════════════════════════════════════════════════════╝ -->
+    <div th:if="${userRole == 'TRAVEL_CONSULTANT'}" class="admin-layout">
+        <!-- Dedicated Consultant Sidebar -->
+        <div th:replace="~{fragments/consultant-sidebar :: consultant-sidebar('dashboard')}"></div>
+
+        <!-- Main Workspace Area -->
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <span>Package Manager Workspace</span>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Operations Command Center</span>
+                        </div>
+                        <h2 class="topbar-title">Tour Package & Operations Command Center</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <span class="badge badge-success">
+                        <svg width="10" height="10" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
+                        Package Manager Online
+                    </span>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="openConsultantPackageModal()">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        + Create Package
+                    </button>
+                    <a th:href="@{/staff/packages}" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        All Packages
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Flash Alerts -->
+                <div th:if="${successMessage}" class="alert alert-success" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span th:text="${successMessage}">Operation successful</span>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <span th:text="${errorMessage}">Error occurred</span>
+                </div>
+
+                <!-- 1. Executive Metrics (Row 1) -->
+                <div class="hub-section-header" style="margin-top: 0;">
+                    <h3 class="hub-section-title">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        Tour Packages & Logistics Metrics
+                    </h3>
+                    <a th:href="@{/staff/packages}" style="font-size: 0.82rem; color: #0284C7; font-weight: 600; text-decoration: none;">View Package Inventory &rarr;</a>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Total Tour Packages</span>
+                            <div class="stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="${totalPackages}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--success); font-weight: 600;" th:text="${activePackages} + ' Active'">0 Active</span>
+                            <span>Live in public catalog</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Destinations & Hotels</span>
+                            <div class="stat-icon stat-icon-green">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: #059669;" th:text="${totalDestinations}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: #059669; font-weight: 600;" th:text="${totalHotels} + ' Hotels'">0 Hotels</span>
+                            <span>Partner accommodation spots</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Customer Bookings</span>
+                            <div class="stat-icon stat-icon-red">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: #D97706;" th:text="${totalBookings}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: #D97706; font-weight: 600;" th:text="${pendingBookings} + ' Awaiting Action'">0 Awaiting</span>
+                            <span>Requires staff confirmation</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Customer Inquiries</span>
+                            <div class="stat-icon stat-icon-amber">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: #7E22CE;" th:text="${totalInquiries}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: #7E22CE; font-weight: 600;" th:text="${openInquiries} + ' Pending Reply'">0 Pending</span>
+                            <span>Client questions in inbox</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Command Hub Grid -->
+                <div class="hub-section-header">
+                    <h3 class="hub-section-title">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                        Package Handling Command Centers
+                    </h3>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Quick-access operational workflows</span>
+                </div>
+
+                <div class="command-hub-grid">
+                    <a th:href="@{/staff/packages}" class="command-card">
+                        <div class="command-icon icon-blue">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                        </div>
+                        <div class="command-text">
+                            <h4>Tour Packages <span class="command-badge" style="background:#0284C7;" th:text="${totalPackages}">0</span></h4>
+                            <p>Configure pricing, duration, flights, and service packages</p>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/staff/destinations}" class="command-card">
+                        <div class="command-icon icon-green">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            </svg>
+                        </div>
+                        <div class="command-text">
+                            <h4>Destinations <span class="command-badge" style="background:#059669;" th:text="${totalDestinations}">0</span></h4>
+                            <p>Manage international travel destinations and cities</p>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/staff/hotels}" class="command-card">
+                        <div class="command-icon icon-amber">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </div>
+                        <div class="command-text">
+                            <h4>Partner Hotels <span class="command-badge" style="background:#D97706;" th:text="${totalHotels}">0</span></h4>
+                            <p>Manage star ratings, partner addresses, and room tariffs</p>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/staff/categories}" class="command-card">
+                        <div class="command-icon icon-purple">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                            </svg>
+                        </div>
+                        <div class="command-text">
+                            <h4>Package Categories <span class="command-badge" style="background:#7E22CE;" th:text="${totalCategories}">0</span></h4>
+                            <p>Organize tours by Adventure, Luxury, Family, or Honeymoon</p>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/staff/bookings}" class="command-card">
+                        <div class="command-icon icon-slate">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div class="command-text">
+                            <h4>Booking Confirmations <span class="command-badge" th:if="${pendingBookings > 0}" th:text="${pendingBookings}">0</span></h4>
+                            <p>Review customer booking dates, party size, and confirmations</p>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/staff/inquiries}" class="command-card">
+                        <div class="command-icon icon-blue">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                        </div>
+                        <div class="command-text">
+                            <h4>Customer Inquiries <span class="command-badge" style="background:#0D9488;" th:if="${openInquiries > 0}" th:text="${openInquiries}">0</span></h4>
+                            <p>Send direct consultant replies to user questions and inquiries</p>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- 3. Recent Tour Packages Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-heading); display: flex; align-items: center; gap: 0.5rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; color: #0284C7;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                                Recent Tour Packages
+                            </h3>
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">Latest travel packages created in the system</span>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="openConsultantPackageModal()">+ Add New Package</button>
+                            <a th:href="@{/staff/packages}" class="btn btn-outline btn-sm">Full Inventory &rarr;</a>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="data-table" th:if="${not #lists.isEmpty(recentPackages)}">
+                            <thead>
+                                <tr>
+                                    <th>Package</th>
+                                    <th>Category</th>
+                                    <th>Destination</th>
+                                    <th>Base Price</th>
+                                    <th>Duration</th>
+                                    <th>Capacity</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="pkg : ${recentPackages}">
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                            <img th:if="${pkg.image != null and !#strings.isEmpty(pkg.image)}"
+                                                 th:src="${pkg.image}"
+                                                 style="width: 44px; height: 36px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);"
+                                                 onerror="this.style.display='none'" />
+                                            <div>
+                                                <strong style="color: var(--text-heading); font-size: 0.9rem;" th:text="${pkg.name}">European Classical Journey</strong>
+                                                <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="'ID: #' + ${pkg.id}">ID: #1</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-outline" th:text="${pkg.category != null ? pkg.category.name : '—'}">Cultural</span>
+                                    </td>
+                                    <td>
+                                        <span style="font-weight: 600; color: var(--text-heading);" th:text="${pkg.destination != null ? pkg.destination.city + ', ' + pkg.destination.country : '—'}">Paris, France</span>
+                                    </td>
+                                    <td>
+                                        <span style="font-weight: 700; color: #059669;" th:text="'$' + ${#numbers.formatDecimal(pkg.basePrice, 1, 2)}">$1,299.00</span>
+                                    </td>
+                                    <td th:text="${pkg.durationDays} + ' Days'">7 Days</td>
+                                    <td th:text="${pkg.maxCapacity} + ' Max'">25 Max</td>
+                                    <td>
+                                        <span class="badge" th:classappend="${pkg.active} ? 'badge-success' : 'badge-danger'"
+                                              th:text="${pkg.active ? 'ACTIVE' : 'INACTIVE'}">ACTIVE</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <a th:href="@{/staff/packages}" class="btn btn-outline btn-sm" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">
+                                            Manage
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div th:if="${#lists.isEmpty(recentPackages)}" style="padding: 2.5rem; text-align: center; color: var(--text-muted);">
+                            No tour packages recorded yet. Click <strong>+ Add New Package</strong> to get started.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Recent Bookings Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-heading); display: flex; align-items: center; gap: 0.5rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; color: #D97706;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                Recent Customer Bookings
+                            </h3>
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">Monitor and confirm client package reservations</span>
+                        </div>
+                        <a th:href="@{/staff/bookings}" class="btn btn-outline btn-sm">All Bookings &rarr;</a>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="data-table" th:if="${not #lists.isEmpty(recentBookings)}">
+                            <thead>
+                                <tr>
+                                    <th>Booking Ref</th>
+                                    <th>Customer</th>
+                                    <th>Tour Package</th>
+                                    <th>Travel Date</th>
+                                    <th>Travelers</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="b : ${recentBookings}">
+                                    <td>
+                                        <span class="ref-id" th:text="'#BK-' + ${b.id}">#BK-1</span>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 600; color: var(--text-heading);" th:text="${b.user != null ? b.user.name : 'Customer'}">Customer Name</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${b.user != null ? b.user.email : '—'}">customer@example.com</div>
+                                    </td>
+                                    <td>
+                                        <strong style="color: var(--text-heading);" th:text="${b.tourPackage != null ? b.tourPackage.name : '—'}">Package Name</strong>
+                                    </td>
+                                    <td th:text="${b.travelDate != null ? #temporals.format(b.travelDate, 'MMM dd, yyyy') : '—'}">Oct 15, 2026</td>
+                                    <td th:text="${b.numberOfTravelers} + ' Pax'">2 Pax</td>
+                                    <td>
+                                        <span style="font-weight: 700; color: #059669;" th:text="'$' + ${#numbers.formatDecimal(b.totalPackageAmount != null ? b.totalPackageAmount : 0, 1, 2)}">$2,598.00</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${b.bookingStatus.name() == 'CONFIRMED'} ? 'badge-success' : (${b.bookingStatus.name() == 'CANCELLED'} ? 'badge-danger' : (${b.bookingStatus.name() == 'PROCESSING'} ? 'badge-warning' : 'badge-outline'))"
+                                              th:text="${b.bookingStatus}">CONFIRMED</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <form th:if="${confirmableBookingIds.contains(b.id)}"
+                                              th:action="@{/staff/bookings/{id}/confirm(id=${b.id})}" method="post" style="display: inline;">
+                                            <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">
+                                                Confirm
+                                            </button>
+                                        </form>
+                                        <span th:if="${b.bookingStatus.name() == 'CONFIRMED'}" style="font-size: 0.78rem; color: var(--success); font-weight: 600;">
+                                            ✓ Confirmed
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div th:if="${#lists.isEmpty(recentBookings)}" style="padding: 2.5rem; text-align: center; color: var(--text-muted);">
+                            No recent bookings found.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Quick Create Tour Package -->
+        <div id="consultantPackageModal" class="modal-backdrop">
+            <div class="modal-card" style="max-width: 650px;">
+                <div class="modal-header">
+                    <h3>
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0D9488;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Create New Tour Package
+                    </h3>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="closeConsultantPackageModal()" style="padding: 0.2rem 0.5rem;">✕</button>
+                </div>
+                <form th:action="@{/staff/packages/create}" method="post">
+                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                        <div class="form-group">
+                            <label class="form-label">Package Name *</label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g. Alpine Winter Wonderland" required />
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Category *</label>
+                                <select name="categoryId" class="form-control" required>
+                                    <option value="">Select Category...</option>
+                                    <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Destination *</label>
+                                <select name="destinationId" class="form-control" required>
+                                    <option value="">Select Destination...</option>
+                                    <option th:each="d : ${destinations}" th:value="${d.id}" th:text="${d.city + ', ' + d.country}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Base Price ($) *</label>
+                                <input type="number" step="0.01" name="basePrice" class="form-control" placeholder="1299.00" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Duration (Days) *</label>
+                                <input type="number" name="durationDays" class="form-control" placeholder="7" required />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Max Group Capacity *</label>
+                                <input type="number" name="maxCapacity" class="form-control" placeholder="20" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Flight Details</label>
+                                <input type="text" name="flightDetails" class="form-control" placeholder="e.g. Emirates Return Flight Included" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Cover Image URL</label>
+                            <input type="text" name="image" class="form-control" placeholder="https://images.unsplash.com/..." />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Included Services</label>
+                            <textarea name="includedServices" class="form-control" rows="2" placeholder="e.g. 4-Star Hotel, Daily Breakfast, Guided Tours..."></textarea>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Package Description</label>
+                            <textarea name="description" class="form-control" rows="3" placeholder="Detailed itinerary summary and travel highlights..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="closeConsultantPackageModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;">
+                            Publish Tour Package
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function openConsultantPackageModal() {
+                document.getElementById('consultantPackageModal').style.display = 'flex';
+            }
+            function closeConsultantPackageModal() {
+                document.getElementById('consultantPackageModal').style.display = 'none';
+            }
+            window.addEventListener('click', function(e) {
+                var modal = document.getElementById('consultantPackageModal');
+                if (e.target == modal) {
+                    closeConsultantPackageModal();
+                }
+            });
+        </script>
+    </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script>
+    var stompClient = null;
+    function connectRealTime() {
+        var socket = new SockJS('/ws-travelgo');
+        stompClient = Stomp.over(socket);
+        stompClient.debug = null; 
+        stompClient.connect({}, function(frame) {
+            console.log('Connected to TravelGO Real-Time Engine');
+            stompClient.subscribe('/topic/staff-updates', function(messageOutput) {
+                var payload = JSON.parse(messageOutput.body);
+                showLiveToast(payload);
+            });
+        });
+    }
+    
+    function showLiveToast(payload) {
+        var toast = document.createElement('div');
+        toast.style.position = 'fixed';
+        toast.style.bottom = '30px';
+        toast.style.right = '30px';
+        toast.style.background = '#FFFFFF';
+        toast.style.borderLeft = '4px solid #0284C7';
+        toast.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+        toast.style.padding = '15px 20px';
+        toast.style.borderRadius = '8px';
+        toast.style.zIndex = '99999';
+        toast.style.fontFamily = 'Inter, sans-serif';
+        toast.style.transform = 'translateY(100px)';
+        toast.style.opacity = '0';
+        toast.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        
+        var title = 'System Update';
+        var msg = 'An event occurred (Ref #' + payload.bookingId + ')';
+        
+        if(payload.type === 'NEW_BOOKING') { title = 'New Booking! 🎉'; msg = 'Booking #' + payload.bookingId + ' just arrived in the queue.'; toast.style.borderLeftColor = '#059669'; }
+        if(payload.type === 'BOOKING_CONFIRMED') { title = 'Booking Confirmed'; msg = 'Booking #' + payload.bookingId + ' is fully paid.'; toast.style.borderLeftColor = '#059669'; }
+        if(payload.type === 'BOOKING_UPDATED') { title = 'Booking Modified'; msg = 'Booking #' + payload.bookingId + ' travel details were changed.'; toast.style.borderLeftColor = '#D97706'; }
+        if(payload.type === 'BOOKING_CANCELLED') { title = 'Booking Cancelled'; msg = 'Booking #' + payload.bookingId + ' has been cancelled.'; toast.style.borderLeftColor = '#EF4444'; }
+        
+        toast.innerHTML = '<strong style="display:block; color:#0F172A; margin-bottom:5px;">' + title + '</strong><span style="color:#64748B; font-size:14px;">' + msg + '</span>';
+        document.body.appendChild(toast);
+        
+        setTimeout(() => { toast.style.transform = 'translateY(0)'; toast.style.opacity = '1'; }, 100);
+        setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(20px)'; setTimeout(() => toast.remove(), 400); }, 6000);
+    }
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        connectRealTime();
+    });
+</script>
+<script th:src="@{/js/main.js}"></script></body>
+</html>

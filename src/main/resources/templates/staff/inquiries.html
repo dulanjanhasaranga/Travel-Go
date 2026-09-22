@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Inquiries - TravelGO Staff</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Dedicated Consultant Sidebar -->
+        <div th:replace="~{fragments/consultant-sidebar :: consultant-sidebar('inquiries')}"></div>
+
+        <!-- Main Workspace Area -->
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <span>Travel Consultant Workspace</span>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Inquiries</span>
+                        </div>
+                        <h2 class="topbar-title">Customer Inquiries & Support Inbox</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <span class="badge badge-success">
+                        <svg width="10" height="10" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
+                        Support Active
+                    </span>
+                    <a th:href="@{/staff/dashboard}" class="btn btn-outline btn-sm">
+                        &larr; Dashboard
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Flash Alerts -->
+                <div th:if="${successMessage}" class="alert alert-success" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span th:text="${successMessage}">Operation successful</span>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <span th:text="${errorMessage}">Error occurred</span>
+                </div>
+
+                <!-- KPI Overview Cards -->
+                <div class="stats-grid" style="margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Total Inquiries</span>
+                            <div class="stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="${#lists.size(inquiries)}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--text-heading); font-weight: 600;">Messages Received</span>
+                            <span>Client questions</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Pending Reply</span>
+                            <div class="stat-icon stat-icon-red">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: #D97706;" th:text="${#lists.size(inquiries.?[status.name() == 'OPEN'])}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: #D97706; font-weight: 600;">Action Required</span>
+                            <span>Unanswered questions</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Resolved Questions</span>
+                            <div class="stat-icon stat-icon-green">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: #059669;" th:text="${#lists.size(inquiries.?[status.name() == 'RESOLVED'])}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: #059669; font-weight: 600;">Replied & Closed</span>
+                            <span>Answers delivered to clients</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search and Status Tabs -->
+                <div class="filter-toolbar">
+                    <div class="search-box">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" id="inquirySearchInput" placeholder="Search by sender, email, subject, or message..." onkeyup="filterInquiries()" />
+                    </div>
+
+                    <div class="filter-tabs" id="inquiryFilterTabs">
+                        <button class="filter-tab active" data-filter="all" onclick="setInquiryStatusFilter('all', this)">
+                            All (<span th:text="${#lists.size(inquiries)}">0</span>)
+                        </button>
+                        <button class="filter-tab" data-filter="OPEN" onclick="setInquiryStatusFilter('OPEN', this)">
+                            Open (<span th:text="${#lists.size(inquiries.?[status.name() == 'OPEN'])}">0</span>)
+                        </button>
+                        <button class="filter-tab" data-filter="RESOLVED" onclick="setInquiryStatusFilter('RESOLVED', this)">
+                            Resolved (<span th:text="${#lists.size(inquiries.?[status.name() == 'RESOLVED'])}">0</span>)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Inquiries Table Container -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-heading); display: flex; align-items: center; gap: 0.5rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; color: #0D9488;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                </svg>
+                                Customer Inquiries Inbox (<span id="visibleInquiryCount" th:text="${#lists.size(inquiries)}">0</span>)
+                            </h3>
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">View traveler inquiries and dispatch official consultant responses</span>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="data-table" id="inquiriesTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Sender</th>
+                                    <th>Subject</th>
+                                    <th>Inquiry Message</th>
+                                    <th>Status</th>
+                                    <th>Consultant Response</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="inq : ${inquiries}"
+                                    th:attr="data-search=${#strings.toLowerCase(inq.senderName + ' ' + inq.senderEmail + ' ' + inq.subject + ' ' + inq.message)},
+                                             data-status=${inq.status.name()}">
+                                    <td style="font-family: monospace; font-weight: 700; color: var(--text-muted);" th:text="'#' + ${inq.id}">#1</td>
+                                    <td>
+                                        <div style="font-weight: 600; color: var(--text-heading);" th:text="${inq.senderName}">Jane Smith</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${inq.senderEmail}">jane@example.com</div>
+                                    </td>
+                                    <td>
+                                        <strong style="color: var(--text-heading); font-size: 0.88rem;" th:text="${inq.subject}">Swiss Tour Questions</strong>
+                                    </td>
+                                    <td>
+                                        <div style="max-width: 280px; font-size: 0.85rem; color: var(--text-muted);"
+                                             th:text="${#strings.abbreviate(inq.message, 90)}">What are the age limits for this tour?</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${inq.status.name() == 'RESOLVED'} ? 'badge-success' : 'badge-warning'"
+                                              th:text="${inq.status}">OPEN</span>
+                                    </td>
+                                    <td>
+                                        <div th:if="${inq.replyText != null and !#strings.isEmpty(inq.replyText)}"
+                                             style="max-width: 220px; font-size: 0.82rem; color: var(--success);"
+                                             th:text="${#strings.abbreviate(inq.replyText, 50)}">Replied</div>
+                                        <span th:if="${inq.replyText == null or #strings.isEmpty(inq.replyText)}"
+                                              style="color: var(--text-muted); font-size: 0.82rem;">—</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <button th:if="${inq.status.name() != 'RESOLVED'}" type="button"
+                                                class="btn btn-primary btn-sm"
+                                                style="padding: 0.25rem 0.65rem; font-size: 0.78rem; background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;"
+                                                th:attr="onclick=|openReplyModal(${inq.id}, '${#strings.escapeJavaScript(inq.senderName)}', '${#strings.escapeJavaScript(inq.senderEmail)}', '${#strings.escapeJavaScript(inq.subject)}', '${#strings.escapeJavaScript(inq.message)}')|">
+                                            Reply
+                                        </button>
+                                        <span th:if="${inq.status.name() == 'RESOLVED'}" style="font-size: 0.78rem; color: var(--success); font-weight: 600;">
+                                            ✓ Answered
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div th:if="${#lists.isEmpty(inquiries)}" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+                            <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-heading);">No inquiries in inbox</div>
+                            <p>Customer contact messages and tour queries will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reply Modal -->
+        <div id="replyModal" class="modal-backdrop">
+            <div class="modal-card" style="max-width: 580px;">
+                <div class="modal-header">
+                    <h3>
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0D9488;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                        </svg>
+                        Reply to Customer Inquiry
+                    </h3>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="closeReplyModal()" style="padding: 0.2rem 0.5rem;">✕</button>
+                </div>
+                <form id="replyForm" method="post">
+                    <div class="modal-body">
+                        <div style="background: #F8FAFC; padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem; border: 1px solid var(--border-subtle);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Sender:</span>
+                                <span id="replySenderDisplay" style="font-weight: 600; font-size: 0.85rem;">-</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Subject:</span>
+                                <span id="replySubjectDisplay" style="font-weight: 600; font-size: 0.85rem;">-</span>
+                            </div>
+                            <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--border-subtle);">
+                                <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.2rem;">Customer Message:</span>
+                                <div id="replyMessageDisplay" style="font-size: 0.85rem; color: var(--text-heading); line-height: 1.4;">-</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Consultant Response / Reply Text *</label>
+                            <textarea name="replyText" class="form-control" rows="4" placeholder="Type your professional reply to the client..." required></textarea>
+                            <small style="display: block; color: var(--text-muted); font-size: 0.75rem; margin-top: 0.35rem;">
+                                Submitting will mark this inquiry as RESOLVED and record your response.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="closeReplyModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;">
+                            Send Reply & Resolve
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var currentStatusFilter = 'all';
+
+        function openReplyModal(id, senderName, senderEmail, subject, message) {
+            var form = document.getElementById('replyForm');
+            form.action = '/staff/inquiries/' + id + '/reply';
+            document.getElementById('replySenderDisplay').innerText = senderName + ' (' + senderEmail + ')';
+            document.getElementById('replySubjectDisplay').innerText = subject;
+            document.getElementById('replyMessageDisplay').innerText = message;
+            document.getElementById('replyModal').style.display = 'flex';
+        }
+        function closeReplyModal() {
+            document.getElementById('replyModal').style.display = 'none';
+        }
+
+        function setInquiryStatusFilter(status, btn) {
+            currentStatusFilter = status;
+            document.querySelectorAll('#inquiryFilterTabs .filter-tab').forEach(function(b) {
+                b.classList.remove('active');
+            });
+            btn.classList.add('active');
+            filterInquiries();
+        }
+
+        function filterInquiries() {
+            var q = (document.getElementById('inquirySearchInput').value || '').toLowerCase().trim();
+            var rows = document.querySelectorAll('#inquiriesTable tbody tr');
+            var visible = 0;
+
+            rows.forEach(function(r) {
+                var search = r.getAttribute('data-search') || '';
+                var st = r.getAttribute('data-status') || '';
+
+                var matchQ = !q || search.includes(q);
+                var matchStatus = (currentStatusFilter === 'all') || (st === currentStatusFilter);
+
+                if (matchQ && matchStatus) {
+                    r.style.display = '';
+                    visible++;
+                } else {
+                    r.style.display = 'none';
+                }
+            });
+
+            var countEl = document.getElementById('visibleInquiryCount');
+            if (countEl) countEl.innerText = visible;
+        }
+
+        window.addEventListener('click', function(e) {
+            var modal = document.getElementById('replyModal');
+            if (e.target == modal) closeReplyModal();
+        });
+    </script>
+<script th:src="@{/js/main.js}"></script></body>
+</html>

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visa Application Management - TravelGO Staff</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <div th:replace="~{fragments/visa-sidebar :: visa-sidebar('visas')}"></div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <span>Visa Officer Workspace</span>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Visa Application Queue</span>
+                        </div>
+                        <h2 class="topbar-title">Visa Operations Management</h2>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <a th:href="@{/staff/dashboard}" class="btn btn-outline btn-sm">
+                        &larr; Operations Dashboard
+                    </a>
+                    <a th:href="@{/staff/payments}" class="btn btn-primary btn-sm">
+                        Payment Center &rarr;
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content" style="padding: 2rem 2.5rem;">
+
+            <!-- Flash Messages -->
+            <div th:if="${successMessage}" class="alert alert-success" style="margin-bottom: 1.5rem;">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <div th:text="${successMessage}">Operation successful</div>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger" style="margin-bottom: 1.5rem;">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div th:text="${errorMessage}">Error occurred</div>
+            </div>
+
+            <!-- Metrics Overview Cards -->
+            <div class="stat-cards-row">
+                <div class="stat-card stat-total">
+                    <div class="stat-card-top">
+                        <span class="stat-card-label">Total Applications</span>
+                        <div class="stat-card-icon">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-card-value" th:text="${#lists.size(visaApplications)}">0</div>
+                    <div class="stat-card-desc">All customer requests</div>
+                </div>
+
+                <div class="stat-card stat-pending">
+                    <div class="stat-card-top">
+                        <span class="stat-card-label">Pending Review</span>
+                        <div class="stat-card-icon">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-card-value"
+                         th:text="${#lists.size(visaApplications.?[status.name() == 'PENDING_DOCUMENTS' or status.name() == 'DOCUMENTS_SUBMITTED' or status.name() == 'DOCUMENTS_REQUIRED'])}">0</div>
+                    <div class="stat-card-desc">Requires document review</div>
+                </div>
+
+                <div class="stat-card stat-processing">
+                    <div class="stat-card-top">
+                        <span class="stat-card-label">In Processing</span>
+                        <div class="stat-card-icon">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-card-value"
+                         th:text="${#lists.size(visaApplications.?[status.name() == 'PROCESSING' or status.name() == 'DOCUMENTS_VERIFIED' or status.name() == 'PAYMENT_PENDING'])}">0</div>
+                    <div class="stat-card-desc">Active embassy pipeline</div>
+                </div>
+
+                <div class="stat-card stat-approved">
+                    <div class="stat-card-top">
+                        <span class="stat-card-label">Approved</span>
+                        <div class="stat-card-icon">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-card-value"
+                         th:text="${#lists.size(visaApplications.?[status.name() == 'APPROVED'])}">0</div>
+                    <div class="stat-card-desc">Granted visas</div>
+                </div>
+            </div>
+
+            <!-- Application Queue Card -->
+            <div class="queue-container">
+                <div class="queue-header">
+                    <h3>
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        Application Queue
+                    </h3>
+
+                    <!-- Status Filter Tabs -->
+                    <div class="filter-tabs" id="statusFilterTabs">
+                        <button class="filter-tab active" data-filter="all">All <span class="count-badge" th:text="${#lists.size(visaApplications)}">0</span></button>
+                        <button class="filter-tab" data-filter="PENDING">Pending</button>
+                        <button class="filter-tab" data-filter="DOCUMENTS_VERIFIED">Verified</button>
+                        <button class="filter-tab" data-filter="PAYMENT_PENDING">Payment</button>
+                        <button class="filter-tab" data-filter="PROCESSING">Processing</button>
+                        <button class="filter-tab" data-filter="APPROVED">Approved</button>
+                        <button class="filter-tab" data-filter="REJECTED">Rejected</button>
+                    </div>
+                </div>
+
+                <!-- Applications Table -->
+                <div class="table-container" th:if="${not #lists.isEmpty(visaApplications)}">
+                    <table class="data-table" id="visaTable">
+                        <thead>
+                            <tr>
+                                <th>Ref ID</th>
+                                <th>Applicant</th>
+                                <th>Booking / Package</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Visa Fee</th>
+                                <th>Doc Fee</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="visa : ${visaApplications}" th:attr="data-status=${visa.status.name()}">
+                                <td>
+                                    <span class="ref-id" th:text="'#VISA-' + ${visa.id}">#VISA-1</span>
+                                </td>
+                                <td>
+                                    <div class="applicant-name" th:text="${visa.booking.user.name}">John Doe</div>
+                                    <div class="applicant-email" th:text="${visa.booking.user.email}">john@example.com</div>
+                                </td>
+                                <td>
+                                    <div class="package-name" th:text="${visa.booking.tourPackage.name}">European Classical Journey</div>
+                                    <div class="package-meta">
+                                        Booking <span th:text="'#' + ${visa.booking.id}">#1</span> &bull;
+                                        <span th:text="${visa.booking.tourPackage.destination.city + ', ' + visa.booking.tourPackage.destination.country}">Paris, France</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-info" th:text="${visa.visaType}">VISIT</span>
+                                </td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${visa.status.name() == 'APPROVED'} ? 'badge-success' : (${visa.status.name() == 'REJECTED'} ? 'badge-danger' : (${visa.status.name() == 'PROCESSING' or visa.status.name() == 'DOCUMENTS_VERIFIED'} ? 'badge-info' : 'badge-warning'))"
+                                          th:text="${visa.status}">
+                                        STATUS
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="fee-value" th:text="${visa.visaCharge != null} ? '$' + ${visa.visaCharge} : '&#8212;'">&#8212;</span>
+                                </td>
+                                <td>
+                                    <span class="fee-value" th:text="${visa.documentationCharge != null} ? '$' + ${visa.documentationCharge} : '&#8212;'">&#8212;</span>
+                                </td>
+                                <td>
+                                    <div class="action-group">
+                                        <!-- Manage Application Button -->
+                                        <button class="action-btn open-modal-btn"
+                                                th:data-target="'docsModal' + ${visa.id}"
+                                                th:title="'Manage Application'">
+                                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            Manage
+                                        </button>
+
+                                        <!-- Mark Documents Verified Button -->
+                                        <form th:if="${visa.status.name() == 'DOCUMENTS_SUBMITTED'}"
+                                              th:action="@{/staff/visas/{id}/verify-all(id=${visa.id})}" method="post" style="display: inline;">
+                                            <button type="submit" class="action-btn action-verify"
+                                                    onclick="return confirm('Confirm all required documents are verified and acceptable?');">
+                                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                Verify All
+                                            </button>
+                                        </form>
+
+
+
+                                        <!-- Start Processing Button -->
+                                        <form th:if="${visa.status.name() == 'EXPIRED' or (visa.status.name() == 'PAYMENT_PENDING' and visa.paymentExpiresAt != null and !visa.paymentExpiresAt.isAfter(workflowNow))}"
+                    th:action="@{/staff/visas/{id}/reissue(id=${visa.id})}" method="post">
+                    <button class="btn btn-outline btn-sm" type="submit">Reissue unchanged charges for 24 hours</button>
+                </form>
+
+                                        <!-- Approve / Reject Buttons -->
+                                        <th:block th:if="${visa.status.name() == 'PROCESSING'}">
+                                            <form th:action="@{/staff/visas/{id}/approve(id=${visa.id})}" method="post" style="display: inline;">
+                                                <button type="submit" class="action-btn action-approve"
+                                                        onclick="return confirm('Grant final approval for this visa application?');">
+                                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    Approve
+                                                </button>
+                                            </form>
+                                            <button class="action-btn action-reject open-modal-btn"
+                                                    th:data-target="'rejectModal' + ${visa.id}">
+                                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Reject
+                                            </button>
+                                        </th:block>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div th:if="${#lists.isEmpty(visaApplications)}" class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <h4>No Visa Applications Pending</h4>
+                    <p>There are currently no active visa applications in the queue. When customers book tour packages and request visa handling, their files will appear here for review.</p>
+                    <a th:href="@{/staff/dashboard}" class="btn btn-outline btn-sm">Return to Dashboard</a>
+                </div>
+            </div>
+        </div>
+        </div> <!-- /admin-main -->
+    </div> <!-- /admin-layout -->
+
+    <!-- ===================== Modals Layer ===================== -->
+    <div th:each="visa : ${visaApplications}">
+
+        <!-- Unified Manage Application Modal (Documents + Fee Setting) -->
+        <div class="custom-modal-backdrop" th:id="'docsModal' + ${visa.id}">
+            <div class="custom-modal-box" style="max-width: 640px;">
+                <div class="custom-modal-header">
+                    <div>
+                        <h4>
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Manage Application
+                        </h4>
+                        <div class="modal-ref-text" th:text="'Ref: #VISA-' + ${visa.id} + ' — ' + ${visa.booking.user.name} + ' | ' + ${visa.booking.tourPackage.name}">Ref #VISA-1</div>
+                    </div>
+                    <button type="button" class="custom-modal-close close-modal-btn">&times;</button>
+                </div>
+                <div class="custom-modal-body">
+
+                    <!-- Section 1: Uploaded Documents -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="font-size: 0.78rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px; color: #0284C7;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Uploaded Documents
+                        </div>
+                        <div th:if="${documentsMap.get(visa.id) != null and not #lists.isEmpty(documentsMap.get(visa.id))}">
+                            <ul class="doc-list">
+                                <li class="doc-item" th:each="doc : ${documentsMap.get(visa.id)}">
+                                    <div class="doc-icon">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <div class="doc-info">
+                                        <div class="doc-name" th:text="${doc.documentName}">Passport Copy</div>
+                                        <div style="margin-top: 0.25rem;">
+                                            <span class="badge" th:classappend="${doc.verified} ? 'badge-success' : 'badge-warning'"
+                                                  th:text="${doc.verified} ? 'Verified' : 'Pending Review'">
+                                                Status
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="doc-actions">
+                                        <a th:href="@{/visa-documents/{id}/download(id=${doc.id})}"
+                                           target="_blank" class="action-btn" title="Open File">
+                                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                            View
+                                        </a>
+                                        <form th:if="${!doc.verified and visa.status.name() == 'DOCUMENTS_SUBMITTED'}" th:action="@{/staff/visas/documents/{docId}/verify(docId=${doc.id})}" method="post">
+                                            <button type="submit" class="action-btn action-verify" title="Mark as Verified">
+                                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                Verify
+                                            </button>
+                                        </form>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div th:if="${documentsMap.get(visa.id) == null or #lists.isEmpty(documentsMap.get(visa.id))}" style="text-align: center; padding: 1.5rem 1rem; background: #F8FAFC; border-radius: 8px; border: 1px dashed #CBD5E1;">
+                            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">No documents have been uploaded by the applicant yet.</p>
+                        </div>
+                    </div>
+
+                    <section th:if="${visa.status.name() == 'PENDING_DOCUMENTS' or visa.status.name() == 'DOCUMENTS_SUBMITTED' or visa.status.name() == 'DOCUMENTS_VERIFIED'}" class="surface" style="margin-bottom:1rem">
+                        <h3>Request additional documents</h3>
+                        <p>Explain what is missing. The customer receives a notification and can upload another file before charges are issued.</p>
+                        <form th:action="@{/staff/visas/{id}/request-documents(id=${visa.id})}" method="post">
+                            <label th:for="'document-request-' + ${visa.id}">Required documents and instructions</label>
+                            <textarea th:id="'document-request-' + ${visa.id}" name="reason" required maxlength="2000" rows="3"></textarea>
+                            <button type="submit" class="btn btn-primary">Request documents</button>
+                        </form>
+                    </section>
+                    <p th:if="${visa.officerRemarks != null}" class="context-banner" th:text="${visa.officerRemarks}"></p>
+                    <p th:if="${visa.status.name() == 'DOCUMENTS_REQUIRED'}" class="context-banner">Waiting for the customer to upload the requested documents.</p>
+                    <section th:if="${not #lists.isEmpty(visa.booking.travelers)}">
+                        <h3>Traveler details</h3>
+                        <ul><li th:each="traveler : ${visa.booking.travelers}"><strong th:text="${traveler.fullName}"></strong><span th:text="' · ' + ${traveler.nationality} + ' · Passport: ' + ${traveler.passportNumber}"></span></li></ul>
+                    </section>
+                    <!-- Section 2: Set Visa & Documentation Fees (only for active applications) -->
+                    <div th:if="${visa.status.name() == 'DOCUMENTS_VERIFIED'}">
+                        <div style="height: 1px; background: var(--border-subtle); margin-bottom: 1.5rem;"></div>
+                        <div style="font-size: 0.78rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px; color: #059669;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Set Visa &amp; Documentation Fees
+                        </div>
+
+                        <!-- Package Presets Quick-Select Chips -->
+                        <div style="margin-bottom: 1rem;">
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.4rem;">⚡ Quick presets:</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                                <button type="button" class="preset-pill-btn" th:data-vid="${visa.id}" data-gov="90.00" data-doc="45.00" onclick="applyPackagePreset(this)">
+                                    🇪🇺 Schengen ($90+$45)
+                                </button>
+                                <button type="button" class="preset-pill-btn" th:data-vid="${visa.id}" data-gov="140.00" data-doc="50.00" onclick="applyPackagePreset(this)">
+                                    🇬🇧 UK ($140+$50)
+                                </button>
+                                <button type="button" class="preset-pill-btn" th:data-vid="${visa.id}" data-gov="185.00" data-doc="60.00" onclick="applyPackagePreset(this)">
+                                    🇺🇸 USA ($185+$60)
+                                </button>
+                                <button type="button" class="preset-pill-btn" th:data-vid="${visa.id}" data-gov="35.00" data-doc="30.00" onclick="applyPackagePreset(this)">
+                                    🇯🇵 Asia ($35+$30)
+                                </button>
+                                <button type="button" class="preset-pill-btn" th:data-vid="${visa.id}" data-gov="95.00" data-doc="40.00" onclick="applyPackagePreset(this)">
+                                    🇦🇪 UAE ($95+$40)
+                                </button>
+                                <button type="button" class="preset-pill-btn" th:data-vid="${visa.id}" data-gov="80.00" data-doc="40.00" onclick="applyPackagePreset(this)">
+                                    🌐 Global ($80+$40)
+                                </button>
+                            </div>
+                        </div>
+
+                        <form th:action="@{/staff/visas/{id}/charges(id=${visa.id})}" method="post">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" style="font-size: 0.8rem;">Embassy Visa Fee ($)</label>
+                                    <input type="number" step="0.01" min="0" name="visaCharge" th:id="'visaChargeInput' + ${visa.id}"
+                                           th:value="${visa.visaCharge != null ? visa.visaCharge : 85.00}"
+                                           th:oninput="'recalcTotal(' + ${visa.id} + ')'"
+                                           class="form-control-custom" placeholder="85.00" required style="font-weight: 700; color: #0284C7;">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" style="font-size: 0.8rem;">Documentation Fee ($)</label>
+                                    <input type="number" step="0.01" min="0" name="documentationCharge" th:id="'docChargeInput' + ${visa.id}"
+                                           th:value="${visa.documentationCharge != null ? visa.documentationCharge : 40.00}"
+                                           th:oninput="'recalcTotal(' + ${visa.id} + ')'"
+                                           class="form-control-custom" placeholder="40.00" required style="font-weight: 700; color: #059669;">
+                                </div>
+                            </div>
+
+                            <!-- Live Total -->
+                            <div style="background: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 6px; padding: 0.6rem 0.85rem; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: space-between;">
+                                <span style="font-size: 0.8rem; font-weight: 600; color: #475569;">Total Invoice</span>
+                                <span style="font-size: 1.1rem; font-weight: 800; color: #0284C7;" th:id="'totalDisplay' + ${visa.id}"
+                                      th:text="'$' + ${#numbers.formatDecimal((visa.visaCharge != null ? visa.visaCharge : 85.00) + (visa.documentationCharge != null ? visa.documentationCharge : 40.00), 1, 2)} + ' USD'">
+                                    $125.00 USD
+                                </span>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-sm" style="width: 100%; background: #0284C7; border-color: #0284C7; padding: 0.5rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                                Save Charges &amp; Notify Customer
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Show current fees for completed applications -->
+                    <div th:if="${visa.status.name() == 'APPROVED' or visa.status.name() == 'REJECTED' or visa.status.name() == 'PROCESSING'}">
+                        <div style="height: 1px; background: var(--border-subtle); margin: 1rem 0;"></div>
+                        <div style="display: flex; gap: 1rem; font-size: 0.88rem;">
+                            <div><strong>Visa Fee:</strong> <span th:text="${visa.visaCharge != null ? '$' + visa.visaCharge : '—'}">—</span></div>
+                            <div><strong>Doc Fee:</strong> <span th:text="${visa.documentationCharge != null ? '$' + visa.documentationCharge : '—'}">—</span></div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="custom-modal-footer">
+                    <button type="button" class="btn btn-outline btn-sm close-modal-btn">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reject Modal -->
+        <div class="custom-modal-backdrop" th:id="'rejectModal' + ${visa.id}" th:if="${visa.status.name() == 'PROCESSING'}">
+            <div class="custom-modal-box">
+                <form th:action="@{/staff/visas/{id}/reject(id=${visa.id})}" method="post">
+                    <div class="custom-modal-header">
+                        <div>
+                            <h4 style="color: var(--danger);">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                Reject Visa Application
+                            </h4>
+                            <div class="modal-ref-text" th:text="'Ref: #VISA-' + ${visa.id}">Ref #VISA-1</div>
+                        </div>
+                        <button type="button" class="custom-modal-close close-modal-btn">&times;</button>
+                    </div>
+                    <div class="custom-modal-body">
+                        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
+                            Please provide a detailed reason for embassy rejection. This explanation will be recorded and communicated to the customer.
+                        </p>
+                        <div class="form-group">
+                            <label class="form-label">Rejection Reason</label>
+                            <textarea name="rejectionReason" class="form-control-custom" rows="4" placeholder="e.g. Insufficient proof of funds or missing embassy appointment verification." required></textarea>
+                        </div>
+                    </div>
+                    <div class="custom-modal-footer">
+                        <button type="button" class="btn btn-outline btn-sm close-modal-btn">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm" style="background: var(--danger); border-color: var(--danger);">Confirm Rejection</button>
+                    </div>
+                </form>
+            </div>
+            </div>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+
+    <script>
+        // Preset fee applicator according to requested package
+        function applyPackagePreset(btn) {
+            const vid = btn.getAttribute('data-vid');
+            const gov = parseFloat(btn.getAttribute('data-gov')) || 0;
+            const doc = parseFloat(btn.getAttribute('data-doc')) || 0;
+            const govInput = document.getElementById('visaChargeInput' + vid);
+            const docInput = document.getElementById('docChargeInput' + vid);
+            if (govInput) govInput.value = gov.toFixed(2);
+            if (docInput) docInput.value = doc.toFixed(2);
+            recalcTotal(vid);
+        }
+
+        // Live calculation of Total Invoice to Customer
+        function recalcTotal(vid) {
+            const govInput = document.getElementById('visaChargeInput' + vid);
+            const docInput = document.getElementById('docChargeInput' + vid);
+            const display = document.getElementById('totalDisplay' + vid);
+            if (govInput && docInput && display) {
+                const gov = parseFloat(govInput.value) || 0;
+                const doc = parseFloat(docInput.value) || 0;
+                const total = (gov + doc).toFixed(2);
+                display.textContent = '$' + total + ' USD';
+            }
+        }
+
+        // Modal management
+        document.querySelectorAll('.open-modal-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                const modal = document.getElementById(targetId);
+                if (modal) {
+                    modal.classList.add('active');
+                }
+            });
+        });
+
+        document.querySelectorAll('.close-modal-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const modal = btn.closest('.custom-modal-backdrop');
+                if (modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // Close on clicking outside modal box
+        document.querySelectorAll('.custom-modal-backdrop').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.custom-modal-backdrop.active').forEach(m => m.classList.remove('active'));
+            }
+        });
+
+        // Client-side status filtering
+        const filterTabs = document.querySelectorAll('#statusFilterTabs .filter-tab');
+        const tableRows = document.querySelectorAll('#visaTable tbody tr');
+
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                filterTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const filter = tab.getAttribute('data-filter');
+
+                tableRows.forEach(row => {
+                    const status = row.getAttribute('data-status');
+                    if (filter === 'all') {
+                        row.style.display = '';
+                    } else if (filter === 'PENDING') {
+                        row.style.display = (status === 'PENDING_DOCUMENTS' || status === 'DOCUMENTS_SUBMITTED' || status === 'DOCUMENTS_REQUIRED') ? '' : 'none';
+                    } else {
+                        row.style.display = (status === filter) ? '' : 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

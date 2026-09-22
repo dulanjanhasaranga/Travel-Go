@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Permissions - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('roles')}"></div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <a th:href="@{/admin/roles}">Roles</a>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;" th:text="${role.roleName}">Role Details</span>
+                        </div>
+                        <h2 class="topbar-title">Permission Matrix for <span th:text="${role.roleName}">ADMIN</span></h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <a th:href="@{/admin/roles}" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Roles
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Alerts -->
+                <div th:if="${successMessage}" class="alert alert-success">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span th:text="${successMessage}"></span>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span th:text="${errorMessage}"></span>
+                </div>
+
+                <div class="card">
+                    <div class="table-header">
+                        <div>
+                            <h4 style="margin: 0;">Permission reference settings</h4>
+                            <span style="font-size: 0.82rem; color: var(--text-muted);" th:text="${role.description}">Role description</span>
+                        </div>
+                    </div>
+
+                    <div class="card-body"><p class="alert alert-info">Access is enforced by the assigned role: administrator, travel consultant, visa officer or customer. These stored permission references do not override the role rules.</p>
+                        <form th:action="@{/admin/roles/{id}/permissions(id=${role.id})}" method="post">
+                            <div th:each="permissionModule : ${modules}" style="margin-bottom: 2.5rem;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border-subtle); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">
+                                    <h4 style="color: var(--brand-accent); margin: 0; font-size: 1.1rem;">
+                                        Module: <span th:text="${permissionModule}">USER</span>
+                                    </h4>
+                                    <span class="badge badge-info" style="font-size: 0.7rem;">System Module</span>
+                                </div>
+
+                                <div class="permissions-grid">
+                                    <label th:each="perm : ${allPermissions}" th:if="${perm.module == permissionModule}" th:for="'perm_' + ${perm.id}" class="permission-card">
+                                        <input type="checkbox" name="permissionIds" th:value="${perm.id}"
+                                               th:id="'perm_' + ${perm.id}"
+                                               th:checked="${#sets.contains(role.permissions, perm)}">
+                                        <div>
+                                            <div class="permission-title" th:text="${perm.permissionName}">USER_VIEW</div>
+                                            <div class="permission-desc" th:text="${perm.description}">View users list</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                </svg>
+                                Save permission reference
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

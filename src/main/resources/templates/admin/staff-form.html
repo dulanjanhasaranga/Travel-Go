@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboard Staff Member - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('staff')}"></div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <a th:href="@{/admin/staff}">Staff Directory</a>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">New Account</span>
+                        </div>
+                        <h2 class="topbar-title">Onboard Staff Specialist</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <a th:href="@{/admin/staff}" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Staff List
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span th:text="${errorMessage}"></span>
+                </div>
+
+                <div class="card" style="max-width: 650px; margin: 0 auto;">
+                    <div class="table-header">
+                        <h4 style="margin: 0;">Staff Credentials & Profile</h4>
+                        <span style="font-size: 0.82rem; color: var(--text-muted);">Stored in unified `users` table with BCrypt hashing</span>
+                    </div>
+
+                    <div class="card-body">
+                        <form th:action="@{/admin/staff/create}" th:object="${staffRequest}" method="post">
+                            <div class="form-group">
+                                <label class="form-label">Full Name *</label>
+                                <input type="text" th:field="*{name}" class="form-control" placeholder="e.g. Sarah Jenkins" required>
+                                <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Official Work Email *</label>
+                                <input type="email" th:field="*{email}" class="form-control" placeholder="s.jenkins@travelgo.com" required>
+                                <div class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Role Assignment *</label>
+                                <select th:field="*{roleName}" class="form-control" required>
+                                    <option value="" disabled selected>-- Select Staff Role --</option>
+                                    <option th:each="r : ${roles}" th:value="${r.roleName}" th:text="${r.roleName} + ' — ' + ${r.description}"></option>
+                                </select>
+                                <div class="field-error" th:if="${#fields.hasErrors('roleName')}" th:errors="*{roleName}"></div>
+                                <div class="form-hint">Grants access to role-specific dashboard and actions.</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Initial Temporary Password *</label>
+                                <input type="password" th:field="*{password}" class="form-control" placeholder="Minimum 6 characters" required>
+                                <div class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Contact Phone</label>
+                                <input type="tel" th:field="*{phone}" class="form-control" placeholder="+1 (555) 012-3456">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Office / Branch Address</label>
+                                <textarea th:field="*{address}" class="form-control" placeholder="Branch location, Desk info"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                </svg>
+                                Create Staff Account
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

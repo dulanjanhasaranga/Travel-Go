@@ -1,0 +1,11 @@
+# Copy to local.properties in the directory containing pom.xml.
+# local.properties is ignored. Never put real credentials in frontend files.
+TRAVELGO_DB_URL=jdbc:mysql://localhost:3306/travelgo?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+TRAVELGO_DB_USERNAME=root
+TRAVELGO_DB_PASSWORD=REPLACE_WITH_YOUR_MYSQL_SERVER_PASSWORD
+
+# Optional only when initializing a brand-new database with no administrator.
+# Do not commit real values.
+# TRAVELGO_BOOTSTRAP_ADMIN_EMAIL=administrator@example.com
+# TRAVELGO_BOOTSTRAP_ADMIN_PASSWORD=use-a-unique-12-to-72-byte-password
+# TRAVELGO_BOOTSTRAP_ADMIN_NAME=Initial Administrator

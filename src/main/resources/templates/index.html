@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TravelGO - Smart Travel Agency & Tour Management System. Explore curated tour packages, visa services, and seamless flight bookings.">
+    <title>TravelGO - Smart Travel Agency & Tour Management</title>
+    
+    <!-- Optimize Loading Time -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" th:href="@{/css/style.css}" as="style">
+    <link rel="preload" th:href="@{/css/brand.css}" as="style">
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero hero-premium">
+            <!-- Video Background -->
+            <video autoplay loop muted playsinline class="hero-video-bg">
+                <source src="/video/japan_bg.mp4" type="video/mp4">
+            </video>
+            
+            <div class="container">
+
+                <h1 class="hero-title">Discover the World with <span>Effortless Elegance</span></h1>
+                <p class="hero-subtitle">
+                    Explore curated tour packages, choose your stay and get support with your visa application, all in one place.
+                </p>
+
+                <!-- Search Widget -->
+                <form th:action="@{/packages}" method="get" class="search-widget search-widget-glass">
+                    <div class="search-field">
+                        <label class="search-label" for="homeDestination">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Destination
+                        </label>
+                        <input id="homeDestination" name="destinationQuery" class="search-input" list="destination-suggestions" maxlength="255" placeholder="City or country" autocomplete="off">
+                        <datalist id="destination-suggestions"><option th:each="d : ${destinations}" th:value="${d.city + ', ' + d.country}"></option></datalist>
+                    </div>
+
+                    <div class="search-field">
+                        <label class="search-label" for="homeSearch">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            Search
+                        </label>
+                        <input id="homeSearch" type="text" maxlength="120" name="search" class="search-input" placeholder="Keyword or Tour name...">
+                    </div>
+
+                    <div class="search-field">
+                        <label class="search-label" for="homeCategory">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            Package Type
+                        </label>
+                        <select id="homeCategory" name="categoryId" class="search-input">
+                            <option value="">All Categories</option>
+                            <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}">Cultural Heritage</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-secondary btn-lg btn-glow" style="height: 52px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%;">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <span>Search</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Popular Destination Quick Tags -->
+                <div class="hero-quick-tags">
+                    <span class="tag-label">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.316.492-.474.966-.567 1.344-.197.802-.13 1.49.014 1.968.1.33.24.58.372.764.025.034.05.066.074.095-.243.084-.504.148-.778.194-.962.16-2.03.013-2.903-.45a.75.75 0 00-1.12.8c.28 1.417 1.15 2.62 2.378 3.298a5.2 5.2 0 001.077.424 5.992 5.992 0 01-1.04 1.83c-.765.94-1.8 1.58-3.037 1.815a.75.75 0 00-.588.94c.15.548.65.932 1.218.895 1.77-.116 3.327-.88 4.417-2.083.568-.627.99-1.378 1.25-2.203.284.14.59.25.918.324 1.306.297 2.7-.034 3.73-.89a5.26 5.26 0 001.76-2.613.75.75 0 00-.63-.923 4.49 4.49 0 01-2.148-.48 4.2 4.2 0 01-1.572-1.46c-.347-.533-.538-1.155-.548-1.823 0-.756.246-1.52.707-2.164.218-.306.23-.71.026-1.025z" clip-rule="evenodd" />
+                        </svg>
+                        Explore:
+                    </span>
+                    <th:block th:if="${not #lists.isEmpty(destinations)}">
+                        <a th:each="dest, iterStat : ${destinations}" th:if="${iterStat.index < 6}" th:href="@{/destinations/{id}(id=${dest.id})}" class="hero-tag-pill" th:text="${dest.city + ', ' + dest.country}">Paris, France</a>
+                    </th:block>
+<a th:if="${#lists.isEmpty(destinations)}" th:href="@{/contact}" class="hero-tag-pill">Plan with our travel team</a>
+                </div>
+
+                <!-- Floating Stats Strip -->
+                <div class="hero-stats-strip">
+                    <div class="hero-stat-card float-anim">
+                        <div class="hero-stat-number">Explore</div>
+                        <div class="hero-stat-desc">Find a destination that inspires you</div>
+                    </div>
+                    <div class="hero-stat-card float-anim">
+                        <div class="hero-stat-number">Prepare</div>
+                        <div class="hero-stat-desc">Get support with your documents</div>
+                    </div>
+                    <div class="hero-stat-card float-anim">
+                        <div class="hero-stat-number">Plan</div>
+                        <div class="hero-stat-desc">Choose your package and stay</div>
+                    </div>
+                    <div class="hero-stat-card float-anim">
+                        <div class="hero-stat-number">Connect</div>
+                        <div class="hero-stat-desc">Speak with our travel team</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Featured Tour Packages -->
+        <section class="section">
+            <div class="container">
+                <div class="section-header reveal-up">
+                    <span class="section-tag">Curated Itineraries</span>
+                    <h2 class="section-title">Featured Tour Packages</h2>
+                    <p class="section-subtitle">Hand-picked itineraries designed for culture, comfort, and discovery</p>
+                </div>
+
+                <div class="grid grid-3" th:if="${not #lists.isEmpty(packages)}">
+                    <div class="card card-premium reveal-up" th:each="pkg, iterStat : ${packages}" th:if="${iterStat.index < 6}" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img th:with="displayImage=${@travelImages.resolve(pkg.image)}, imageSources=${@travelImages.srcset(pkg.image)}" th:src="${displayImage}" th:attr="srcset=${imageSources}" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 th:alt="${pkg.name}" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="card-img-badge" th:text="${pkg.durationDays + ' Days'}">7 Days</span>
+                            <span class="card-img-price" th:text="'$' + ${#numbers.formatDecimal(pkg.basePrice, 1, 'COMMA', 2, 'POINT')}">$1,299</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <div style="font-size: 0.8rem; font-weight: 700; color: var(--brand-accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;" 
+                                 th:text="${pkg.category != null ? pkg.category.name : 'Tour Package'}">Tour Category</div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;" th:text="${pkg.name}">Package Name</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.6;" 
+                               th:text="${pkg.description != null ? pkg.description : 'Curated itinerary featuring expert guidance, activities, and comfortable travel.'}">
+                                Description
+                            </p>
+
+                            <div class="hotel-note">
+                                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                <span>Hotel: Optional Add-on During Booking</span>
+                            </div>
+
+                            <ul class="inclusions-list">
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span th:text="${pkg.flightDetails != null and !pkg.flightDetails.isEmpty() ? pkg.flightDetails : 'Confirm flight arrangements with our team'}">Round-trip Flight</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Visa Application Assistance</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span th:text="${pkg.includedServices != null and !pkg.includedServices.isEmpty() ? pkg.includedServices : 'Ask our team for confirmed inclusions'}">Guided Tour Access</span>
+                                </li>
+                            </ul>
+
+                            <div style="margin-top: auto; padding-top: 0.5rem; display: flex; gap: 0.5rem;">
+                                <a class="btn btn-outline" th:href="@{/packages/{id}(id=${pkg.id})}">View details</a>
+                                <a th:href="@{/packages/{id}/book(id=${pkg.id})}" class="btn btn-primary btn-glow" style="flex: 1; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                    <span>Book Now</span>
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2.5rem;">
+                    <a th:href="@{/packages}" class="btn btn-primary btn-lg btn-glow" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <span>View All Packages</span>
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Premier Global Destinations Section -->
+        <section class="section" style="background-color: var(--bg-subtle);">
+            <div class="container">
+                <div class="section-header reveal-up">
+                    <span class="section-tag">Global Portfolio</span>
+                    <h2 class="section-title">Explore Premier Destinations</h2>
+                    <p class="section-subtitle">Discover handpicked destinations across Europe, Asia, the Middle East, the Americas, and the Pacific</p>
+                </div>
+
+                <div class="grid grid-3" th:if="${not #lists.isEmpty(destinations)}">
+                    <div class="card card-premium reveal-up" th:each="dest, iterStat : ${destinations}" th:if="${iterStat.index < 6}" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img th:with="displayImage=${@travelImages.resolve(dest.image)}, imageSources=${@travelImages.srcset(dest.image)}" th:src="${displayImage}" th:attr="srcset=${imageSources}" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 th:alt="${dest.city + ', ' + dest.country}" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="badge badge-info card-img-badge" th:text="${dest.country}">Country</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;" th:text="${dest.city + ', ' + dest.country}">Paris, France</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem; line-height: 1.6;" 
+                               th:text="${dest.description != null and !dest.description.isEmpty() ? dest.description : 'Explore memorable attractions and vibrant culture in ' + dest.city + '.'}">
+                                Description
+                            </p>
+                            <div style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+                                <span class="muted" th:text="${destinationSummaries[dest.id].packageCount + ' packages'}"></span>
+                                <a th:href="@{/destinations/{id}(id=${dest.id})}" class="btn btn-outline btn-sm">
+                                    <span>Explore destination</span>
+                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="margin-left: 0.25rem;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2.5rem;">
+                    <a th:href="@{/destinations}" class="btn btn-outline btn-lg" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <span>View All Destinations</span>
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section"><div class="container"><div class="section-header"><span class="section-tag">How it works</span><h2 class="section-title">From an idea to a confirmed journey</h2><p class="section-subtitle">Keep your trip, documents and payment records together in your customer account.</p></div><ol class="travel-process grid grid-4"><li class="surface"><span class="process-number">01</span><h3>Find your trip</h3><p>Compare published packages, prices and optional hotels. Choose your travel date and enter every traveler's details.</p></li><li class="surface"><span class="process-number">02</span><h3>Prepare your visa</h3><p>Upload documents for officer review. Pay the visa and documentation quote to begin processing.</p></li><li class="surface"><span class="process-number">03</span><h3>Complete payment</h3><p>After visa approval, pay your package and hotel total before the three-day departure deadline.</p></li><li class="surface"><span class="process-number">04</span><h3>Follow your journey</h3><p>View confirmation, notifications and the latest trip details in My Bookings.</p></li></ol><div class="section-action"><a class="btn btn-outline" th:href="@{/visa-info}">Read the visa and payment guide</a></div></div></section>
+        <!-- Why Choose Us Features Grid -->
+        <section class="section" style="background-color: var(--bg-subtle);">
+            <div class="container">
+                <div class="section-header reveal-up">
+                    <span class="section-tag">Agency Excellence</span>
+                    <h2 class="section-title">Built for Modern Travelers</h2>
+                    <p class="section-subtitle">Experience a new standard of agency management and transparency</p>
+                </div>
+
+                <div class="grid grid-4">
+                    <div class="card card-premium reveal-up">
+                        <div class="feature-card">
+                            <div class="feature-icon stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                            </div>
+                            <h4 style="margin-bottom: 0.5rem;">Flight Inclusions</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                                Review the flight arrangements listed for each package and confirm the details with your consultant.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card card-premium reveal-up">
+                        <div class="feature-card">
+                            <div class="feature-icon stat-icon stat-icon-green">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            </div>
+                            <h4 style="margin-bottom: 0.5rem;">Visa Processing</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                                Our visa team reviews your documents and helps you follow the application process.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card card-premium reveal-up">
+                        <div class="feature-card">
+                            <div class="feature-icon stat-icon stat-icon-amber">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            </div>
+                            <h4 style="margin-bottom: 0.5rem;">Flexible Hotels</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                                Compare listed hotels and add your preferred accommodation while entering your booking details.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card card-premium reveal-up">
+                        <div class="feature-card">
+                            <div class="feature-icon stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                            </div>
+                            <h4 style="margin-bottom: 0.5rem;">Expert Support</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                                Travel consultants help you choose your package and prepare your booking.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" th:if="${!#lists.isEmpty(valuePackages)}">
+            <div class="container">
+                <div class="section-header"><span class="section-tag">Find your budget</span><h2 class="section-title">Explore our lowest-priced packages</h2><p class="section-subtitle">Compare current package prices per person. Optional hotels and visa charges are quoted separately.</p></div>
+                <div class="grid grid-3">
+                    <article class="card card-premium reveal-up" th:each="pkg : ${valuePackages}">
+                        <div class="card-image-wrap"><img class="card-img" th:with="resolvedSrc=${@travelImages.resolve(pkg.image)}, resolvedSrcset=${@travelImages.srcset(pkg.image)}" th:src="${resolvedSrc}" th:attr="srcset=${resolvedSrcset}" sizes="(max-width: 768px) 100vw, 33vw" th:alt="${pkg.name}" loading="lazy"></div>
+                        <div class="card-body"><span class="eyebrow" th:text="${pkg.destination.city}"></span><h3 th:text="${pkg.name}"></h3><p th:text="${pkg.durationDays + ' days · $' + #numbers.formatDecimal(pkg.basePrice,1,'COMMA',2,'POINT') + ' per person'}"></p><a class="btn btn-outline" th:href="@{/packages/{id}(id=${pkg.id})}">Explore this package</a></div>
+                    </article>
+                </div>
+                <div class="section-action"><a class="btn btn-primary btn-glow" th:href="@{/packages(sort='price-asc')}">Compare prices</a></div>
+            </div>
+        </section>
+
+        <!-- Call to Action Banner -->
+        <section class="section" style="padding: 4rem 0;">
+            <div class="container">
+                <div class="cta-banner reveal-zoom">
+                    <h2 style="color: #FFFFFF; font-size: 2.25rem; margin-bottom: 1rem;">Ready to Plan Your Next Adventure?</h2>
+                    <p style="color: rgba(255, 255, 255, 0.85); max-width: 600px; margin: 0 auto 2rem; font-size: 1.1rem; line-height: 1.7;">
+                        Create a free customer account to track your itineraries, manage your documents, and contact our travel team.
+                    </p>
+                    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                        <a th:href="@{/auth/register}" class="btn btn-secondary btn-lg btn-glow">Create Free Account</a>
+                        <a th:href="@{/contact}" class="btn btn-outline btn-lg" style="border-color: rgba(255, 255, 255, 0.35); color: #FFFFFF !important;">Speak with Consultant</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top-btn" aria-label="Scroll to top">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+    </button>
+
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

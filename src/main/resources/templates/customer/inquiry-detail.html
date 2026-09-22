@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Inquiry Details - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+    
+    <main class="main-content">
+        <div class="container section">
+            <div style="margin-bottom: 2rem;">
+                <a th:href="@{/customer/inquiries}" class="btn btn-outline btn-sm" style="margin-bottom: 1.5rem; display: inline-block;">&larr; Back to Inquiries</a>
+                
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                            <span class="badge" th:classappend="${inquiry.statusLabel == 'New'} ? 'badge-info' : (${inquiry.statusLabel == 'Resolved' or inquiry.statusLabel == 'Replied'} ? 'badge-success' : 'badge-warning')" th:text="${inquiry.statusLabel}">STATUS</span>
+                            <span style="font-size: 0.9rem; color: var(--text-muted); font-family: monospace;" th:text="${inquiry.reference}">REF-123</span>
+                        </div>
+                        <h1 style="margin: 0; font-size: 2rem;" th:text="${inquiry.subject}">Subject</h1>
+                    </div>
+                    <div style="text-align: right; color: var(--text-muted); font-size: 0.9rem;">
+                        <div>Submitted on:</div>
+                        <strong th:text="${#temporals.format(inquiry.createdAt, 'MMMM dd, yyyy h:mm a')}">Date</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Original Message -->
+            <div class="card" style="padding: 2rem; margin-bottom: 2rem; border-left: 4px solid var(--brand-primary);">
+                <h3 style="margin: 0 0 1rem; font-size: 1.1rem; color: var(--text-heading); display: flex; align-items: center; gap: 0.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    Your Message
+                </h3>
+                <div style="font-size: 1rem; color: var(--text-body); line-height: 1.7; white-space: pre-wrap;" th:text="${inquiry.message}">
+                    Original message text...
+                </div>
+            </div>
+
+            <!-- Staff Reply -->
+            <div th:if="${inquiry.replyText}" class="card" style="padding: 2rem; border-left: 4px solid var(--success); background: #F0FDF4;">
+                <h3 style="margin: 0 0 1rem; font-size: 1.1rem; color: #166534; display: flex; align-items: center; gap: 0.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>
+                    Travel Consultant Reply
+                </h3>
+                <div style="font-size: 1rem; color: #374151; line-height: 1.7; white-space: pre-wrap;" th:text="${inquiry.replyText}">
+                    Reply message text...
+                </div>
+                <div th:if="${inquiry.repliedAt}" style="margin-top: 1rem; font-size: 0.85rem; color: #166534; opacity: 0.8;">
+                    Replied on <span th:text="${#temporals.format(inquiry.repliedAt, 'MMMM dd, yyyy h:mm a')}">Date</span>
+                </div>
+            </div>
+            
+            <div th:if="${!inquiry.replyText}" style="padding: 2rem; text-align: center; color: var(--text-muted); background: var(--bg-subtle); border-radius: var(--radius-md); border: 1px dashed var(--border-subtle);">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px; margin: 0 auto 1rem; opacity: 0.5;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <div style="font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-heading);">Awaiting Response</div>
+                <p style="margin: 0;">Our travel consultants are reviewing your inquiry and will reply soon.</p>
+            </div>
+            
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

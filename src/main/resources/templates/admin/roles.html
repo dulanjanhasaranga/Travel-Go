@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roles Management - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('roles')}"></div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <a th:href="@{/admin/dashboard}">Admin</a>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Access Control</span>
+                        </div>
+                        <h2 class="topbar-title">Role-Based Access Control (RBAC)</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <a th:href="@{/admin/permissions}" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                        </svg>
+                        View Permission Registry
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h4 style="margin: 0;">System Roles (<span th:text="${#lists.size(roles)}">0</span>)</h4>
+                        <span style="font-size: 0.82rem; color: var(--text-muted);">Database: `roles` + `role_permissions` join table</span>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Role Identifier</th>
+                                <th>Role Description</th>
+                                <th>Permission Count</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="role : ${roles}">
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${role.roleName == 'ADMIN'} ? 'badge-danger' : (${role.roleName == 'CUSTOMER'} ? 'badge-info' : 'badge-warning')"
+                                          th:text="${role.roleName}">
+                                        ADMIN
+                                    </span>
+                                </td>
+                                <td th:text="${role.description}">Role description</td>
+                                <td>
+                                    <span class="badge badge-info" th:text="${#sets.size(role.permissions)} + ' active permissions'">5 permissions</span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <a th:href="@{/admin/roles/{id}(id=${role.id})}" class="btn btn-outline btn-sm">
+                                        Configure Permissions &rarr;
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

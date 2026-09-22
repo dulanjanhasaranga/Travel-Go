@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Destinations - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container section reveal">
+            <div class="section-header">
+                <span class="section-tag">Global Portfolio</span>
+                <h1 class="section-title">Explore Premier Destinations</h1>
+                <p class="section-subtitle">Discover handpicked destinations across Europe, Asia, the Middle East, the Americas, and the Pacific</p>
+            </div>
+
+<section class="surface catalogue-filters" aria-label="Find a destination">
+                <form th:action="@{/destinations}" method="get" class="filter-grid">
+                    <label for="destinationSearch">City or country<input id="destinationSearch" name="search" class="form-control" th:value="${search}" maxlength="255" list="destination-suggestions" placeholder="Start typing a destination" autocomplete="off"></label>
+                    <datalist id="destination-suggestions"><option th:each="d : ${destinationOptions}" th:value="${d.city + ', ' + d.country}"></option></datalist>
+                    <label for="destinationCountry">Country<select id="destinationCountry" class="form-control" name="country"><option value="">All countries</option><option th:each="c : ${countries}" th:value="${c}" th:text="${c}" th:selected="${c == country}"></option></select></label>
+                    <label for="destinationSort">Sort destinations<select id="destinationSort" class="form-control" name="sort"><option value="name" th:selected="${sort == 'name'}">City: A–Z</option><option value="name-desc" th:selected="${sort == 'name-desc'}">City: Z–A</option><option value="newest" th:selected="${sort == 'newest'}">Newest first</option><option value="oldest" th:selected="${sort == 'oldest'}">Oldest first</option></select></label>
+                    <div class="filter-actions"><button type="submit" class="btn btn-primary">Find destinations</button><a th:href="@{/destinations}" class="btn btn-outline">Clear filters</a></div>
+                </form>
+            </section>
+            <p class="catalogue-results" role="status" th:text="${resultCount + (resultCount == 1 ? ' destination found' : ' destinations found')}"></p>
+                        <!-- Dynamic Destinations Grid -->
+            <div class="grid grid-3" th:if="${not #lists.isEmpty(destinations)}">
+                <div class="card" th:each="dest : ${destinations}" style="display: flex; flex-direction: column;">
+                    <div class="card-image-wrap">
+                        <img th:with="displayImage=${@travelImages.resolve(dest.image)}, imageSources=${@travelImages.srcset(dest.image)}" th:src="${displayImage}" th:attr="srcset=${imageSources}" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                             th:alt="${dest.city + ', ' + dest.country}" 
+                             class="card-img"
+                             onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                        <span class="badge badge-info card-img-badge" th:text="${dest.country}">Country</span>
+                    </div>
+                    <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--brand-accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span th:text="${dest.country}">Country</span>
+                        </div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;" th:text="${dest.city + ', ' + dest.country}">Paris, France</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem; line-height: 1.6;" 
+                           th:text="${dest.description != null and !dest.description.isEmpty() ? dest.description : 'Discover unforgettable sights, cultural landmarks, and authentic experiences in ' + dest.city + '.'}">
+                            Description
+                        </p>
+                        <div class="destination-facts" th:with="summary=${destinationSummaries[dest.id]}"><p th:if="${summary.startingPrice != null}">From <strong th:text="${'$' + #numbers.formatDecimal(summary.startingPrice,1,'COMMA',2,'POINT')}"></strong> <span class="muted">per person</span></p><p th:if="${summary.packageCount == 0}" class="muted">New packages are being prepared. Ask our team about your plans.</p><p class="muted">Visa assistance with every booking</p></div>
+                        <div style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">
+                                Featured Destination
+                            </span>
+                            <a th:href="@{/destinations/{id}(id=${dest.id})}" class="btn btn-outline btn-sm">
+                                <span>Explore destination</span>
+                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="margin-left: 0.25rem;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<nav th:if="${pageCount > 1}" class="catalogue-pagination" aria-label="Destination results pages"><a class="btn btn-outline" th:if="${currentPage > 1}" th:href="@{/destinations(search=${search},country=${country},sort=${sort},page=${currentPage - 1})}">Previous</a><span th:text="${'Page ' + currentPage + ' of ' + pageCount}"></span><a class="btn btn-outline" th:if="${currentPage < pageCount}" th:href="@{/destinations(search=${search},country=${country},sort=${sort},page=${currentPage + 1})}">Next</a></nav>
+            <!-- Empty State -->
+            <div th:if="${#lists.isEmpty(destinations)}" class="card" style="text-align: center; padding: 4rem 2rem; max-width: 600px; margin: 0 auto;">
+                <div style="width: 64px; height: 64px; background: var(--bg-subtle); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--text-muted);">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 32px; height: 32px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
+                <h3>No Destinations Found</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">We couldn't find any travel destinations matching your query. Check back soon or view all destinations.</p>
+                <a th:href="@{/destinations}" class="btn btn-primary">View All Destinations</a>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top-btn" aria-label="Scroll to top">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+    </button>
+
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

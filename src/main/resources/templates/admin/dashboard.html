@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Dashboard - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('dashboard')}"></div>
+
+        <!-- Main Content Area -->
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <span>Admin Workspace</span>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">System Overview</span>
+                        </div>
+                        <h2 class="topbar-title">Administrator Dashboard</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <span class="badge" th:classappend="${settings.websiteStatus == 'ACTIVE'} ? 'badge-success' : 'badge-danger'">
+                        <svg width="10" height="10" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
+                        <span th:text="'Website ' + ${settings.websiteStatus}">Website ACTIVE</span>
+                    </span>
+                    <a th:href="@{/admin/settings}" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        </svg>
+                        Settings
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content"><section class="surface"><span class="eyebrow">Agency overview</span><h2>Bookings & customer communication</h2><div class="grid grid-4 dashboard-metrics"><article><span class="muted">Total bookings</span><p class="price" th:text="${totalBookings}"></p></article><article><span class="muted">Upcoming confirmed trips</span><p class="price" th:text="${upcomingBookings}"></p></article><article><span class="muted">Customers</span><p class="price" th:text="${totalCustomers}"></p></article><article><span class="muted">Fully paid bookings</span><p class="price" th:text="${fullyPaidBookings}"></p></article><article><span class="muted">Revenue after refunds</span><p class="price" th:text="${revenue}"></p></article><article><span class="muted">Pending receivables</span><p class="price" th:text="${pendingReceivables}"></p></article><article><span class="muted">New inquiries</span><p class="price" th:text="${newInquiries}"></p></article><article><span class="muted">Open inquiries</span><p class="price" th:text="${openInquiries}"></p></article></div><a class="btn btn-primary" th:href="@{/admin/inquiries}">Manage travel inquiries</a><p class="muted">Amounts are USD. Revenue subtracts processed refunds; payments remain simulated.</p><p><span th:text="${queuedEmails}"></span> emails queued · <span th:text="${reviewEmails}"></span> deliveries require review</p><h3>Most requested packages</h3><p th:if="${#lists.isEmpty(popularPackages)}">No bookings yet.</p><p th:each="entry : ${popularPackages}" th:text="${entry.key + ' · ' + entry.value + ' booking(s)'}"></p></section>
+                <!-- Executive Metric Cards -->
+                <div class="stats-grid">
+                    <!-- Total Accounts -->
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Total Accounts</span>
+                            <div class="stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="${totalUsers}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--success); font-weight: 600;">100%</span>
+                            <span>All registered members in database</span>
+                        </div>
+                    </div>
+
+                    <!-- Active Users -->
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Active Users</span>
+                            <div class="stat-icon stat-icon-green">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--success);" th:text="${activeUsers}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--success); font-weight: 600;">Active</span>
+                            <span>Can sign in & access services</span>
+                        </div>
+                    </div>
+
+                    <!-- Inactive Users -->
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Suspended Accounts</span>
+                            <div class="stat-icon stat-icon-red">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--danger);" th:text="${inactiveUsers}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--danger); font-weight: 600;">Blocked</span>
+                            <span>Restricted from logging in</span>
+                        </div>
+                    </div>
+
+                    <!-- Total Staff -->
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Staff Specialists</span>
+                            <div class="stat-icon stat-icon-amber">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2H-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--brand-secondary);" th:text="${totalStaff}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--brand-accent); font-weight: 600;">Staff</span>
+                            <span>Consultants & Visa Officers</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Management Feature Grid -->
+                <h3 style="margin-bottom: 1.25rem;">Management Workspaces</h3>
+                <div class="grid grid-3" style="margin-bottom: 2.5rem;">
+                    <!-- User Management Card -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                <div class="stat-icon stat-icon-blue" style="width: 38px; height: 38px;">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                </div>
+                                <h4 style="margin: 0;">User Management</h4>
+                            </div>
+                            <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.25rem;">
+                                Search, review customer profiles, toggle account active status, and reassign system roles.
+                            </p>
+                            <a th:href="@{/admin/users}" class="btn btn-outline btn-sm" style="width: 100%;">
+                                Open User Directory &rarr;
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Staff Management Card -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                <div class="stat-icon stat-icon-amber" style="width: 38px; height: 38px;">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2H-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <h4 style="margin: 0;">Staff Directory</h4>
+                            </div>
+                            <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.25rem;">
+                                Onboard new travel consultants and visa officers, edit profiles, and govern staff authorizations.
+                            </p>
+                            <a th:href="@{/admin/staff}" class="btn btn-outline btn-sm" style="width: 100%;">
+                                Open Staff Directory &rarr;
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- System Settings Card -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                <div class="stat-icon stat-icon-green" style="width: 38px; height: 38px;">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    </svg>
+                                </div>
+                                <h4 style="margin: 0;">System Configuration</h4>
+                            </div>
+                            <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.25rem;">
+                                Manage company branding, public contact channels, business schedules, and maintenance mode.
+                            </p>
+                            <a th:href="@{/admin/settings}" class="btn btn-outline btn-sm" style="width: 100%;">
+                                Edit System Settings &rarr;
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>
