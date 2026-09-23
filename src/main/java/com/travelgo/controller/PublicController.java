@@ -59,17 +59,6 @@ public class PublicController {
         return "index";
     }
 
-    @org.springframework.web.bind.annotation.ResponseBody
-    @GetMapping("/debug-packages")
-    public String debugPackages() {
-        java.util.List<com.travelgo.entity.TourPackage> all = tourPackageService.findAll();
-        StringBuilder sb = new StringBuilder();
-        sb.append("Total packages: ").append(all.size()).append("\n");
-        for (com.travelgo.entity.TourPackage p : all) {
-            sb.append("ID: ").append(p.getId()).append(", Name: ").append(p.getName()).append("\n");
-        }
-        return sb.toString();
-    }
 
     @GetMapping("/destinations")
     public String destinations(@RequestParam(value = "search", required = false) String search,
