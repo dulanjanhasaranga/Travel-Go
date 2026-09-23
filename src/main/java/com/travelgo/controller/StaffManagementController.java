@@ -14,6 +14,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
+import com.travelgo.service.ApprovalService;
+import org.springframework.security.core.context.SecurityContextHolder;
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * Controller for Staff Management in Admin panel.
  */
@@ -23,10 +28,12 @@ public class StaffManagementController {
 
     private final UserService userService;
     private final RoleService roleService;
+    private final ApprovalService approvalService;
 
-    public StaffManagementController(UserService userService, RoleService roleService) {
+    public StaffManagementController(UserService userService, RoleService roleService, ApprovalService approvalService) {
         this.userService = userService;
         this.roleService = roleService;
+        this.approvalService = approvalService;
     }
 
     @GetMapping
@@ -52,15 +59,18 @@ public class StaffManagementController {
             return "admin/staff-form";
         }
         try {
-            userService.createStaffAccount(
-                    request.getName(),
-                    request.getEmail(),
-                    request.getPassword(),
-                    request.getPhone(),
-                    request.getAddress(),
-                    request.getRoleName()
-            );
-            redirectAttributes.addFlashAttribute("successMessage", "Staff account created successfully.");
+            String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("name", request.getName());
+            payload.put("email", request.getEmail());
+            payload.put("password", request.getPassword());
+            payload.put("phone", request.getPhone());
+            payload.put("address", request.getAddress());
+            payload.put("roleName", request.getRoleName());
+            
+            approvalService.submitRequest("STAFF", null, "CREATE", payload, currentUserEmail);
+            
+            redirectAttributes.addFlashAttribute("successMessage", "Staff creation request submitted for approval.");
             return "redirect:/admin/staff";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -89,10 +99,17 @@ public class StaffManagementController {
                              @RequestParam("roleName") String roleName,
                              RedirectAttributes redirectAttributes) {
         try {
-            userService.updateStaff(id, name, phone, address, roleName);
-            redirectAttributes.addFlashAttribute("successMessage", "Staff account updated successfully.");
+            String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("name", name);
+            payload.put("phone", phone);
+            payload.put("address", address);
+            payload.put("roleName", roleName);
+            
+            approvalService.submitRequest("STAFF", id, "UPDATE", payload, currentUserEmail);
+            redirectAttributes.addFlashAttribute("successMessage", "Staff update request submitted for approval.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update staff: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to submit request: " + e.getMessage());
         }
         return "redirect:/admin/staff";
     }
@@ -100,10 +117,11 @@ public class StaffManagementController {
     @PostMapping("/{id}/toggle-status")
     public String toggleStatus(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         try {
-            userService.toggleUserStatus(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Staff account status toggled.");
+            String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            approvalService.submitRequest("STAFF", id, "TOGGLE_STATUS", new HashMap<>(), currentUserEmail);
+            redirectAttributes.addFlashAttribute("successMessage", "Status toggle request submitted for approval.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update status: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to submit request: " + e.getMessage());
         }
         return "redirect:/admin/staff";
     }

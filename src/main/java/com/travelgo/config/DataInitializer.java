@@ -216,6 +216,18 @@ public class DataInitializer implements CommandLineRunner {
         user.setActive(true);
         userRepository.save(user);
         System.out.println("  Created configured bootstrap administrator.");
+        
+        // Also ensure a second admin exists for maker-checker testing
+        if (userRepository.findByEmailIgnoreCase("admin2@travelgo.com").isEmpty()) {
+            User admin2 = new User();
+            admin2.setName("Secondary Admin");
+            admin2.setEmail("admin2@travelgo.com");
+            admin2.setPassword(passwordEncoder.encode("Password1234!"));
+            admin2.setRole(adminRole);
+            admin2.setActive(true);
+            userRepository.save(admin2);
+            System.out.println("  Created secondary administrator for maker-checker testing (admin2@travelgo.com).");
+        }
     }
 
     private static String normalized(String value) {

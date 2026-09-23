@@ -10,6 +10,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
+import com.travelgo.service.ApprovalService;
+import org.springframework.security.core.context.SecurityContextHolder;
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * Controller for User Management in Admin panel.
  */
@@ -19,10 +24,12 @@ public class UserManagementController {
 
     private final UserService userService;
     private final RoleService roleService;
+    private final ApprovalService approvalService;
 
-    public UserManagementController(UserService userService, RoleService roleService) {
+    public UserManagementController(UserService userService, RoleService roleService, ApprovalService approvalService) {
         this.userService = userService;
         this.roleService = roleService;
+        this.approvalService = approvalService;
     }
 
     @GetMapping
@@ -57,10 +64,16 @@ public class UserManagementController {
                              @RequestParam("address") String address,
                              RedirectAttributes redirectAttributes) {
         try {
-            userService.updateUser(id, name, phone, address);
-            redirectAttributes.addFlashAttribute("successMessage", "User details updated successfully.");
+            String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("name", name);
+            payload.put("phone", phone);
+            payload.put("address", address);
+            
+            approvalService.submitRequest("USER", id, "UPDATE", payload, currentUserEmail);
+            redirectAttributes.addFlashAttribute("successMessage", "User update request submitted for approval.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update user: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to submit request: " + e.getMessage());
         }
         return "redirect:/admin/users/" + id;
     }
@@ -68,10 +81,11 @@ public class UserManagementController {
     @PostMapping("/{id}/toggle-status")
     public String toggleStatus(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         try {
-            userService.toggleUserStatus(id);
-            redirectAttributes.addFlashAttribute("successMessage", "User account status changed successfully.");
+            String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            approvalService.submitRequest("USER", id, "TOGGLE_STATUS", new HashMap<>(), currentUserEmail);
+            redirectAttributes.addFlashAttribute("successMessage", "Status toggle request submitted for approval.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to change status: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to submit request: " + e.getMessage());
         }
         return "redirect:/admin/users";
     }
@@ -81,10 +95,14 @@ public class UserManagementController {
                              @RequestParam("roleId") Long roleId,
                              RedirectAttributes redirectAttributes) {
         try {
-            userService.assignRole(id, roleId);
-            redirectAttributes.addFlashAttribute("successMessage", "Role updated successfully.");
+            String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("roleId", roleId);
+            
+            approvalService.submitRequest("USER", id, "ASSIGN_ROLE", payload, currentUserEmail);
+            redirectAttributes.addFlashAttribute("successMessage", "Role assignment request submitted for approval.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to assign role: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to submit request: " + e.getMessage());
         }
         return "redirect:/admin/users/" + id;
     }

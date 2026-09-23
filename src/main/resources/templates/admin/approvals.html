@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approvals Queue - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('approvals')}"></div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <a th:href="@{/admin/dashboard}">Admin</a>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Approvals Queue</span>
+                        </div>
+                        <h2 class="topbar-title">Management Approval Queue</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <div th:replace="~{fragments/notification-bell :: bell}"></div>
+                </div>
+            </header>
+
+            <main class="admin-content">
+                <div class="admin-page-header">
+                    <p class="admin-page-description">Review and approve changes made by administrators (Maker-Checker workflow). You cannot approve your own requests.</p>
+                </div>
+
+                <div th:if="${successMessage}" class="status-banner status-success" role="alert">
+                    <div class="status-icon">✓</div>
+                    <div class="status-content">
+                        <strong class="status-title">Success</strong>
+                        <p class="status-desc" th:text="${successMessage}"></p>
+                    </div>
+                </div>
+
+                <div th:if="${errorMessage}" class="status-banner status-error" role="alert">
+                    <div class="status-icon">!</div>
+                    <div class="status-content">
+                        <strong class="status-title">Error</strong>
+                        <p class="status-desc" th:text="${errorMessage}"></p>
+                    </div>
+                </div>
+
+                <div class="data-card">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>Action</th>
+                                    <th>Requested By</th>
+                                    <th>Created At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(pendingRequests)}">
+                                    <td colspan="6" class="text-center py-8" style="color: var(--text-muted);">
+                                        <svg style="width: 48px; height: 48px; margin: 0 auto 16px; opacity: 0.5;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                        </svg>
+                                        <p>No pending approvals in the queue.</p>
+                                    </td>
+                                </tr>
+                                <tr th:each="req : ${pendingRequests}">
+                                    <td th:text="${req.id}"></td>
+                                    <td>
+                                        <span class="role-badge" th:text="${req.entityType}">USER</span>
+                                        <span style="font-size: 0.85rem; color: var(--text-muted); display: block;" th:if="${req.targetEntityId != null}">ID: <span th:text="${req.targetEntityId}"></span></span>
+                                    </td>
+                                    <td>
+                                        <span style="font-weight: 500;" th:text="${req.actionType}">UPDATE</span>
+                                        <details style="margin-top: 8px; font-size: 0.85rem;">
+                                            <summary style="cursor: pointer; color: var(--primary);">View Payload</summary>
+                                            <pre style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; margin-top: 4px; overflow-x: auto;" th:text="${req.payload}"></pre>
+                                        </details>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 500;" th:text="${req.requestedBy.name}">Name</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-muted);" th:text="${req.requestedBy.email}">email</div>
+                                    </td>
+                                    <td th:text="${#temporals.format(req.createdAt, 'dd MMM yyyy HH:mm')}"></td>
+                                    <td>
+                                        <div class="action-cell">
+                                            <form th:if="${req.requestedBy.email != currentUserEmail}" th:action="@{/admin/approvals/{id}/approve(id=${req.id})}" method="post" style="display: inline;">
+                                                <button type="submit" class="btn btn-sm btn-primary">Approve</button>
+                                            </form>
+                                            <button th:if="${req.requestedBy.email == currentUserEmail}" class="btn btn-sm" disabled title="You cannot approve your own request" style="opacity: 0.5; cursor: not-allowed;">Approve</button>
+                                            
+                                            <form th:if="${req.requestedBy.email != currentUserEmail}" th:action="@{/admin/approvals/{id}/reject(id=${req.id})}" method="post" style="display: inline;">
+                                                <button type="submit" class="btn btn-sm btn-outline" style="border-color: rgba(239, 68, 68, 0.5); color: #ef4444;">Reject</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
