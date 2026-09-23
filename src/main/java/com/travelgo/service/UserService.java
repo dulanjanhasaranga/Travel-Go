@@ -9,6 +9,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
+import com.travelgo.entity.EmailVerificationToken;
+import com.travelgo.repository.EmailVerificationTokenRepository;
+import java.security.SecureRandom;
+import java.util.Base64;
+import java.time.Clock;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+import java.nio.charset.StandardCharsets;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.ObjectProvider;
 
 /**
  * Service for user management operations.
