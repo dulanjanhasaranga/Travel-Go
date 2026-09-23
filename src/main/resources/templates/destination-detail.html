@@ -6,7 +6,17 @@
     <nav class="breadcrumbs" aria-label="Breadcrumb"><a th:href="@{/}">Home</a><span>/</span><a th:href="@{/destinations}">Destinations</a><span>/</span><span th:text="${destination.city}"></span></nav>
     <div class="detail-hero" th:with="heroImage=${@travelImages.resolve(destination.image)},heroSources=${@travelImages.srcset(destination.image)}"><img th:src="${heroImage}" th:attr="srcset=${heroSources}" sizes="100vw" th:alt="${destination.city + ', ' + destination.country}" fetchpriority="high"><div class="detail-hero-copy"><span class="eyebrow" th:text="${destination.country}"></span><h1 th:text="${destination.city}"></h1><p th:text="${packages.size() + ' published packages · ' + hotels.size() + ' optional hotels'}"></p></div></div>
     <div class="detail-layout"><div class="stack">
-        <section class="surface"><span class="eyebrow">Your destination</span><h2 th:text="${'Discover ' + destination.city}"></h2><p class="preserve-lines" th:if="${!#strings.isEmpty(destination.description)}" th:text="${destination.description}"></p><p th:if="${#strings.isEmpty(destination.description)}">Speak with a travel consultant for destination information and a trip suited to your interests.</p><nav class="portal-links" aria-label="Destination sections"><a href="#destination-packages">Explore packages</a><a href="#destination-hotels">Optional hotels</a><a href="#destination-visa">Visa and planning</a></nav></section>
+        <section class="surface"><span class="eyebrow">Your destination</span><h2 th:text="${'Discover ' + destination.city}"></h2>
+        <p class="preserve-lines" th:if="${!#strings.isEmpty(destination.description)}" th:text="${destination.description}"></p>
+        <p th:if="${#strings.isEmpty(destination.description)}">Speak with a travel consultant for destination information and a trip suited to your interests.</p>
+        
+        <div class="map-container" style="margin-top: 1.5rem; margin-bottom: 2rem;">
+            <iframe width="100%" height="350" style="border:0; border-radius:12px; margin-top: 0.5rem;" loading="lazy" allowfullscreen 
+                    th:src="@{'https://maps.google.com/maps?q=' + ${#strings.replace(destination.city + ',' + destination.country, ' ', '+')} + '&t=&z=10&ie=UTF8&iwloc=&output=embed'}">
+            </iframe>
+        </div>
+        
+        <nav class="portal-links" aria-label="Destination sections"><a href="#destination-packages">Explore packages</a><a href="#destination-hotels">Optional hotels</a><a href="#destination-visa">Visa and planning</a></nav></section>
         <section class="surface" id="destination-packages"><h2>Packages for this destination</h2><p>Compare package prices, itineraries and trip duration before choosing your journey.</p><div class="stack" th:if="${!#lists.isEmpty(packages)}"><article class="destination-package" th:each="pkg : ${packages}">
     <img th:with="resolvedSrc=${@travelImages.resolve(pkg.image)}" th:src="${resolvedSrc}" th:alt="${pkg.name}" loading="lazy" decoding="async">
     <div>

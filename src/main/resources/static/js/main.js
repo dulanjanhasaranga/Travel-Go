@@ -1,3 +1,21 @@
+// Theme Manager
+window.toggleTheme = function() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+};
+
+// Initialize theme immediately
+(function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
  const navbar = document.querySelector('.navbar');
@@ -366,3 +384,9 @@ document.addEventListener('DOMContentLoaded', () => {
         navigateTo(window.location.href, { pushToHistory: false, method: 'GET' });
     });
 });
+
+
+// Load Grok Features globally
+const script = document.createElement('script');
+script.src = '/js/grok-features.js';
+document.body.appendChild(script);
