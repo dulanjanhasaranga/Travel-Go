@@ -16,6 +16,7 @@ public class DestinationService {
         this.repository = repository;
     }
 
+    @org.springframework.cache.annotation.Cacheable("destinations")
     public List<Destination> findAll() {
         return repository.findAll();
     }
@@ -44,3 +45,4 @@ public class DestinationService {
         return repository.findByCountryContainingIgnoreCaseOrCityContainingIgnoreCase(query, query);
     }
 }
+

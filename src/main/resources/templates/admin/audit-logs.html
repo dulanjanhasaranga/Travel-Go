@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Audit Logs - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('audit')}"></div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <a th:href="@{/admin/dashboard}">Admin</a>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Audit Logs</span>
+                        </div>
+                        <h2 class="topbar-title">System Activity Log</h2>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="surface" style="padding: 1.5rem;">
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border-color);">
+                                    <th style="padding: 1rem; font-weight: 600; color: var(--text-heading);">Timestamp</th>
+                                    <th style="padding: 1rem; font-weight: 600; color: var(--text-heading);">User</th>
+                                    <th style="padding: 1rem; font-weight: 600; color: var(--text-heading);">Action</th>
+                                    <th style="padding: 1rem; font-weight: 600; color: var(--text-heading);">Entity</th>
+                                    <th style="padding: 1rem; font-weight: 600; color: var(--text-heading);">Entity ID</th>
+                                    <th style="padding: 1rem; font-weight: 600; color: var(--text-heading);">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="log : ${logs}" style="border-bottom: 1px solid var(--border-color); font-size: 0.9rem;">
+                                    <td style="padding: 1rem; font-family: monospace;" th:text="${#temporals.format(log.timestamp, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                    <td style="padding: 1rem; font-weight: 500;" th:text="${log.username}"></td>
+                                    <td style="padding: 1rem;">
+                                        <span class="badge" style="background: #e2e8f0; color: #475569;" th:text="${log.action}"></span>
+                                    </td>
+                                    <td style="padding: 1rem;" th:text="${log.entityName}"></td>
+                                    <td style="padding: 1rem;" th:text="${log.entityId}"></td>
+                                    <td style="padding: 1rem; color: var(--text-body);" th:text="${log.details}"></td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(logs)}">
+                                    <td colspan="6" style="padding: 2rem; text-align: center; color: var(--text-body);">No audit logs found.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

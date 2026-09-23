@@ -101,6 +101,14 @@
 			<artifactId>stripe-java</artifactId>
 			<version>24.22.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -113,3 +121,5 @@
 	</build>
 
 </project>
+
+

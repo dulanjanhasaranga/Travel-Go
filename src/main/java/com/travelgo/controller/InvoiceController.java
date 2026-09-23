@@ -37,8 +37,12 @@ public class InvoiceController {
 
     @GetMapping("/{paymentId}")
     public ResponseEntity<byte[]> downloadInvoice(@PathVariable Long bookingId, @PathVariable Long paymentId, @AuthenticationPrincipal UserDetails userDetails) {
-        User user = userService.findByEmail(userDetails.getUsername());
-        Booking booking = bookingService.getBookingById(bookingId);
+        Optional<User> userOpt = userService.getUserByEmail(userDetails.getUsername());
+        if (userOpt.isEmpty()) return ResponseEntity.status(401).build();
+        User user = userOpt.get();
+        Optional<Booking> bookingOpt = bookingService.findById(bookingId);
+        if (bookingOpt.isEmpty()) return ResponseEntity.notFound().build();
+        Booking booking = bookingOpt.get();
         
         if (booking == null || !booking.getUser().getId().equals(user.getId())) {
             return ResponseEntity.notFound().build();
@@ -65,3 +69,5 @@ public class InvoiceController {
                 .body(pdfBytes);
     }
 }
+
+

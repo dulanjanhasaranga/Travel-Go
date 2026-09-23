@@ -30,9 +30,11 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final com.travelgo.service.CustomOAuth2UserService customOAuth2UserService;
     private final com.travelgo.repository.UserRepository userRepository;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService, com.travelgo.repository.UserRepository userRepository) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, com.travelgo.repository.UserRepository userRepository, com.travelgo.service.CustomOAuth2UserService customOAuth2UserService) {
+        this.customOAuth2UserService = customOAuth2UserService;
         this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
     }
@@ -116,6 +118,11 @@ public class SecurityConfig {
                 .failureUrl("/auth/login?error=true")
                 .permitAll()
             )
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/auth/login")
+                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                .successHandler(customSuccessHandler())
+            )
             .logout(logout -> logout
                 .logoutUrl("/auth/logout")
                 .logoutSuccessUrl("/auth/login?logout=true")
@@ -177,3 +184,4 @@ public class SecurityConfig {
         };
     }
 }
+

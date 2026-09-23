@@ -20,12 +20,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditService auditService;
 
     public UserService(UserRepository userRepository, RoleRepository roleRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder, AuditService auditService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.passwordEncoder = passwordEncoder; this.auditService = auditService;
     }
 
     // ---- Registration ----
@@ -188,3 +189,5 @@ public class UserService {
         return userRepository.countByRoleRoleNameNot("CUSTOMER");
     }
 }
+
+

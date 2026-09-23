@@ -25,12 +25,13 @@ public class BookingService {
     private final DepartureRepository departures; private final SupplierHoldRepository supplierHolds;
     private final SimpMessagingTemplate messagingTemplate;
     private final BookingNoteRepository bookingNotes;
+    private final AuditService auditService;
     public BookingService(BookingRepository repository, TourPackageRepository packages, HotelRepository hotels,
-            BookingHotelRepository bookingHotels, TravelerRepository travelers, WorkflowRules rules, Validator validator, UserRepository users, BookingEmailService email, DepartureRepository departures, SupplierHoldRepository supplierHolds, SimpMessagingTemplate messagingTemplate, BookingNoteRepository bookingNotes) {
+            BookingHotelRepository bookingHotels, TravelerRepository travelers, WorkflowRules rules, Validator validator, UserRepository users, BookingEmailService email, DepartureRepository departures, SupplierHoldRepository supplierHolds, SimpMessagingTemplate messagingTemplate, BookingNoteRepository bookingNotes, AuditService auditService) {
         this.repository=repository; this.packages=packages; this.hotels=hotels; this.bookingHotels=bookingHotels;
         this.travelers=travelers; this.rules=rules; this.validator=validator;this.users=users;this.email=email;
         this.departures=departures; this.supplierHolds=supplierHolds;
-        this.messagingTemplate=messagingTemplate; this.bookingNotes=bookingNotes;
+        this.messagingTemplate=messagingTemplate; this.bookingNotes=bookingNotes; this.auditService=auditService;
     }
     public List<Booking> findAll() { return repository.findAll(); }
     public Optional<Booking> findById(Long id) { return repository.findById(id); }
@@ -139,7 +140,7 @@ public class BookingService {
         notifyConsultants("BOOKING_UPDATED", "Booking updated", "Booking #" + b.getId() + " travel details were updated by customer.", b.getId());
         return repository.save(b);
     }
-    public void cancelBooking(Long id) { Booking b=rules.lock(id); rules.owner(b); rules.requireEditable(b); b.setBookingStatus(BookingStatus.CANCELLED); email.booking(b,true); rules.bookingNotice(b, "BOOKING_CANCELLED", "Booking cancelled", "Booking #" + b.getId() + " was cancelled."); notifyConsultants("BOOKING_CANCELLED", "Booking cancelled", "Booking #" + b.getId() + " was cancelled by customer.", b.getId()); }
+    public void cancelBooking(Long id) { Booking b=rules.lock(id); rules.owner(b); rules.requireEditable(b); b.setBookingStatus(BookingStatus.CANCELLED); email.booking(b,true); rules.bookingNotice(b, "BOOKING_CANCELLED", "Booking cancelled", "Booking #" + b.getId() + " was cancelled."); notifyConsultants("BOOKING_CANCELLED", "Booking cancelled", "Booking #" + b.getId() + " was cancelled by customer.", b.getId()); auditService.logAction("CANCEL_BOOKING", "Booking", b.getId(), "Booking was cancelled."); }
     public boolean canConfirm(Booking b) {
         try {
             rules.eligible(b);
@@ -158,6 +159,7 @@ public class BookingService {
         rules.requirePaid(b, PaymentType.PACKAGE_DEPOSIT);
         rules.requirePaid(b, PaymentType.PACKAGE_BALANCE);
         b.setBookingStatus(BookingStatus.CONFIRMED);
+        auditService.logAction("CONFIRM_BOOKING", "Booking", b.getId(), "Booking was confirmed by staff.");
         rules.bookingNotice(b, "BOOKING_CONFIRMED", "Booking confirmed", "Booking #" + b.getId() + " is confirmed. Your trip is scheduled.");
         messagingTemplate.convertAndSend("/topic/staff-updates", "{\"type\":\"BOOKING_CONFIRMED\",\"bookingId\":" + b.getId() + "}");
     }
@@ -174,6 +176,7 @@ public class BookingService {
             throw new IllegalStateException("Only pending, processing, or info-required bookings can be declined.");
         b.setBookingStatus(BookingStatus.DECLINED);
         b.setDeclineReason(reason.trim());
+        auditService.logAction("DECLINE_BOOKING", "Booking", b.getId(), "Booking was declined. Reason: " + reason);
         b.setDeclinedAt(rules.now());
         b.setDeclinedBy(rules.actor());
         rules.bookingNotice(b, "BOOKING_DECLINED", "Booking declined",
@@ -236,3 +239,6 @@ public class BookingService {
         return bookingNotes.findByBooking_IdOrderByCreatedAtAsc(bookingId);
     }
 }
+
+
+
