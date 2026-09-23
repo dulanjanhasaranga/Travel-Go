@@ -34,12 +34,27 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuditService auditService;
+    private final EmailVerificationTokenRepository verificationTokens;
+    private final ObjectProvider<JavaMailSender> mail;
+    private final Clock clock;
+    private final String baseUrl;
+    private final String from;
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UserService.class);
 
     public UserService(UserRepository userRepository, RoleRepository roleRepository,
-                       PasswordEncoder passwordEncoder, AuditService auditService) {
+                       PasswordEncoder passwordEncoder, AuditService auditService,
+                       EmailVerificationTokenRepository verificationTokens,
+                       ObjectProvider<JavaMailSender> mail, Clock clock,
+                       @Value("${travelgo.public-base-url:http://localhost:8080}") String baseUrl,
+                       @Value("${travelgo.mail.from:no-reply@travelgo.example}") String from) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder; this.auditService = auditService;
+        this.verificationTokens = verificationTokens;
+        this.mail = mail;
+        this.clock = clock;
+        this.baseUrl = baseUrl;
+        this.from = from;
     }
 
     // ---- Registration ----
@@ -60,7 +75,59 @@ public class UserService {
         User user = new User(name, email, passwordEncoder.encode(password), customerRole);
         user.setPhone(phone);
         user.setAddress(address);
-        return userRepository.save(user);
+        user.setActive(false);
+        user = userRepository.saveAndFlush(user);
+
+        byte[] bytes = new byte[32];
+        new SecureRandom().nextBytes(bytes);
+        String token = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+
+        EmailVerificationToken verification = new EmailVerificationToken();
+        verification.setTokenHash(hash(token));
+        verification.setUser(user);
+        verification.setExpiresAt(clock.instant().plusSeconds(86400)); // 24 hours
+        verification.setUsed(false);
+        verificationTokens.saveAndFlush(verification);
+
+        logger.info("Email verification token for {}: {}", email, token);
+
+        var sender = mail.getIfAvailable();
+        if (sender != null) {
+            var message = new SimpleMailMessage();
+            message.setFrom(from);
+            message.setTo(user.getEmail());
+            message.setSubject("Verify your TravelGO account");
+            message.setText("Welcome to TravelGO!\n\nPlease verify your email address by clicking this link:\n" + baseUrl + "/auth/verify-email?token=" + token + "\n\nIf you did not create this account, please ignore this email.");
+            sender.send(message);
+        }
+
+        return user;
+    }
+
+    @Transactional
+    public void verifyEmail(String token) {
+        if (token == null || token.isBlank()) throw new IllegalArgumentException("Invalid token.");
+        EmailVerificationToken verification = verificationTokens.lockByHash(hash(token))
+                .orElseThrow(() -> new IllegalArgumentException("This verification link is invalid."));
+        
+        if (verification.isUsed() || !clock.instant().isBefore(verification.getExpiresAt())) {
+            throw new IllegalArgumentException("This verification link is invalid or expired.");
+        }
+        
+        User user = userRepository.lockAccount(verification.getUser().getId()).orElseThrow();
+        user.setActive(true);
+        userRepository.save(user);
+        
+        verification.setUsed(true);
+        verificationTokens.save(verification);
+    }
+
+    private String hash(String token) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest((token == null ? "" : token).getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     // ---- Staff Creation (by Admin) ----
@@ -202,5 +269,8 @@ public class UserService {
         return userRepository.countByRoleRoleNameNot("CUSTOMER");
     }
 }
+
+
+
 
 

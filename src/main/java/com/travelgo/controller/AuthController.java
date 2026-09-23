@@ -72,4 +72,17 @@ public class AuthController {
             return "auth/register";
         }
     }
+
+    @GetMapping("/verify-email")
+    public String verifyEmail(@org.springframework.web.bind.annotation.RequestParam("token") String token, RedirectAttributes redirectAttributes) {
+        try {
+            userService.verifyEmail(token);
+            redirectAttributes.addFlashAttribute("successMessage", "Your email has been successfully verified! You may now log in.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Email verification failed: " + e.getMessage());
+        }
+        return "redirect:/auth/login";
+    }
 }
+
+
