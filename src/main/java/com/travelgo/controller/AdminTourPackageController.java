@@ -4,6 +4,10 @@ import com.travelgo.entity.TourPackage;
 import com.travelgo.service.DestinationService;
 import com.travelgo.service.PackageCategoryService;
 import com.travelgo.service.TourPackageService;
+import com.travelgo.service.DepartureService;
+import com.travelgo.entity.Departure;
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 import com.travelgo.util.ValidationHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,15 +34,17 @@ public class AdminTourPackageController {
     private final DestinationService destinationService;
     private final PackageCategoryService categoryService;
     private final HotelService hotelService;
+    private final DepartureService departureService;
 
     public AdminTourPackageController(TourPackageService tourPackageService,
                                      DestinationService destinationService,
                                      PackageCategoryService categoryService,
-                                     HotelService hotelService) {
+                                     HotelService hotelService, DepartureService departureService) {
         this.tourPackageService = tourPackageService;
         this.destinationService = destinationService;
         this.categoryService = categoryService;
         this.hotelService = hotelService;
+        this.departureService = departureService;
     }
 
     @GetMapping
@@ -94,11 +100,10 @@ public class AdminTourPackageController {
                                @RequestParam(value = "flightDetails", required = false) String flightDetails,
                                @RequestParam(value = "includedServices", required = false) String includedServices,
                                @RequestParam("maxCapacity") Integer maxCapacity,
-                               @RequestParam(value = "image", required = false) String image,
+                               @RequestParam(value = "image", required = false) String image, @RequestParam(value = "itinerary", required = false) String itinerary, @RequestParam(value = "excludedServices", required = false) String excludedServices, @RequestParam(value = "travelerInformation", required = false) String travelerInformation,
                                RedirectAttributes redirectAttributes) {
         try {
-            tourPackageService.savePackage(null, new com.travelgo.dto.PackageRequest(name, categoryId, destinationId,
-                    description, basePrice, durationDays, flightDetails, includedServices, maxCapacity, image));
+            tourPackageService.savePackage(null, new com.travelgo.dto.PackageRequest(name, categoryId, destinationId, description, basePrice, durationDays, flightDetails, includedServices, maxCapacity, image, itinerary, excludedServices, travelerInformation));
             redirectAttributes.addFlashAttribute("successMessage", "Tour package created successfully.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", com.travelgo.service.CustomerErrorMessage.from(e));
@@ -117,11 +122,10 @@ public class AdminTourPackageController {
                              @RequestParam(value = "flightDetails", required = false) String flightDetails,
                              @RequestParam(value = "includedServices", required = false) String includedServices,
                              @RequestParam("maxCapacity") Integer maxCapacity,
-                             @RequestParam(value = "image", required = false) String image,
+                             @RequestParam(value = "image", required = false) String image, @RequestParam(value = "itinerary", required = false) String itinerary, @RequestParam(value = "excludedServices", required = false) String excludedServices, @RequestParam(value = "travelerInformation", required = false) String travelerInformation,
                              RedirectAttributes redirectAttributes) {
         try {
-            tourPackageService.savePackage(id, new com.travelgo.dto.PackageRequest(name, categoryId, destinationId,
-                    description, basePrice, durationDays, flightDetails, includedServices, maxCapacity, image));
+            tourPackageService.savePackage(id, new com.travelgo.dto.PackageRequest(name, categoryId, destinationId, description, basePrice, durationDays, flightDetails, includedServices, maxCapacity, image, itinerary, excludedServices, travelerInformation));
             redirectAttributes.addFlashAttribute("successMessage", "Tour package updated successfully.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", com.travelgo.service.CustomerErrorMessage.from(e));
@@ -150,10 +154,9 @@ public class AdminTourPackageController {
                                 @RequestParam(value = "flightDetails", required = false) String flightDetails,
                                 @RequestParam(value = "includedServices", required = false) String includedServices,
                                 @RequestParam("maxCapacity") Integer maxCapacity,
-                                @RequestParam(value = "image", required = false) String image) {
+                                @RequestParam(value = "image", required = false) String image, @RequestParam(value = "itinerary", required = false) String itinerary, @RequestParam(value = "excludedServices", required = false) String excludedServices, @RequestParam(value = "travelerInformation", required = false) String travelerInformation) {
         try {
-            com.travelgo.entity.TourPackage pkg = tourPackageService.savePackage(null, new com.travelgo.dto.PackageRequest(name, categoryId, destinationId,
-                    description, basePrice, durationDays, flightDetails, includedServices, maxCapacity, image));
+            com.travelgo.entity.TourPackage pkg = tourPackageService.savePackage(null, new com.travelgo.dto.PackageRequest(name, categoryId, destinationId, description, basePrice, durationDays, flightDetails, includedServices, maxCapacity, image, itinerary, excludedServices, travelerInformation));
             
             UnifiedPackageDTO dto = new UnifiedPackageDTO();
             dto.setIdPrefix("TOUR-" + pkg.getId());
@@ -183,7 +186,7 @@ public class AdminTourPackageController {
                              @RequestParam(value = "starRating", required = false) Integer starRating,
                              @RequestParam("pricePerNight") BigDecimal pricePerNight,
                              @RequestParam(value = "description", required = false) String description,
-                             @RequestParam(value = "image", required = false) String image) {
+                             @RequestParam(value = "image", required = false) String image, @RequestParam(value = "itinerary", required = false) String itinerary, @RequestParam(value = "excludedServices", required = false) String excludedServices, @RequestParam(value = "travelerInformation", required = false) String travelerInformation) {
         try {
             Hotel hotel = new Hotel();
             hotel.setName(name);
@@ -213,5 +216,38 @@ public class AdminTourPackageController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body((e instanceof IllegalArgumentException ? e.getMessage() : "Check for duplicate names or linked records and try again."));
         }
+    }
+
+
+    @GetMapping("/{id}/departures")
+    @ResponseBody
+    public ResponseEntity<?> getDepartures(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(departureService.findByTourPackageId(id));
+    }
+
+    @PostMapping("/{id}/departures")
+    public String addDeparture(@PathVariable("id") Long id,
+                               @RequestParam("departureDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate departureDate,
+                               @RequestParam("returnDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate,
+                               @RequestParam("totalCapacity") Integer totalCapacity,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            departureService.createDeparture(id, departureDate, returnDate, totalCapacity);
+            redirectAttributes.addFlashAttribute("successMessage", "Departure added successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", com.travelgo.service.CustomerErrorMessage.from(e));
+        }
+        return "redirect:/staff/packages";
+    }
+
+    @PostMapping("/departures/{depId}/delete")
+    public String deleteDeparture(@PathVariable("depId") Long depId, RedirectAttributes redirectAttributes) {
+        try {
+            departureService.deleteDeparture(depId);
+            redirectAttributes.addFlashAttribute("successMessage", "Departure deleted successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", com.travelgo.service.CustomerErrorMessage.from(e));
+        }
+        return "redirect:/staff/packages";
     }
 }

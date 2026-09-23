@@ -238,6 +238,7 @@
                                     <td style="text-align: right;">
                                         <div style="display: inline-flex; gap: 0.4rem; justify-content: flex-end;">
                                             <a th:if="${pkg.type == 'DESTINATION'}" class="btn btn-outline btn-sm" th:href="@{/staff/packages/{id}/content(id=${pkg.id})}">Itinerary</a>
+                                              <button th:if="${pkg.type == \'DESTINATION\'}" type="button" class="btn btn-outline btn-sm" th:onclick="\'openManageDeparturesModal(\' + ${pkg.id} + \')\'">Departures</button>
                                             <form th:if="${pkg.type == 'DESTINATION'}" th:action="@{/staff/packages/{id}/delete(id=${pkg.id})}" method="post" style="display: inline;"
                                                   onsubmit="return confirm('Deactivate this package?');">
                                                 <button type="submit" class="btn btn-sm btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">Deactivate</button>
@@ -344,6 +345,20 @@
                         <textarea name="includedServices" id="includedServices" class="form-control" rows="2"></textarea>
                     </div>
 
+                    <div class="form-group">
+                        <label class="form-label">Itinerary</label>
+                        <textarea name="itinerary" id="itinerary" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Excluded Services</label>
+                        <textarea name="excludedServices" id="excludedServices" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Traveler Information</label>
+                        <textarea name="travelerInformation" id="travelerInformation" class="form-control" rows="3"></textarea>
+                    </div>
+
+
                     <div class="form-group" style="margin-bottom: 0;">
                         <label class="form-label">Detailed Description</label>
                         <textarea name="description" class="form-control" rows="3"></textarea>
@@ -429,6 +444,20 @@
                             <label class="form-label">Included Services</label>
                             <textarea id="editIncludedServices" name="includedServices" class="form-control" rows="2"></textarea>
                         </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Itinerary</label>
+                                <textarea name="itinerary" id="editItinerary" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Excluded Services</label>
+                                <textarea name="excludedServices" id="editExcludedServices" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Traveler Information</label>
+                                <textarea name="travelerInformation" id="editTravelerInformation" class="form-control" rows="3"></textarea>
+                            </div>
+
 
                         <div class="form-group" style="margin-bottom: 0;">
                             <label class="form-label">Detailed Description</label>
@@ -568,6 +597,7 @@
             let actionsHtml = '';
             if(pkg.type === 'DESTINATION') {
                 actionsHtml = `<a class="btn btn-outline btn-sm" href="/staff/packages/${pkg.id}/content">Itinerary</a>
+                                 <button type="button" class="btn btn-outline btn-sm" onclick="openManageDeparturesModal(${pkg.id})">Departures</button>
                                <form action="/staff/packages/${pkg.id}/delete" method="post" style="display: inline;" onsubmit="return confirm('Deactivate?');">
                                    ${csrfHtml}
                                    <button type="submit" class="btn btn-sm btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">Deactivate</button>
@@ -693,6 +723,250 @@
             var editModal = document.getElementById('editPackageModal');
             if (e.target == editModal) closeEditPackageModal();
         });
-    </script>
-<script th:src="@{/js/main.js}"></script></body>
+    
+        function openManageDeparturesModal(packageId) {
+            document.getElementById('manageDeparturesBackdrop').classList.add('open');
+            document.getElementById('manageDeparturesModal').classList.add('open');
+            document.getElementById('depPackageId').value = packageId;
+            loadDepartures(packageId);
+        }
+
+        function closeManageDeparturesModal() {
+            document.getElementById('manageDeparturesBackdrop').classList.remove('open');
+            document.getElementById('manageDeparturesModal').classList.remove('open');
+        }
+
+        function loadDepartures(packageId) {
+            const listDiv = document.getElementById('departuresList');
+            listDiv.innerHTML = '<p style="color: var(--text-muted); font-style: italic;">Loading departures...</p>';
+            fetch(`/staff/packages/${packageId}/departures`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data || data.length === 0) {
+                        listDiv.innerHTML = '<p style="color: var(--text-muted); font-style: italic;">No departures found.</p>';
+                        return;
+                    }
+                    let html = '<table class="data-table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">';
+                    html += '<thead><tr><th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Departure</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Return</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Available</th><th style="padding: 8px; text-align: right; border-bottom: 1px solid #ddd;">Actions</th></tr></thead>';
+                    html += '<tbody>';
+                    data.forEach(dep => {
+                        html += `<tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${dep.departureDate}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${dep.returnDate}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${dep.availableSeats}/${dep.totalCapacity}</td>
+                            <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteDeparture(${dep.id}, ${packageId})" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">Delete</button>
+                            </td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                    listDiv.innerHTML = html;
+                })
+                .catch(err => {
+                    listDiv.innerHTML = '<p style="color: var(--text-danger);">Failed to load departures.</p>';
+                    console.error(err);
+                });
+        }
+
+        function submitDepartureForm(event) {
+            event.preventDefault();
+            const packageId = document.getElementById('depPackageId').value;
+            const departureDate = document.getElementById('depDepartureDate').value;
+            const returnDate = document.getElementById('depReturnDate').value;
+            const totalCapacity = document.getElementById('depTotalCapacity').value;
+            
+            const formData = new FormData();
+            formData.append('departureDate', departureDate);
+            formData.append('returnDate', returnDate);
+            formData.append('totalCapacity', totalCapacity);
+            
+            // Append CSRF if available
+            const csrfInput = document.querySelector('input[name="_csrf"]');
+            if (csrfInput) {
+                formData.append(csrfInput.name, csrfInput.value);
+            }
+            
+            fetch(`/staff/packages/${packageId}/departures`, {
+                method: 'POST',
+                body: formData
+            }).then(res => {
+                if(res.ok) {
+                    loadDepartures(packageId);
+                    document.getElementById('addDepartureForm').reset();
+                    document.getElementById('depPackageId').value = packageId;
+                } else {
+                    alert('Failed to add departure.');
+                }
+            }).catch(err => {
+                alert('Error adding departure.');
+                console.error(err);
+            });
+        }
+
+        function deleteDeparture(depId, packageId) {
+            if(!confirm('Are you sure you want to delete this departure?')) return;
+            
+            const formData = new FormData();
+            const csrfInput = document.querySelector('input[name="_csrf"]');
+            if (csrfInput) {
+                formData.append(csrfInput.name, csrfInput.value);
+            }
+            
+            fetch(`/staff/packages/departures/${depId}/delete`, {
+                method: 'POST',
+                body: formData
+            }).then(res => {
+                if(res.ok) {
+                    loadDepartures(packageId);
+                } else {
+                    alert('Failed to delete departure.');
+                }
+            }).catch(err => {
+                alert('Error deleting departure.');
+                console.error(err);
+            });
+        }
+
+</script>
+<script th:src="@{/js/main.js}">
+        function openManageDeparturesModal(packageId) {
+            document.getElementById('manageDeparturesBackdrop').classList.add('open');
+            document.getElementById('manageDeparturesModal').classList.add('open');
+            document.getElementById('depPackageId').value = packageId;
+            loadDepartures(packageId);
+        }
+
+        function closeManageDeparturesModal() {
+            document.getElementById('manageDeparturesBackdrop').classList.remove('open');
+            document.getElementById('manageDeparturesModal').classList.remove('open');
+        }
+
+        function loadDepartures(packageId) {
+            const listDiv = document.getElementById('departuresList');
+            listDiv.innerHTML = '<p style="color: var(--text-muted); font-style: italic;">Loading departures...</p>';
+            fetch(`/staff/packages/${packageId}/departures`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data || data.length === 0) {
+                        listDiv.innerHTML = '<p style="color: var(--text-muted); font-style: italic;">No departures found.</p>';
+                        return;
+                    }
+                    let html = '<table class="data-table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">';
+                    html += '<thead><tr><th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Departure</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Return</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Available</th><th style="padding: 8px; text-align: right; border-bottom: 1px solid #ddd;">Actions</th></tr></thead>';
+                    html += '<tbody>';
+                    data.forEach(dep => {
+                        html += `<tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${dep.departureDate}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${dep.returnDate}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${dep.availableSeats}/${dep.totalCapacity}</td>
+                            <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteDeparture(${dep.id}, ${packageId})" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">Delete</button>
+                            </td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                    listDiv.innerHTML = html;
+                })
+                .catch(err => {
+                    listDiv.innerHTML = '<p style="color: var(--text-danger);">Failed to load departures.</p>';
+                    console.error(err);
+                });
+        }
+
+        function submitDepartureForm(event) {
+            event.preventDefault();
+            const packageId = document.getElementById('depPackageId').value;
+            const departureDate = document.getElementById('depDepartureDate').value;
+            const returnDate = document.getElementById('depReturnDate').value;
+            const totalCapacity = document.getElementById('depTotalCapacity').value;
+            
+            const formData = new FormData();
+            formData.append('departureDate', departureDate);
+            formData.append('returnDate', returnDate);
+            formData.append('totalCapacity', totalCapacity);
+            
+            // Append CSRF if available
+            const csrfInput = document.querySelector('input[name="_csrf"]');
+            if (csrfInput) {
+                formData.append(csrfInput.name, csrfInput.value);
+            }
+            
+            fetch(`/staff/packages/${packageId}/departures`, {
+                method: 'POST',
+                body: formData
+            }).then(res => {
+                if(res.ok) {
+                    loadDepartures(packageId);
+                    document.getElementById('addDepartureForm').reset();
+                    document.getElementById('depPackageId').value = packageId;
+                } else {
+                    alert('Failed to add departure.');
+                }
+            }).catch(err => {
+                alert('Error adding departure.');
+                console.error(err);
+            });
+        }
+
+        function deleteDeparture(depId, packageId) {
+            if(!confirm('Are you sure you want to delete this departure?')) return;
+            
+            const formData = new FormData();
+            const csrfInput = document.querySelector('input[name="_csrf"]');
+            if (csrfInput) {
+                formData.append(csrfInput.name, csrfInput.value);
+            }
+            
+            fetch(`/staff/packages/departures/${depId}/delete`, {
+                method: 'POST',
+                body: formData
+            }).then(res => {
+                if(res.ok) {
+                    loadDepartures(packageId);
+                } else {
+                    alert('Failed to delete departure.');
+                }
+            }).catch(err => {
+                alert('Error deleting departure.');
+                console.error(err);
+            });
+        }
+
+</script>
+<!-- Manage Departures Modal -->
+<div id="manageDeparturesBackdrop" class="slide-backdrop" onclick="closeManageDeparturesModal()"></div>
+<div id="manageDeparturesModal" class="slide-panel" style="width: 500px; max-width: 90vw;">
+    <div class="panel-header" style="padding: 1.5rem; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-heading);">Manage Departures</h3>
+        <button type="button" class="btn-close" onclick="closeManageDeparturesModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+    </div>
+    <div class="panel-body" style="padding: 1.5rem; overflow-y: auto; flex: 1;">
+        <div id="departuresList" style="margin-bottom: 1.5rem;">
+            <!-- Departures loaded via AJAX -->
+            <p>Loading departures...</p>
+        </div>
+        <hr style="border: 0; border-top: 1px solid var(--border-light); margin: 1.5rem 0;" />
+        <h4 style="margin: 0 0 1rem 0; font-size: 1rem; color: var(--text-heading);">Add New Departure</h4>
+        <form id="addDepartureForm" onsubmit="submitDepartureForm(event)">
+            <input type="hidden" id="depPackageId" name="packageId" />
+            <div class="form-group">
+                <label class="form-label">Departure Date *</label>
+                <input type="date" id="depDepartureDate" name="departureDate" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Return Date *</label>
+                <input type="date" id="depReturnDate" name="returnDate" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Total Capacity *</label>
+                <input type="number" id="depTotalCapacity" name="totalCapacity" min="1" max="1000" class="form-control" required />
+            </div>
+            <div style="margin-top: 1rem; text-align: right;">
+                <button type="submit" class="btn btn-primary">Add Departure</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
 </html>

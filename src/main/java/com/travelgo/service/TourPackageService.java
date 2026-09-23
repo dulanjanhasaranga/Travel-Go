@@ -51,6 +51,9 @@ public class TourPackageService {
         p.setDescription(request.description()); p.setBasePrice(request.basePrice()); p.setDurationDays(request.durationDays());
         p.setFlightDetails(request.flightDetails()); p.setIncludedServices(request.includedServices());
         p.setMaxCapacity(request.maxCapacity()); p.setImage(request.image());
+        if (request.itinerary() != null) p.setItinerary(request.itinerary().trim());
+        if (request.excludedServices() != null) p.setExcludedServices(request.excludedServices().trim());
+        if (request.travelerInformation() != null) p.setTravelerInformation(request.travelerInformation().trim());
         TourPackage saved = repository.save(p);
         auditService.logAction(id == null ? "CREATE_PACKAGE" : "UPDATE_PACKAGE", "TourPackage", saved.getId(), "Package "+saved.getName()+" was "+(id==null?"created":"updated")+".");
         return saved;
@@ -92,5 +95,6 @@ public class TourPackageService {
         return repository.filterPackages(cleanQuery, destinationId, categoryId);
     }
 }
+
 
 

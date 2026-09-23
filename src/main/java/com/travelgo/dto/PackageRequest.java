@@ -14,4 +14,7 @@ public record PackageRequest(
         @Size(max=255) String flightDetails,
         @Size(max=10000) String includedServices,
         @NotNull @Min(1) @Max(1000) Integer maxCapacity,
-        @Size(max=255) String image) {}
+        @Size(max=255) String image,
+        @Size(max=10000) String itinerary,
+        @Size(max=10000) String excludedServices,
+        @Size(max=10000) String travelerInformation) {}
