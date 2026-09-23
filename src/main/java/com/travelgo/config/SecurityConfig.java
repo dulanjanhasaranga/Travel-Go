@@ -82,12 +82,12 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**").permitAll()
 
                 // Staff Package Management pages
-                .requestMatchers("/staff/destinations/**", "/staff/hotels/**", "/staff/categories/**").hasAnyAuthority("ROLE_TRAVEL_CONSULTANT", "PERM_DESTINATION_VIEW", "PERM_DESTINATION_MANAGE")
-                .requestMatchers("/staff/packages/**").hasAnyAuthority("ROLE_TRAVEL_CONSULTANT", "PERM_PACKAGE_VIEW", "PERM_PACKAGE_MANAGE")
-                .requestMatchers("/staff/bookings/**", "/staff/inquiries/**").hasAnyAuthority("ROLE_TRAVEL_CONSULTANT", "PERM_BOOKING_VIEW", "PERM_BOOKING_MANAGE")
-                .requestMatchers("/staff/visas/**").hasAnyAuthority("ROLE_VISA_OFFICER", "PERM_VISA_VIEW", "PERM_VISA_MANAGE")
-                .requestMatchers("/staff/payments/**").hasAnyAuthority("ROLE_VISA_OFFICER", "PERM_VISA_MANAGE", "PERM_PAYMENT_MANAGE", "PERM_PAYMENT_VIEW")
-                .requestMatchers("/staff/reports/**").hasAnyAuthority("ROLE_TRAVEL_CONSULTANT", "ROLE_VISA_OFFICER", "PERM_BOOKING_VIEW", "PERM_VISA_VIEW")
+                .requestMatchers("/staff/destinations/**", "/staff/hotels/**", "/staff/categories/**").hasAnyAuthority("PERM_DESTINATION_VIEW", "PERM_DESTINATION_MANAGE")
+                .requestMatchers("/staff/packages/**").hasAnyAuthority("PERM_PACKAGE_VIEW", "PERM_PACKAGE_MANAGE")
+                .requestMatchers("/staff/bookings/**", "/staff/inquiries/**").hasAnyAuthority("PERM_BOOKING_VIEW", "PERM_BOOKING_MANAGE")
+                .requestMatchers("/staff/visas/**").hasAnyAuthority("PERM_VISA_VIEW", "PERM_VISA_MANAGE")
+                .requestMatchers("/staff/payments/**").hasAnyAuthority("PERM_VISA_MANAGE", "PERM_PAYMENT_MANAGE", "PERM_PAYMENT_VIEW")
+                .requestMatchers("/staff/reports/**").hasAnyAuthority("PERM_BOOKING_VIEW", "PERM_VISA_VIEW")
 
                 // Admin pages
                 .requestMatchers("/admin/users/**").hasAnyAuthority("ROLE_ADMIN", "PERM_USER_VIEW", "PERM_USER_MANAGE")
@@ -157,7 +157,7 @@ public class SecurityConfig {
         return (request, response, authentication) -> {
             request.getSession().setAttribute("accountPasswordVersion", userDetailsService.loadUserByUsername(authentication.getName()).getPassword());
             // Store the permission hash so that AccountSessionFilter can detect mid-session permission changes
-            userRepository.findByEmail(authentication.getName()).ifPresent(user ->
+            userRepository.findByEmailIgnoreCase(authentication.getName()).ifPresent(user ->
                 request.getSession().setAttribute("permissionHash",
                     com.travelgo.service.CustomUserDetailsService.permissionHash(user.getRole().getPermissions()))
             );

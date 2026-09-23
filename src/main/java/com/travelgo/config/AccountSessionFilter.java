@@ -21,7 +21,7 @@ public class AccountSessionFilter extends OncePerRequestFilter {
  @Override protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response,FilterChain chain)throws ServletException,IOException {
   var auth=SecurityContextHolder.getContext().getAuthentication();
   if(auth!=null&&auth.isAuthenticated()&&!(auth instanceof AnonymousAuthenticationToken)) {
-   var user=users.findByEmail(auth.getName());var session=request.getSession(false);
+   var user=users.findByEmailIgnoreCase(auth.getName());var session=request.getSession(false);
    String baseline=session==null?null:(String)session.getAttribute("accountPasswordVersion");
    boolean allowed=user.isPresent()&&user.get().isActive()&&(!user.get().isDemoAccount()||demoMode.isEnabled())&&auth.getAuthorities().stream().anyMatch(a->a.getAuthority().equals("ROLE_"+com.travelgo.security.RoleNames.canonical(user.get().getRole().getRoleName())))&&(baseline==null||baseline.equals(user.get().getPassword()));
    // Check if role permissions have changed since session was created
