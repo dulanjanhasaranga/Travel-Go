@@ -1,5 +1,5 @@
 * { box-sizing:border-box; }
-body { margin:0; color:#17324d; background:#f7f9fc; font-family:Inter,'Segoe UI',sans-serif; }
+body { margin:0; color:#17324d; background:#f7f9fc; font-family:var(--font-body); }
 a { color:#1e65aa; text-underline-offset:4px; }
 .signin-shell { min-height:100vh; display:grid; grid-template-columns:1.05fr 1fr; }
 .signin-story { position:relative; display:flex; flex-direction:column; justify-content:space-between; padding:44px 56px; color:white; background:linear-gradient(180deg,rgba(8,30,48,.3),rgba(8,30,48,.08) 35%,rgba(8,30,48,.83)),image-set(url('/images/hero-travel.jpg') 1x, url('/images/hero-travel-4k.jpg') 2x) center/cover; }
@@ -8,7 +8,7 @@ a { color:#1e65aa; text-underline-offset:4px; }
 .signin-brand b { color:#ed863d; }
 .story-copy { max-width:490px; padding:100px 0 20px; }
 .eyebrow { display:block; font-size:11px; font-weight:700; letter-spacing:2.2px; text-transform:uppercase; }
-.story-copy h2 { font-family:Georgia,serif; font-size:clamp(42px,4.5vw,72px); font-weight:400; line-height:1.08; letter-spacing:-2px; margin:24px 0; }
+.story-copy h2 { font-family:var(--font-heading); font-size:clamp(42px,4.5vw,72px); font-weight:700; line-height:1.08; letter-spacing:-2px; margin:24px 0; }
 .story-copy p { max-width:370px; color:#e9f2fa; font-size:16px; line-height:1.8; }
 .story-note { border-top:1px solid #ffffff45; padding-top:24px; font-size:12px; letter-spacing:.4px; }
 .signin-main { display:flex; flex-direction:column; padding:48px 64px 28px; }

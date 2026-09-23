@@ -4,7 +4,6 @@
    Palette: Executive Slate, Royal Azure, Sunset Coral, Emerald
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('./transitions.css');
 
 :root {
@@ -66,10 +65,7 @@
     --shadow-glow: 0 0 20px rgba(2, 132, 199, 0.25);
     --shadow-glow-coral: 0 0 20px rgba(234, 88, 12, 0.20);
     
-    /* Typography */
-    --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    
+    /* Typography is now inherited globally from brand.css */
     --transition-fast: 0.05s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-base: 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-smooth: 0.15s cubic-bezier(0.16, 1, 0.3, 1);
@@ -710,12 +706,19 @@ img {
 .section-header {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center !important;
     justify-content: center;
-    text-align: center;
+    text-align: center !important;
     max-width: 700px;
-    margin: 0 auto 3.5rem;
+    margin: 0 auto 3.5rem !important;
     gap: 0.25rem;
+}
+
+.section-header > * {
+    align-self: center !important;
+    text-align: center !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }
 
 .section-tag {
