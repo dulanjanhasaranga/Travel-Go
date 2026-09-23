@@ -35,7 +35,7 @@ public class UserService {
     public User registerCustomer(String name, String email, String password, String phone, String address) {
         if (email == null || email.length()>150 || !email.trim().matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) throw new IllegalArgumentException("Enter a valid email address.");
         email=email.trim().toLowerCase(java.util.Locale.ROOT);
-        if(name==null||name.trim().length()<2||name.length()>100||password==null||password.length()<6||password.getBytes(java.nio.charset.StandardCharsets.UTF_8).length>72)throw new IllegalArgumentException("Check your name and use a password of 6–72 bytes.");
+        if(name==null||name.trim().length()<2||name.length()>100||password==null||password.length()<12||password.getBytes(java.nio.charset.StandardCharsets.UTF_8).length>72)throw new IllegalArgumentException("Check your name and use a password of 12–72 bytes.");
         if(phone!=null&&phone.length()>20||address!=null&&address.length()>1000)throw new IllegalArgumentException("Contact details are too long.");
         if (userRepository.existsByEmailIgnoreCase(email)) {
             throw new RuntimeException("Email already registered: " + email);
@@ -57,7 +57,7 @@ public class UserService {
                                    String phone, String address, String roleName) {
         if (email == null || email.length()>150 || !email.trim().matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) throw new IllegalArgumentException("Enter a valid email address.");
         email=email.trim().toLowerCase(java.util.Locale.ROOT);
-        if(name==null||name.trim().length()<2||name.length()>100||password==null||password.length()<6||password.getBytes(java.nio.charset.StandardCharsets.UTF_8).length>72)throw new IllegalArgumentException("Check your name and use a password of 6–72 bytes.");
+        if(name==null||name.trim().length()<2||name.length()>100||password==null||password.length()<12||password.getBytes(java.nio.charset.StandardCharsets.UTF_8).length>72)throw new IllegalArgumentException("Check your name and use a password of 12–72 bytes.");
         if(phone!=null&&phone.length()>20||address!=null&&address.length()>1000)throw new IllegalArgumentException("Contact details are too long.");
         if (userRepository.existsByEmailIgnoreCase(email)) {
             throw new RuntimeException("Email already registered: " + email);

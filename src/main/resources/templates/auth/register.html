@@ -114,7 +114,7 @@
                             <div class="form-field-group">
                                 <label class="field-label" for="password">Password *</label>
                                 <div class="input-icon-wrapper">
-                                    <input type="password" autocomplete="new-password" id="password" th:field="*{password}" class="auth-input" style="padding-left: 14px;" placeholder="6+ chars" required>
+                                    <input type="password" autocomplete="new-password" id="password" th:field="*{password}" class="auth-input" style="padding-left: 14px;" placeholder="12+ chars" required>
                                 </div>
                                 <div class="auth-field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
                             </div>

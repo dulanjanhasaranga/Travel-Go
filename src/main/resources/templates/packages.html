@@ -97,9 +97,9 @@
             </div>
 
 <nav th:if="${pageCount > 1}" class="catalogue-pagination" aria-label="Package results pages">
-                <a class="btn btn-outline" th:if="${currentPage > 1}" th:href="@{/packages(search=${search},destinationId=${selectedDestinationId},destinationQuery=${destinationQuery},categoryId=${selectedCategoryId},maxPrice=${maxPrice},minDays=${minDays},maxDays=${maxDays},travelers=${travelers},sort=${sort},page=${currentPage - 1})}">Previous</a>
+                <a class="btn btn-outline" th:if="${currentPage > 1}" th:href="@{/packages(search=${search},destinationId=${selectedDestinationId},destinationQuery=${destinationQuery},categoryId=${selectedCategoryId},maxPrice=${maxPrice},minDays=${minDays},maxDays=${maxDays},travelers=${travelers},travelDate=${travelDate},sort=${sort},page=${currentPage - 1})}">Previous</a>
                 <span th:text="${'Page ' + currentPage + ' of ' + pageCount}"></span>
-                <a class="btn btn-outline" th:if="${currentPage < pageCount}" th:href="@{/packages(search=${search},destinationId=${selectedDestinationId},destinationQuery=${destinationQuery},categoryId=${selectedCategoryId},maxPrice=${maxPrice},minDays=${minDays},maxDays=${maxDays},travelers=${travelers},sort=${sort},page=${currentPage + 1})}">Next</a>
+                <a class="btn btn-outline" th:if="${currentPage < pageCount}" th:href="@{/packages(search=${search},destinationId=${selectedDestinationId},destinationQuery=${destinationQuery},categoryId=${selectedCategoryId},maxPrice=${maxPrice},minDays=${minDays},maxDays=${maxDays},travelers=${travelers},travelDate=${travelDate},sort=${sort},page=${currentPage + 1})}">Next</a>
             </nav>
             <!-- Empty State -->
             <div th:if="${#lists.isEmpty(packages)}" class="card" style="text-align: center; padding: 4rem 2rem; max-width: 600px; margin: 0 auto;">
