@@ -196,10 +196,11 @@
                             </div>
                             <div style="flex: 1; min-width: 150px;">
                                 <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #0369A1; margin-bottom: 0.25rem;">Visa Category</label>
-                                <select name="visaType" class="form-control-custom" style="background: #FFFFFF;" required>
+                                <select name="visaType" class="form-control-custom" style="background: #FFFFFF;" required onchange="this.nextElementSibling.innerHTML = this.value === 'WORK' ? '<strong>Required:</strong> Passport, Employment Letter, Sponsorship' : '<strong>Required:</strong> Passport, Financial Statements, Hotel'">
                                     <option value="VISIT">Tourist / Visit Visa</option>
                                     <option value="WORK">Business / Work Visa</option>
                                 </select>
+                                <div style="font-size: 0.75rem; color: #0C4A6E; margin-top: 0.25rem;"><strong>Required:</strong> Passport, Financial Statements, Hotel</div>
                             </div>
                             <button type="submit" class="btn btn-primary" style="padding: 0.65rem 1.25rem;">
                                 Submit Visa Application

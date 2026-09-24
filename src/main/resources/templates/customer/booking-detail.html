@@ -465,10 +465,11 @@
                                 <input type="hidden" name="bookingId" th:value="${booking.id}">
                                 <div class="form-group">
                                     <label class="form-label">Select Visa Classification</label>
-                                    <select name="visaType" class="form-control-custom" required>
+                                    <select name="visaType" class="form-control-custom" required onchange="this.nextElementSibling.innerHTML = this.value === 'WORK' ? '<strong>Required:</strong> Passport Bio, Employment Letter, Company Sponsorship' : '<strong>Required:</strong> Passport Bio, Financial Statements, Hotel Bookings'">
                                         <option value="VISIT">Tourist / Visit Visa</option>
                                         <option value="WORK">Business / Work Visa</option>
                                     </select>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;"><strong>Required:</strong> Passport Bio, Financial Statements, Hotel Bookings</div>
                                 </div>
                                 <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
                                     Apply for Visa Assistance

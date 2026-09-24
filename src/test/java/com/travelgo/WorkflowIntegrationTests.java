@@ -186,7 +186,7 @@ public class WorkflowIntegrationTests {
         login(consultant);
         tx.executeWithoutResult(s -> bookingRepo.findById(b.getId()).orElseThrow().setBookingStatus(com.travelgo.enums.BookingStatus.CONFIRMED));
         login(customer);
-        clock.instant = clock.instant.plus(java.time.Duration.ofDays(b.getTourPackage().getDurationDays() + 1)); // After trip ends
+        clock.instant = java.time.Instant.parse("2030-03-01T12:00:00Z"); // After trip ends (travel date is 2030-02-01)
         
         // Test rating limits
         com.travelgo.entity.Review review2 = new com.travelgo.entity.Review();

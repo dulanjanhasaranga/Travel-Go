@@ -123,6 +123,19 @@
         </svg>
     </button>
 
+    <script>
+        let filterDebounce;
+        document.addEventListener('input', (e) => {
+            if (e.target.closest('form.filter-grid')) {
+                clearTimeout(filterDebounce);
+                filterDebounce = setTimeout(() => {
+                    const form = e.target.closest('form.filter-grid');
+                    const btn = form.querySelector('button[type="submit"]');
+                    if (btn) btn.click();
+                }, 400);
+            }
+        });
+    </script>
     <script th:src="@{/js/main.js}"></script>
 </body>
 </html>

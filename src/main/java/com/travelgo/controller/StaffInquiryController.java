@@ -23,7 +23,7 @@ public class StaffInquiryController {
   return "redirect:"+base(request)+"/"+id;
  }
  @PostMapping("/{id}/reply") public String reply(@PathVariable Long id,@RequestParam String replyText,RedirectAttributes flash,jakarta.servlet.http.HttpServletRequest request){
-  try{service.replyToMessage(id,replyText);flash.addFlashAttribute("successMessage","Reply saved; registered customers receive an in-app notification. Guest replies require email or phone follow-up.");}catch(IllegalArgumentException|IllegalStateException e){flash.addFlashAttribute("errorMessage",e.getMessage());}
+  try{service.replyToMessage(id,replyText);flash.addFlashAttribute("successMessage","Reply sent and emailed to the customer.");}catch(IllegalArgumentException|IllegalStateException e){flash.addFlashAttribute("errorMessage",e.getMessage());}
   return "redirect:"+base(request);
  }
 }
