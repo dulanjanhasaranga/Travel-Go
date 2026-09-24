@@ -125,6 +125,7 @@ public class CustomerBookingController {
             List<Traveler> travelers = travelerService.findByBookingId(booking.getId());
             model.addAttribute("travelers", travelers);
             model.addAttribute("bookingNotes", bookingService.findNotes(booking.getId()));
+            model.addAttribute("bookingStatusHistory", bookingService.getStatusHistory(booking.getId()));
             
             return "customer/booking-detail";
         }).orElseGet(() -> {
