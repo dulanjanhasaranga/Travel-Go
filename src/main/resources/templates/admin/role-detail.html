@@ -54,12 +54,12 @@
                 <div class="card">
                     <div class="table-header">
                         <div>
-                            <h4 style="margin: 0;">Permission reference settings</h4>
+                            <h4 style="margin: 0;">Permission settings</h4>
                             <span style="font-size: 0.82rem; color: var(--text-muted);" th:text="${role.description}">Role description</span>
                         </div>
                     </div>
 
-                    <div class="card-body"><p class="alert alert-info">Access is enforced by the assigned role: administrator, travel consultant, visa officer or customer. These stored permission references do not override the role rules.</p>
+                    <div class="card-body"><p class="alert alert-info">These permissions control which staff pages and operations this role can access. Changing permissions takes effect the next time a user with this role signs in or when their current session is refreshed.</p>
                         <form th:action="@{/admin/roles/{id}/permissions(id=${role.id})}" method="post">
                             <div th:each="permissionModule : ${modules}" style="margin-bottom: 2.5rem;">
                                 <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border-subtle); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">
@@ -86,7 +86,7 @@
                                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                                 </svg>
-                                Save permission reference
+                                Save permissions
                             </button>
                         </form>
                     </div>

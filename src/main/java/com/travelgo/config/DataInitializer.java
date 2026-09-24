@@ -81,13 +81,17 @@ public class DataInitializer implements CommandLineRunner {
         // 2. Create roles
         Role adminRole = createRole("ADMIN", "System administrator with full access");
         createRole("CUSTOMER", "Registered customer");
-        roleRepository.findByRoleName("TRAVEL_CONSULTANT")
+        createRole("TRAVEL_CONSULTANT", "Travel consultant staff member");
+        Role consultantRole = roleRepository.findByRoleName("TRAVEL_CONSULTANT")
                 .or(() -> roleRepository.findByRoleName("PACKAGE_MANAGER"))
-                .orElseGet(() -> createRole("TRAVEL_CONSULTANT", "Travel consultant staff member"));
-        createRole("VISA_OFFICER", "Visa processing officer");
+                .orElse(null);
+        Role officerRole = createRole("VISA_OFFICER", "Visa processing officer");
 
         // 3. Assign all admin permissions to ADMIN role
         assignAdminPermissions(adminRole);
+
+        // 3b. Assign default permissions to staff roles so PERM_* URL rules grant access
+        assignStaffPermissions(consultantRole, officerRole);
 
         // 4. Create only an explicitly configured first administrator.
         createBootstrapAdministrator(adminRole);
@@ -162,6 +166,8 @@ public class DataInitializer implements CommandLineRunner {
         createPermission("VISA_MANAGE", "Process visa applications", "VISA");
         createPermission("BOOKING_VIEW", "View bookings", "BOOKING");
         createPermission("BOOKING_MANAGE", "Manage bookings", "BOOKING");
+        createPermission("PAYMENT_VIEW", "View payment records", "PAYMENT");
+        createPermission("PAYMENT_MANAGE", "Process and manage payments", "PAYMENT");
     }
 
     private void createPermission(String name, String description, String module) {
@@ -186,6 +192,44 @@ public class DataInitializer implements CommandLineRunner {
             adminRole.setPermissions(allPermissions);
             roleRepository.save(adminRole);
             System.out.println("  Assigned all permissions to ADMIN role");
+        }
+    }
+
+    /**
+     * Assign role-appropriate default permissions to staff roles.
+     * Travel Consultants get catalogue and booking permissions.
+     * Visa Officers get visa and payment permissions.
+     * This runs idempotently — only adds permissions that are missing.
+     */
+    private void assignStaffPermissions(Role consultantRole, Role officerRole) {
+        if (consultantRole != null) {
+            assignPermissionsIfMissing(consultantRole,
+                    "DESTINATION_VIEW", "DESTINATION_MANAGE",
+                    "PACKAGE_VIEW", "PACKAGE_MANAGE",
+                    "BOOKING_VIEW", "BOOKING_MANAGE");
+        }
+        if (officerRole != null) {
+            assignPermissionsIfMissing(officerRole,
+                    "VISA_VIEW", "VISA_MANAGE",
+                    "PAYMENT_VIEW", "PAYMENT_MANAGE",
+                    "BOOKING_VIEW");
+        }
+    }
+
+    private void assignPermissionsIfMissing(Role role, String... permissionNames) {
+        Set<String> existing = role.getPermissions().stream()
+                .map(Permission::getPermissionName)
+                .collect(java.util.stream.Collectors.toSet());
+        boolean changed = false;
+        for (String name : permissionNames) {
+            if (!existing.contains(name)) {
+                permissionRepository.findByPermissionName(name).ifPresent(p -> role.getPermissions().add(p));
+                changed = true;
+            }
+        }
+        if (changed) {
+            roleRepository.save(role);
+            System.out.println("  Assigned default permissions to " + role.getRoleName());
         }
     }
 

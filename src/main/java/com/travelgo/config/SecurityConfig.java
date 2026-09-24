@@ -102,9 +102,11 @@ public class SecurityConfig {
                 .requestMatchers("/customer/**", "/packages/*/book").hasRole("CUSTOMER")
                 .requestMatchers("/packages/*").permitAll()
 
-                // Staff dashboard and shared resources - TRAVEL_CONSULTANT or VISA_OFFICER
+                // Staff dashboard - accessible to any staff role
                 .requestMatchers("/staff/dashboard", "/staff").hasAnyRole("TRAVEL_CONSULTANT", "VISA_OFFICER", "ADMIN")
-                .requestMatchers("/staff/**").hasAnyRole("TRAVEL_CONSULTANT", "VISA_OFFICER", "ADMIN")
+                // All other /staff/** paths are gated by the PERM_* rules above;
+                // this catch-all requires authentication so unauthenticated users are redirected to login.
+                .requestMatchers("/staff/**").authenticated()
 
                 // All other requests require authentication
                 .anyRequest().authenticated()
