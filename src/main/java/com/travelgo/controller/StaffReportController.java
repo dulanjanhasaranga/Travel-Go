@@ -74,4 +74,27 @@ public class StaffReportController {
                 .contentType(mediaType)
                 .body(data);
     }
+
+    @GetMapping("/kpis")
+    public ResponseEntity<byte[]> exportKpis(@RequestParam(defaultValue = "excel") String format) {
+        List<Booking> bookings = bookingService.findAll();
+        byte[] data;
+        String filename;
+        MediaType mediaType;
+
+        if ("pdf".equalsIgnoreCase(format)) {
+            data = reportService.generateKpiPdf(bookings);
+            filename = "kpi_report.pdf";
+            mediaType = MediaType.APPLICATION_PDF;
+        } else {
+            data = reportService.generateKpiExcel(bookings);
+            filename = "kpi_report.xlsx";
+            mediaType = MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(mediaType)
+                .body(data);
+    }
 }

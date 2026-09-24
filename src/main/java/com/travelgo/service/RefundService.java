@@ -10,8 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
 public class RefundService {
     private final RefundRepository repository;
+    private final PaymentRepository paymentRepository;
     private final WorkflowRules rules;
-    public RefundService(RefundRepository repository, WorkflowRules rules) { this.repository = repository; this.rules = rules; }
+    public RefundService(RefundRepository repository, PaymentRepository paymentRepository, WorkflowRules rules) { this.repository = repository; this.paymentRepository = paymentRepository; this.rules = rules; }
     public List<Refund> findAll() { return repository.findAll(); }
     public Optional<Refund> findById(Long id) { return repository.findById(id); }
     public void simulateVisaRejectionRefund(VisaApplication visa, Payment ignored) {
@@ -36,5 +37,26 @@ public class RefundService {
         refund.setReason("Visa rejected: documentation charge only. " + current.getRejectionReason());
         refund.setStatus(RefundStatus.REFUND_PROCESSED); refund.setProcessedAt(rules.now()); repository.saveAndFlush(refund);
         if (refund.getAmount().compareTo(payment.getAmount()) == 0) payment.setPaymentStatus(PaymentStatus.REFUNDED);
+    }
+
+    public void processCancellationRefunds(Booking booking) {
+        List<Payment> allPayments = paymentRepository.findByBooking_Id(booking.getId());
+        // Refund all successful payments that haven't been refunded yet
+        for (Payment payment : allPayments) {
+            if (payment.getPaymentStatus() == PaymentStatus.PAID) {
+                // Check if a refund already exists
+                Optional<Refund> existing = repository.findByPayment_Id(payment.getId());
+                if (existing.isEmpty()) {
+                    Refund refund = new Refund(); 
+                    refund.setPayment(payment); 
+                    refund.setAmount(payment.getAmount());
+                    refund.setReason("Booking cancelled: full refund of " + payment.getPaymentType());
+                    refund.setStatus(RefundStatus.REFUND_PROCESSED); 
+                    refund.setProcessedAt(rules.now()); 
+                    repository.saveAndFlush(refund);
+                    payment.setPaymentStatus(PaymentStatus.REFUNDED);
+                }
+            }
+        }
     }
 }

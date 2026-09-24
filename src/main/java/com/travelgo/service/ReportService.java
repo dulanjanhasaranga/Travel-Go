@@ -19,6 +19,15 @@ import java.util.List;
 @Service
 public class ReportService {
 
+    private final com.travelgo.repository.BookingNoteRepository bookingNoteRepository;
+    private final com.travelgo.repository.PaymentRepository paymentRepository;
+
+    public ReportService(com.travelgo.repository.BookingNoteRepository bookingNoteRepository,
+                         com.travelgo.repository.PaymentRepository paymentRepository) {
+        this.bookingNoteRepository = bookingNoteRepository;
+        this.paymentRepository = paymentRepository;
+    }
+
     public byte[] generateBookingsExcel(List<Booking> bookings) {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Bookings");
@@ -180,6 +189,104 @@ public class ReportService {
                 table.addCell(new Phrase(p.getPaymentType() != null ? p.getPaymentType().name() : "", rowFont));
                 table.addCell(new Phrase(p.getPaymentStatus() != null ? p.getPaymentStatus().name() : "", rowFont));
                 table.addCell(new Phrase(p.getBooking() != null ? "BK-" + p.getBooking().getId() : "", rowFont));
+            }
+
+            document.add(table);
+            document.close();
+            return out.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate PDF report", e);
+        }
+    }
+
+    public byte[] generateKpiExcel(List<Booking> bookings) {
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("KPI Overview");
+            CellStyle headerStyle = workbook.createCellStyle();
+            org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            Row headerRow = sheet.createRow(0);
+            String[] headers = {"Booking Ref", "Processing Time (Days)", "Rework Count (Info Requests)", "Total Paid", "Status"};
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            int rowIdx = 1;
+            for (Booking b : bookings) {
+                Row row = sheet.createRow(rowIdx++);
+                long procTime = b.getUpdatedAt() != null ? java.time.temporal.ChronoUnit.DAYS.between(b.getCreatedAt(), b.getUpdatedAt()) : 0;
+                long reworkCount = bookingNoteRepository.findByBooking_Id(b.getId()).stream()
+                        .filter(n -> "INFO_REQUEST".equals(n.getNoteType().name()))
+                        .count();
+                BigDecimal totalPaid = paymentRepository.findByBooking_Id(b.getId()).stream()
+                        .filter(p -> p.getPaymentStatus() == com.travelgo.enums.PaymentStatus.PAID)
+                        .map(Payment::getAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                row.createCell(0).setCellValue("BK-" + b.getId());
+                row.createCell(1).setCellValue(procTime);
+                row.createCell(2).setCellValue(reworkCount);
+                row.createCell(3).setCellValue(totalPaid.doubleValue());
+                row.createCell(4).setCellValue(b.getBookingStatus().name());
+            }
+
+            for (int i = 0; i < headers.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            workbook.write(out);
+            return out.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate Excel report", e);
+        }
+    }
+
+    public byte[] generateKpiPdf(List<Booking> bookings) {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Document document = new Document();
+            PdfWriter.getInstance(document, out);
+            document.open();
+
+            Font titleFont = new Font(Font.HELVETICA, 18, Font.BOLD);
+            Paragraph title = new Paragraph("Operational KPIs Report", titleFont);
+            title.setAlignment(Paragraph.ALIGN_CENTER);
+            title.setSpacingAfter(20);
+            document.add(title);
+
+            PdfPTable table = new PdfPTable(5);
+            table.setWidthPercentage(100);
+            table.setWidths(new float[]{2f, 2f, 2f, 2f, 2f});
+
+            Font tableHeaderFont = new Font(Font.HELVETICA, 12, Font.BOLD);
+            String[] headers = {"Booking Ref", "Process Time (Days)", "Rework (Info Req)", "Total Paid", "Status"};
+            for (String h : headers) {
+                PdfPCell cell = new PdfPCell(new Phrase(h, tableHeaderFont));
+                cell.setPadding(5);
+                table.addCell(cell);
+            }
+
+            Font rowFont = new Font(Font.HELVETICA, 10, Font.NORMAL);
+            for (Booking b : bookings) {
+                long procTime = b.getUpdatedAt() != null ? java.time.temporal.ChronoUnit.DAYS.between(b.getCreatedAt(), b.getUpdatedAt()) : 0;
+                long reworkCount = bookingNoteRepository.findByBooking_Id(b.getId()).stream()
+                        .filter(n -> "INFO_REQUEST".equals(n.getNoteType().name()))
+                        .count();
+                BigDecimal totalPaid = paymentRepository.findByBooking_Id(b.getId()).stream()
+                        .filter(p -> p.getPaymentStatus() == com.travelgo.enums.PaymentStatus.PAID)
+                        .map(Payment::getAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                table.addCell(new Phrase("BK-" + b.getId(), rowFont));
+                table.addCell(new Phrase(String.valueOf(procTime), rowFont));
+                table.addCell(new Phrase(String.valueOf(reworkCount), rowFont));
+                table.addCell(new Phrase("$" + totalPaid.toString(), rowFont));
+                table.addCell(new Phrase(b.getBookingStatus().name(), rowFont));
             }
 
             document.add(table);
