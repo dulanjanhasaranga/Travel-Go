@@ -66,6 +66,12 @@ public class TourPackage {
     public java.util.List<Transport> getTransports() { return transports; }
     public void setTransports(java.util.List<Transport> transports) { this.transports = transports; }
 
+    @OneToMany(mappedBy = "tourPackage", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OrderBy("displayOrder ASC")
+    private java.util.List<PackageImage> gallery = new java.util.ArrayList<>();
+    public java.util.List<PackageImage> getGallery() { return gallery; }
+    public void setGallery(java.util.List<PackageImage> gallery) { this.gallery = gallery; }
+
     @Column(nullable = false)
     private boolean isActive = true;
 

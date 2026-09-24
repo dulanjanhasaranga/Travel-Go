@@ -54,6 +54,20 @@ public class TourPackageService {
         if (request.itinerary() != null) p.setItinerary(request.itinerary().trim());
         if (request.excludedServices() != null) p.setExcludedServices(request.excludedServices().trim());
         if (request.travelerInformation() != null) p.setTravelerInformation(request.travelerInformation().trim());
+        if (request.galleryUrls() != null && !request.galleryUrls().trim().isEmpty()) {
+            p.getGallery().clear();
+            String[] urls = request.galleryUrls().split("\\r?\\n");
+            int order = 0;
+            for (String url : urls) {
+                if (!url.trim().isEmpty()) {
+                    com.travelgo.entity.PackageImage pi = new com.travelgo.entity.PackageImage();
+                    pi.setTourPackage(p);
+                    pi.setUrl(url.trim());
+                    pi.setDisplayOrder(order++);
+                    p.getGallery().add(pi);
+                }
+            }
+        }
         TourPackage saved = repository.save(p);
         auditService.logAction(id == null ? "CREATE_PACKAGE" : "UPDATE_PACKAGE", "TourPackage", saved.getId(), "Package "+saved.getName()+" was "+(id==null?"created":"updated")+".");
         return saved;

@@ -23,12 +23,13 @@ public class WorkflowRules {
     private final Clock clock;
     @jakarta.persistence.PersistenceContext private jakarta.persistence.EntityManager em;
     private final VisaDocumentRepository documents;
+    private final EmailService emailService;
 
     public WorkflowRules(BookingRepository bookings, UserRepository users, VisaApplicationRepository visas,
             PaymentRepository payments, BookingHotelRepository hotels, VisaStatusHistoryRepository history,
-            NotificationRepository notifications, Clock clock, VisaDocumentRepository documents) {
+            NotificationRepository notifications, Clock clock, VisaDocumentRepository documents, EmailService emailService) {
         this.bookings = bookings; this.users = users; this.visas = visas; this.payments = payments;
-        this.hotels = hotels; this.history = history; this.notifications = notifications; this.clock = clock; this.documents = documents;
+        this.hotels = hotels; this.history = history; this.notifications = notifications; this.clock = clock; this.documents = documents; this.emailService = emailService;
     }
     public LocalDateTime now() { return LocalDateTime.now(clock); }
     public User actor() {
@@ -139,6 +140,11 @@ public class WorkflowRules {
     public void notify(User recipient, String type, String title, String message, String entityType, Long entityId) {
         Notification n = new Notification(); n.setUser(recipient); n.setTitle(title); n.setMessage(message);
         n.setType(type); n.setRelatedEntityType(entityType); n.setRelatedEntityId(entityId); n.setCreatedAt(now()); notifications.save(n);
+        
+        emailService.sendEmail(recipient, title, message);
+        if (recipient.getPhone() != null && !recipient.getPhone().isEmpty()) {
+            emailService.sendSms(recipient, "TravelGO: " + title + " - " + message);
+        }
     }
     public void bookingNotice(Booking b, String type, String title, String message) {
         notify(b.getUser(), type, title, message, "BOOKING", b.getId());

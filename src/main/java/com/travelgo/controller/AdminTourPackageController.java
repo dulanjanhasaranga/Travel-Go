@@ -101,9 +101,10 @@ public class AdminTourPackageController {
                                @RequestParam(value = "includedServices", required = false) String includedServices,
                                @RequestParam("maxCapacity") Integer maxCapacity,
                                @RequestParam(value = "image", required = false) String image, @RequestParam(value = "itinerary", required = false) String itinerary, @RequestParam(value = "excludedServices", required = false) String excludedServices, @RequestParam(value = "travelerInformation", required = false) String travelerInformation,
+                               @RequestParam(value = "galleryUrls", required = false) String galleryUrls,
                                RedirectAttributes redirectAttributes) {
         try {
-            tourPackageService.savePackage(null, new com.travelgo.dto.PackageRequest(name, categoryId, destinationId, description, basePrice, durationDays, flightDetails, includedServices, maxCapacity, image, itinerary, excludedServices, travelerInformation));
+            tourPackageService.savePackage(null, new com.travelgo.dto.PackageRequest(name, categoryId, destinationId, description, basePrice, durationDays, flightDetails, includedServices, maxCapacity, image, itinerary, excludedServices, travelerInformation, galleryUrls));
             redirectAttributes.addFlashAttribute("successMessage", "Tour package created successfully.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", com.travelgo.service.CustomerErrorMessage.from(e));
@@ -123,9 +124,10 @@ public class AdminTourPackageController {
                              @RequestParam(value = "includedServices", required = false) String includedServices,
                              @RequestParam("maxCapacity") Integer maxCapacity,
                              @RequestParam(value = "image", required = false) String image, @RequestParam(value = "itinerary", required = false) String itinerary, @RequestParam(value = "excludedServices", required = false) String excludedServices, @RequestParam(value = "travelerInformation", required = false) String travelerInformation,
+                             @RequestParam(value = "galleryUrls", required = false) String galleryUrls,
                              RedirectAttributes redirectAttributes) {
         try {
-            tourPackageService.savePackage(id, new com.travelgo.dto.PackageRequest(name, categoryId, destinationId, description, basePrice, durationDays, flightDetails, includedServices, maxCapacity, image, itinerary, excludedServices, travelerInformation));
+            tourPackageService.savePackage(id, new com.travelgo.dto.PackageRequest(name, categoryId, destinationId, description, basePrice, durationDays, flightDetails, includedServices, maxCapacity, image, itinerary, excludedServices, travelerInformation, galleryUrls));
             redirectAttributes.addFlashAttribute("successMessage", "Tour package updated successfully.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", com.travelgo.service.CustomerErrorMessage.from(e));
@@ -154,9 +156,10 @@ public class AdminTourPackageController {
                                 @RequestParam(value = "flightDetails", required = false) String flightDetails,
                                 @RequestParam(value = "includedServices", required = false) String includedServices,
                                 @RequestParam("maxCapacity") Integer maxCapacity,
-                                @RequestParam(value = "image", required = false) String image, @RequestParam(value = "itinerary", required = false) String itinerary, @RequestParam(value = "excludedServices", required = false) String excludedServices, @RequestParam(value = "travelerInformation", required = false) String travelerInformation) {
+                                @RequestParam(value = "image", required = false) String image, @RequestParam(value = "itinerary", required = false) String itinerary, @RequestParam(value = "excludedServices", required = false) String excludedServices, @RequestParam(value = "travelerInformation", required = false) String travelerInformation,
+                                @RequestParam(value = "galleryUrls", required = false) String galleryUrls) {
         try {
-            com.travelgo.entity.TourPackage pkg = tourPackageService.savePackage(null, new com.travelgo.dto.PackageRequest(name, categoryId, destinationId, description, basePrice, durationDays, flightDetails, includedServices, maxCapacity, image, itinerary, excludedServices, travelerInformation));
+            com.travelgo.entity.TourPackage pkg = tourPackageService.savePackage(null, new com.travelgo.dto.PackageRequest(name, categoryId, destinationId, description, basePrice, durationDays, flightDetails, includedServices, maxCapacity, image, itinerary, excludedServices, travelerInformation, galleryUrls));
             
             UnifiedPackageDTO dto = new UnifiedPackageDTO();
             dto.setIdPrefix("TOUR-" + pkg.getId());
