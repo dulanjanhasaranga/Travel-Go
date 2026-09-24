@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TravelGO - Smart Travel Agency & Tour Management System. Explore curated tour packages, visa services, and seamless flight bookings.">
+    <title>TravelGO - Smart Travel Agency & Tour Management</title>
+    
+    <!-- Optimize Loading Time -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="/css/style.css?v=2.0" as="style">
+    <link rel="preload" href="/css/brand.css?v=2.0" as="style">
+
+    <link rel="stylesheet" href="/css/style.css?v=2.0">
+    <link rel="stylesheet" href="/css/premium.css?v=2.0">
+    <link rel="stylesheet" href="/css/brand.css?v=2.0">
+    <link rel="icon" type="image/png" href="/images/travelgo-logo.png">
+</head>
+<body>
+    <header class="navbar">
+        <div class="container nav-container">
+            <!-- Brand Logo -->
+            <a href="/" class="brand-logo">
+                <span class="official-mark"><img src="/images/travelgo-logo.png" alt="" width="100" height="100"></span>
+                Travel<span>GO</span>
+            </a>
+
+            <button type="button" class="nav-toggle btn btn-outline" aria-expanded="false" aria-controls="primary-navigation">Menu</button>
+            <!-- Navigation Links -->
+            <ul class="nav-links" id="primary-navigation">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/destinations" class="nav-link">Destinations</a></li>
+                <li><a href="/packages" class="nav-link">Tour Packages</a></li>
+                <li><a href="/visa-info" class="nav-link">Visa Guide</a></li>
+                <li><a href="/about" class="nav-link">About</a></li>
+                <li><a href="/contact" class="nav-link">Contact</a></li>
+                <li><a href="/faq" class="nav-link">FAQ</a></li>
+            </ul>
+
+            <!-- Navigation Actions / Authentication State -->
+            <div class="nav-actions">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="toggleTheme()" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                
+                <!-- If Not Authenticated -->
+                <div style="display: flex; gap: 0.65rem;">
+                    <a href="/auth/login" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        Sign In
+                    </a>
+                    <a href="/auth/register" class="btn btn-secondary btn-sm">
+                        Create Account
+                    </a>
+                </div>
+
+                <!-- If Authenticated as Admin -->
+                
+
+                
+                <!-- If Authenticated as Customer -->
+                
+
+                <!-- If Authenticated as Staff -->
+                
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-premium">
+            <!-- Video Background -->
+            <video autoplay loop muted playsinline class="hero-video-bg">
+                <source src="/video/japan_bg.mp4" type="video/mp4">
+            </video>
+            
+            <div class="container">
+
+                <h1 class="hero-title">Discover the World with <span>Effortless Elegance</span></h1>
+                <p class="hero-subtitle">
+                    Explore curated tour packages, choose your stay and get support with your visa application, all in one place.
+                </p>
+
+                <!-- Search Widget -->
+                <form action="/packages" method="get" class="search-widget search-widget-glass">
+                    <div class="search-field">
+                        <label class="search-label" for="homeDestination">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Destination
+                        </label>
+                        <input id="homeDestination" name="destinationQuery" class="search-input" list="destination-suggestions" maxlength="255" placeholder="City or country" autocomplete="off">
+                        <datalist id="destination-suggestions"><option value="Bali, Indonesia"></option><option value="Bangkok, Thailand"></option><option value="Dubai, UAE"></option><option value="Istanbul, Turkey"></option><option value="London, UK"></option><option value="Maldives, Maldives"></option><option value="Male, Maldives"></option><option value="Nairobi, Kenya"></option><option value="Paris, France"></option><option value="Rome, Italy"></option><option value="Santorini, Greece"></option><option value="Singapore, Singapore"></option><option value="Swiss Alps, Switzerland"></option><option value="Tokyo, Japan"></option></datalist>
+                    </div>
+
+                    <div class="search-field">
+                        <label class="search-label" for="homeSearch">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            Search
+                        </label>
+                        <input id="homeSearch" type="text" maxlength="120" name="search" class="search-input" placeholder="Keyword or Tour name...">
+                    </div>
+
+                    <div class="search-field">
+                        <label class="search-label" for="homeCategory">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            Package Type
+                        </label>
+                        <select id="homeCategory" name="categoryId" class="search-input">
+                            <option value="">All Categories</option>
+                            <option value="1">Cultural Heritage</option>
+                            <option value="2">Luxury &amp; Leisure</option>
+                            <option value="3">Adventure &amp; Safari</option>
+                            <option value="4">Beach &amp; Island</option>
+                            <option value="5">Honeymoon</option>
+                            <option value="6">City Break</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-secondary btn-lg btn-glow" style="height: 52px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%;">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <span>Search</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Popular Destination Quick Tags -->
+                <div class="hero-quick-tags">
+                    <span class="tag-label">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.316.492-.474.966-.567 1.344-.197.802-.13 1.49.014 1.968.1.33.24.58.372.764.025.034.05.066.074.095-.243.084-.504.148-.778.194-.962.16-2.03.013-2.903-.45a.75.75 0 00-1.12.8c.28 1.417 1.15 2.62 2.378 3.298a5.2 5.2 0 001.077.424 5.992 5.992 0 01-1.04 1.83c-.765.94-1.8 1.58-3.037 1.815a.75.75 0 00-.588.94c.15.548.65.932 1.218.895 1.77-.116 3.327-.88 4.417-2.083.568-.627.99-1.378 1.25-2.203.284.14.59.25.918.324 1.306.297 2.7-.034 3.73-.89a5.26 5.26 0 001.76-2.613.75.75 0 00-.63-.923 4.49 4.49 0 01-2.148-.48 4.2 4.2 0 01-1.572-1.46c-.347-.533-.538-1.155-.548-1.823 0-.756.246-1.52.707-2.164.218-.306.23-.71.026-1.025z" clip-rule="evenodd" />
+                        </svg>
+                        Explore:
+                    </span>
+                    
+                        <a href="/destinations/7" class="hero-tag-pill">Bali, Indonesia</a><a href="/destinations/6" class="hero-tag-pill">Bangkok, Thailand</a><a href="/destinations/3" class="hero-tag-pill">Dubai, UAE</a><a href="/destinations/10" class="hero-tag-pill">Istanbul, Turkey</a><a href="/destinations/8" class="hero-tag-pill">London, UK</a><a href="/destinations/13" class="hero-tag-pill">Maldives, Maldives</a>
+                    
+
+                </div>
+
+                <!-- Floating Stats Strip -->
+                <div class="hero-stats-strip">
+                    <div class="hero-stat-card float-anim">
+                        <div class="hero-stat-number">Explore</div>
+                        <div class="hero-stat-desc">Find a destination that inspires you</div>
+                    </div>
+                    <div class="hero-stat-card float-anim">
+                        <div class="hero-stat-number">Prepare</div>
+                        <div class="hero-stat-desc">Get support with your documents</div>
+                    </div>
+                    <div class="hero-stat-card float-anim">
+                        <div class="hero-stat-number">Plan</div>
+                        <div class="hero-stat-desc">Choose your package and stay</div>
+                    </div>
+                    <div class="hero-stat-card float-anim">
+                        <div class="hero-stat-number">Connect</div>
+                        <div class="hero-stat-desc">Speak with our travel team</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Featured Tour Packages -->
+        <section class="section">
+            <div class="container">
+                <div class="section-header reveal-up">
+                    <span class="section-tag">Curated Itineraries</span>
+                    <h2 class="section-title">Featured Tour Packages</h2>
+                    <p class="section-subtitle">Hand-picked itineraries designed for culture, comfort, and discovery</p>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="card card-premium reveal-up" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img src="/images/europe_pkg_4k.jpg" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 alt="European Classical Journey" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="card-img-badge">7 Days</span>
+                            <span class="card-img-price">$1,299.00</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <div style="font-size: 0.8rem; font-weight: 700; color: var(--brand-accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">Cultural Heritage</div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">European Classical Journey</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.6;">Covers Paris and Rome with guided museum access and high-speed rail transfers between cities.</p>
+
+                            <div class="hotel-note">
+                                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                <span>Hotel: Optional Add-on During Booking</span>
+                            </div>
+
+                            <ul class="inclusions-list">
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Return Economy Ticket Included</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Visa Application Assistance</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Skip-the-line Louvre &amp; Colosseum, rail transfers, bilingual tour guide</span>
+                                </li>
+                            </ul>
+
+                            <div style="margin-top: auto; padding-top: 0.5rem; display: flex; gap: 0.5rem;">
+                                <a class="btn btn-outline" href="/packages/1">View details</a>
+                                <a href="/packages/1/book" class="btn btn-primary btn-glow" style="flex: 1; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                    <span>Book Now</span>
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-premium reveal-up" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img src="/images/tokyo_pkg_4k.jpg" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 alt="Tokyo &amp; Kyoto Cultural Tour" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="card-img-badge">8 Days</span>
+                            <span class="card-img-price">$1,549.00</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <div style="font-size: 0.8rem; font-weight: 700; color: var(--brand-accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">Cultural Heritage</div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Tokyo &amp; Kyoto Cultural Tour</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.6;">Discover Shinjuku, Asakusa Sensoji temple, Hakone Mt. Fuji views, and traditional Gion geisha districts.</p>
+
+                            <div class="hotel-note">
+                                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                <span>Hotel: Optional Add-on During Booking</span>
+                            </div>
+
+                            <ul class="inclusions-list">
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Tokyo Haneda/Narita Direct Flights Included</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Visa Application Assistance</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>7-Day Shinkansen Bullet Train Pass, tea ceremony, private temple tour</span>
+                                </li>
+                            </ul>
+
+                            <div style="margin-top: auto; padding-top: 0.5rem; display: flex; gap: 0.5rem;">
+                                <a class="btn btn-outline" href="/packages/2">View details</a>
+                                <a href="/packages/2/book" class="btn btn-primary btn-glow" style="flex: 1; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                    <span>Book Now</span>
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-premium reveal-up" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img src="/images/dubai_pkg_4k.jpg" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 alt="Dubai City &amp; Desert Expedition" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="card-img-badge">5 Days</span>
+                            <span class="card-img-price">$899.00</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <div style="font-size: 0.8rem; font-weight: 700; color: var(--brand-accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">Adventure &amp; Safari</div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Dubai City &amp; Desert Expedition</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.6;">Includes red dune safari, evening dhow cruise along Dubai Marina, and Burj Khalifa 124th floor tickets.</p>
+
+                            <div class="hotel-note">
+                                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                <span>Hotel: Optional Add-on During Booking</span>
+                            </div>
+
+                            <ul class="inclusions-list">
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Direct Dubai Return Flights</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Visa Application Assistance</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>4x4 Safari, BBQ dinner, Marina cruise, Burj Khalifa observation deck</span>
+                                </li>
+                            </ul>
+
+                            <div style="margin-top: auto; padding-top: 0.5rem; display: flex; gap: 0.5rem;">
+                                <a class="btn btn-outline" href="/packages/3">View details</a>
+                                <a href="/packages/3/book" class="btn btn-primary btn-glow" style="flex: 1; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                    <span>Book Now</span>
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-premium reveal-up" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img src="/images/rome_pkg_4k.jpg" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 alt="Italian Renaissance &amp; Rome" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="card-img-badge">6 Days</span>
+                            <span class="card-img-price">$1,199.00</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <div style="font-size: 0.8rem; font-weight: 700; color: var(--brand-accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">Luxury &amp; Leisure</div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Italian Renaissance &amp; Rome</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.6;">Experience ancient Roman amphitheaters, Vatican private tours, and authentic Tuscan wine tasting.</p>
+
+                            <div class="hotel-note">
+                                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                <span>Hotel: Optional Add-on During Booking</span>
+                            </div>
+
+                            <ul class="inclusions-list">
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Rome Fiumicino Return Flights</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Visa Application Assistance</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Vatican Museums VIP pass, Colosseum underground tour, guided wine tasting</span>
+                                </li>
+                            </ul>
+
+                            <div style="margin-top: auto; padding-top: 0.5rem; display: flex; gap: 0.5rem;">
+                                <a class="btn btn-outline" href="/packages/4">View details</a>
+                                <a href="/packages/4/book" class="btn btn-primary btn-glow" style="flex: 1; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                    <span>Book Now</span>
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-premium reveal-up" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img src="/images/maldives_pkg_4k.jpg" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 alt="Maldives Romantic Escape" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="card-img-badge">6 Days</span>
+                            <span class="card-img-price">$2,100.00</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <div style="font-size: 0.8rem; font-weight: 700; color: var(--brand-accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">Honeymoon</div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Maldives Romantic Escape</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.6;">An unforgettable romantic retreat in a luxury overwater villa.</p>
+
+                            <div class="hotel-note">
+                                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                <span>Hotel: Optional Add-on During Booking</span>
+                            </div>
+
+                            <ul class="inclusions-list">
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Return Seaplane Transfers Included</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Visa Application Assistance</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Overwater villa, all-inclusive dining, couples massage, sunset cruise</span>
+                                </li>
+                            </ul>
+
+                            <div style="margin-top: auto; padding-top: 0.5rem; display: flex; gap: 0.5rem;">
+                                <a class="btn btn-outline" href="/packages/9">View details</a>
+                                <a href="/packages/9/book" class="btn btn-primary btn-glow" style="flex: 1; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                    <span>Book Now</span>
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-premium reveal-up" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img src="/images/bangkok_4k.jpg" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 alt="Bangkok Street Food &amp; Temples" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="card-img-badge">4 Days</span>
+                            <span class="card-img-price">$650.00</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <div style="font-size: 0.8rem; font-weight: 700; color: var(--brand-accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">Cultural Heritage</div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Bangkok Street Food &amp; Temples</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.6;">Immerse yourself in Thai culture, visit the Grand Palace, and enjoy a guided street food tour.</p>
+
+                            <div class="hotel-note">
+                                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                <span>Hotel: Optional Add-on During Booking</span>
+                            </div>
+
+                            <ul class="inclusions-list">
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Economy Flights to BKK</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Visa Application Assistance</span>
+                                </li>
+                                <li>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    <span>Grand Palace entry, Chao Phraya river cruise, Tuk-Tuk food tour</span>
+                                </li>
+                            </ul>
+
+                            <div style="margin-top: auto; padding-top: 0.5rem; display: flex; gap: 0.5rem;">
+                                <a class="btn btn-outline" href="/packages/10">View details</a>
+                                <a href="/packages/10/book" class="btn btn-primary btn-glow" style="flex: 1; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                    <span>Book Now</span>
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                </div>
+
+                <div style="text-align: center; margin-top: 2.5rem;">
+                    <a href="/packages" class="btn btn-primary btn-lg btn-glow" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <span>View All Packages</span>
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Premier Global Destinations Section -->
+        <section class="section" style="background-color: var(--bg-subtle);">
+            <div class="container">
+                <div class="section-header reveal-up">
+                    <span class="section-tag">Global Portfolio</span>
+                    <h2 class="section-title">Explore Premier Destinations</h2>
+                    <p class="section-subtitle">Discover handpicked destinations across Europe, Asia, the Middle East, the Americas, and the Pacific</p>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="card card-premium reveal-up" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&amp;fit=crop&amp;w=700&amp;q=80" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 alt="Bali, Indonesia" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="badge badge-info card-img-badge">Indonesia</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Bali, Indonesia</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem; line-height: 1.6;">An island of gods, offering volcanic mountains, iconic rice paddies, beaches, and coral reefs.</p>
+                            <div style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+                                <span class="muted">1 packages</span>
+                                <a href="/destinations/7" class="btn btn-outline btn-sm">
+                                    <span>Explore destination</span>
+                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="margin-left: 0.25rem;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-premium reveal-up" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img src="/images/bangkok_4k.jpg" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 alt="Bangkok, Thailand" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="badge badge-info card-img-badge">Thailand</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Bangkok, Thailand</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem; line-height: 1.6;">Vibrant street life, ornate shrines, and energetic floating markets in the heart of Thailand.</p>
+                            <div style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+                                <span class="muted">1 packages</span>
+                                <a href="/destinations/6" class="btn btn-outline btn-sm">
+                                    <span>Explore destination</span>
+                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="margin-left: 0.25rem;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-premium reveal-up" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img src="/images/dubai_desert_4k.jpg" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 alt="Dubai, UAE" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="badge badge-info card-img-badge">UAE</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Dubai, UAE</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem; line-height: 1.6;">A futuristic metropolis famous for luxury shopping, ultramodern architecture, and lively nightlife.</p>
+                            <div style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+                                <span class="muted">2 packages</span>
+                                <a href="/destinations/3" class="btn btn-outline btn-sm">
+                                    <span>Explore destination</span>
+                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="margin-left: 0.25rem;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-premium reveal-up" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img src="/images/istanbul_4k.jpg" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 alt="Istanbul, Turkey" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="badge badge-info card-img-badge">Turkey</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Istanbul, Turkey</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem; line-height: 1.6;">The city where East meets West, known for its rich history, grand bazaars, and stunning mosques.</p>
+                            <div style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+                                <span class="muted">1 packages</span>
+                                <a href="/destinations/10" class="btn btn-outline btn-sm">
+                                    <span>Explore destination</span>
+                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="margin-left: 0.25rem;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-premium reveal-up" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img src="/images/london_royal_highlights_4k.jpg" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 alt="London, UK" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="badge badge-info card-img-badge">UK</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">London, UK</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem; line-height: 1.6;">A 21st-century city with history stretching back to Roman times. Home to the iconic Big Ben and London Eye.</p>
+                            <div style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+                                <span class="muted">2 packages</span>
+                                <a href="/destinations/8" class="btn btn-outline btn-sm">
+                                    <span>Explore destination</span>
+                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="margin-left: 0.25rem;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-premium reveal-up" style="display: flex; flex-direction: column;">
+                        <div class="card-image-wrap">
+                            <img src="/images/maldives_island_escape_4k.jpg" sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" decoding="async" 
+                                 alt="Maldives, Maldives" 
+                                 class="card-img"
+                                 onerror="this.onerror=null;this.removeAttribute('srcset');this.src='/images/hero-travel.jpg'">
+                            <span class="badge badge-info card-img-badge">Maldives</span>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Maldives, Maldives</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem; line-height: 1.6;">A tropical paradise of crystal-clear waters, white sandy beaches, and luxury overwater bungalows.</p>
+                            <div style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+                                <span class="muted">1 packages</span>
+                                <a href="/destinations/13" class="btn btn-outline btn-sm">
+                                    <span>Explore destination</span>
+                                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="margin-left: 0.25rem;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                </div>
+
+                <div style="text-align: center; margin-top: 2.5rem;">
+                    <a href="/destinations" class="btn btn-outline btn-lg" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <span>View All Destinations</span>
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section"><div class="container"><div class="section-header"><span class="section-tag">How it works</span><h2 class="section-title">From an idea to a confirmed journey</h2><p class="section-subtitle">Keep your trip, documents and payment records together in your customer account.</p></div><ol class="travel-process grid grid-4"><li class="surface"><span class="process-number">01</span><h3>Find your trip</h3><p>Compare published packages, prices and optional hotels. Choose your travel date and enter every traveler's details.</p></li><li class="surface"><span class="process-number">02</span><h3>Prepare your visa</h3><p>Upload documents for officer review. Pay the visa and documentation quote to begin processing.</p></li><li class="surface"><span class="process-number">03</span><h3>Complete payment</h3><p>After visa approval, pay your package and hotel total before the three-day departure deadline.</p></li><li class="surface"><span class="process-number">04</span><h3>Follow your journey</h3><p>View confirmation, notifications and the latest trip details in My Bookings.</p></li></ol><div class="section-action"><a class="btn btn-outline" href="/visa-info">Read the visa and payment guide</a></div></div></section>
+        <!-- Why Choose Us Features Grid -->
+        <section class="section" style="background-color: var(--bg-subtle);">
+            <div class="container">
+                <div class="section-header reveal-up">
+                    <span class="section-tag">Agency Excellence</span>
+                    <h2 class="section-title">Built for Modern Travelers</h2>
+                    <p class="section-subtitle">Experience a new standard of agency management and transparency</p>
+                </div>
+
+                <div class="grid grid-4">
+                    <div class="card card-premium reveal-up">
+                        <div class="feature-card">
+                            <div class="feature-icon stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                            </div>
+                            <h4 style="margin-bottom: 0.5rem;">Flight Inclusions</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                                Review the flight arrangements listed for each package and confirm the details with your consultant.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card card-premium reveal-up">
+                        <div class="feature-card">
+                            <div class="feature-icon stat-icon stat-icon-green">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            </div>
+                            <h4 style="margin-bottom: 0.5rem;">Visa Processing</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                                Our visa team reviews your documents and helps you follow the application process.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card card-premium reveal-up">
+                        <div class="feature-card">
+                            <div class="feature-icon stat-icon stat-icon-amber">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            </div>
+                            <h4 style="margin-bottom: 0.5rem;">Flexible Hotels</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                                Compare listed hotels and add your preferred accommodation while entering your booking details.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card card-premium reveal-up">
+                        <div class="feature-card">
+                            <div class="feature-icon stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                            </div>
+                            <h4 style="margin-bottom: 0.5rem;">Expert Support</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                                Travel consultants help you choose your package and prepare your booking.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <div class="section-header"><span class="section-tag">Find your budget</span><h2 class="section-title">Explore our lowest-priced packages</h2><p class="section-subtitle">Compare current package prices per person. Optional hotels and visa charges are quoted separately.</p></div>
+                <div class="grid grid-3">
+                    <article class="card card-premium reveal-up">
+                        <div class="card-image-wrap"><img class="card-img" src="/images/bangkok_4k.jpg" sizes="(max-width: 768px) 100vw, 33vw" alt="Bangkok Street Food &amp; Temples" loading="lazy"></div>
+                        <div class="card-body"><span class="eyebrow">Bangkok</span><h3>Bangkok Street Food &amp; Temples</h3><p>4 days · $650.00 per person</p><a class="btn btn-outline" href="/packages/10">Explore this package</a></div>
+                    </article>
+                    <article class="card card-premium reveal-up">
+                        <div class="card-image-wrap"><img class="card-img" src="/images/istanbul_4k.jpg" sizes="(max-width: 768px) 100vw, 33vw" alt="Istanbul Two Continents" loading="lazy"></div>
+                        <div class="card-body"><span class="eyebrow">Istanbul</span><h3>Istanbul Two Continents</h3><p>5 days · $850.00 per person</p><a class="btn btn-outline" href="/packages/14">Explore this package</a></div>
+                    </article>
+                    <article class="card card-premium reveal-up">
+                        <div class="card-image-wrap"><img class="card-img" src="/images/dubai_pkg_4k.jpg" sizes="(max-width: 768px) 100vw, 33vw" alt="Dubai City &amp; Desert Expedition" loading="lazy"></div>
+                        <div class="card-body"><span class="eyebrow">Dubai</span><h3>Dubai City &amp; Desert Expedition</h3><p>5 days · $899.00 per person</p><a class="btn btn-outline" href="/packages/3">Explore this package</a></div>
+                    </article>
+                </div>
+                <div class="section-action"><a class="btn btn-primary btn-glow" href="/packages?sort=price-asc">Compare prices</a></div>
+            </div>
+        </section>
+
+        <!-- Call to Action Banner -->
+        <section class="section" style="padding: 4rem 0;">
+            <div class="container">
+                <div class="cta-banner reveal-zoom">
+                    <h2 style="color: #FFFFFF; font-size: 2.25rem; margin-bottom: 1rem;">Ready to Plan Your Next Adventure?</h2>
+                    <p style="color: rgba(255, 255, 255, 0.85); max-width: 600px; margin: 0 auto 2rem; font-size: 1.1rem; line-height: 1.7;">
+                        Create a free customer account to track your itineraries, manage your documents, and contact our travel team.
+                    </p>
+                    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                        <a href="/auth/register" class="btn btn-secondary btn-lg btn-glow">Create Free Account</a>
+                        <a href="/contact" class="btn btn-outline btn-lg" style="border-color: rgba(255, 255, 255, 0.35); color: #FFFFFF !important;">Speak with Consultant</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a href="/" class="footer-brand"><span class="official-mark"><img src="/images/travelgo-logo.png" alt="" width="100" height="100"></span><span>Travel<b>GO</b></span></a>
+                    <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 1rem;">Your trusted travel partner for unforgettable journeys around the world. We offer curated tour packages, visa assistance, and personalized travel planning services.</p>
+                    <p style="color: #94a3b8; font-size: 0.85rem;">Hours: Mon - Fri: 9:00 AM - 6:00 PM | Sat: 10:00 AM - 4:00 PM</p>
+                </div>
+
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="/destinations">Destinations</a></li>
+                        <li><a href="/packages">Tour Packages</a></li>
+                        <li><a href="/visa-info">Visa Guide</a></li>
+                        <li><a href="/about">About Us</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="/faq">FAQ</a></li>
+                        <li><a href="/contact">Contact Support</a></li>
+                        <li><a href="/auth/login">Sign In</a></li>
+                        <li><a href="/auth/register">Register</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Contact Us</h4>
+                    <ul class="footer-links">
+                        <li style="color: #cbd5e1; font-size: 0.9rem;">123 Travel Street, Adventure City, TC 10001</li>
+                        <li style="color: #cbd5e1; font-size: 0.9rem;">Phone: +1 (555) 123-4567</li>
+                        <li style="color: #cbd5e1; font-size: 0.9rem;">Email: info@travelgo.com</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 TravelGO - Smart Travel Agency Management System. University Project.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top-btn" aria-label="Scroll to top">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+    </button>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

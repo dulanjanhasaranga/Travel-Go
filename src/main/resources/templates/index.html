@@ -9,19 +9,19 @@
     <!-- Optimize Loading Time -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" th:href="@{/css/style.css}" as="style">
-    <link rel="preload" th:href="@{/css/brand.css}" as="style">
+    <link rel="preload" th:href="@{/css/style.css?v=2.0}" as="style">
+    <link rel="preload" th:href="@{/css/brand.css?v=2.0}" as="style">
 
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css?v=2.0}">
+    <link rel="stylesheet" th:href="@{/css/premium.css?v=2.0}">
+    <link rel="stylesheet" th:href="@{/css/brand.css?v=2.0}">
     <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
 </head>
 <body>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
-
     <main class="main-content">
         <!-- Hero Section -->
-        <section class="hero hero-premium">
+        <section class="hero-premium">
             <!-- Video Background -->
             <video autoplay loop muted playsinline class="hero-video-bg">
                 <source src="/video/japan_bg.mp4" type="video/mp4">

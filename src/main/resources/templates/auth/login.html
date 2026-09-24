@@ -54,20 +54,7 @@
     </a>
     
     <p class="signup-note">New to TravelGO? <a th:href="@{/auth/register}">Create an account</a></p>
-    <section th:if="${demoChoices != null and !#lists.isEmpty(demoChoices)}" class="demo-access" aria-labelledby="demo-access-title">
-     <div class="demo-heading"><h2 id="demo-access-title">Quick Demo Access</h2><span class="demo-mode-badge">Demo mode</span></div>
-     <p>Explore each workspace using a dedicated demo account. Changes are saved to this demonstration database.</p>
-     <div class="demo-access-grid">
-      <form th:each="choice : ${demoChoices}" th:action="@{/auth/demo-login}" method="post">
-       <input type="hidden" name="account" th:value="${choice.key}">
-       <button type="submit" class="demo-access-button">
-        <span class="demo-button-title"><span th:text="${'Login as ' + choice.label}">Login as Customer</span><svg class="icon-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        <span class="demo-button-description" th:text="${choice.description}">Explore your workspace</span>
-       </button>
-      </form>
-     </div>
-     <p class="demo-note">Local university demonstration · Simulated payments</p>
-    </section>
+
     <div class="signin-help">Need help accessing your account?<br><a th:href="@{/contact}">Contact our travel team</a></div>
    </div>
    <div class="signin-bottom">TravelGO &middot; Your travel, thoughtfully organised.</div>
