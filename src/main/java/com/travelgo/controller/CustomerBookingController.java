@@ -43,6 +43,8 @@ public class CustomerBookingController {
     private final com.travelgo.service.ReviewService reviews;
     private final com.travelgo.repository.DepartureRepository departureRepository;
     private final com.travelgo.repository.SupplierHoldRepository supplierHoldRepository;
+    private final com.travelgo.service.PdfReceiptService pdfReceiptService;
+    private final com.travelgo.repository.PaymentRepository paymentRepository;
 
     public CustomerBookingController(BookingService bookingService,
                                     TourPackageService tourPackageService,
@@ -52,7 +54,9 @@ public class CustomerBookingController {
                                     VisaApplicationService visaApplicationService,
                                     TravelerService travelerService, com.travelgo.service.ReviewService reviews,
                                     com.travelgo.repository.DepartureRepository departureRepository,
-                                    com.travelgo.repository.SupplierHoldRepository supplierHoldRepository) {
+                                    com.travelgo.repository.SupplierHoldRepository supplierHoldRepository,
+                                    com.travelgo.service.PdfReceiptService pdfReceiptService,
+                                    com.travelgo.repository.PaymentRepository paymentRepository) {
         this.bookingService = bookingService;
         this.tourPackageService = tourPackageService;
         this.userService = userService;
@@ -62,6 +66,8 @@ public class CustomerBookingController {
         this.travelerService = travelerService;this.reviews=reviews;
         this.departureRepository = departureRepository;
         this.supplierHoldRepository = supplierHoldRepository;
+        this.pdfReceiptService = pdfReceiptService;
+        this.paymentRepository = paymentRepository;
     }
 
     /**
@@ -233,5 +239,26 @@ public class CustomerBookingController {
             redirectAttributes.addFlashAttribute("errorMessage", com.travelgo.service.CustomerErrorMessage.from(e));
         }
         return "redirect:/customer/bookings/" + id;
+    }
+
+    @GetMapping("/{id}/receipt")
+    public org.springframework.http.ResponseEntity<byte[]> downloadReceipt(@PathVariable("id") Long id,
+                                                                           @AuthenticationPrincipal UserDetails userDetails) {
+        User user = resolveUser(userDetails);
+        if (user == null) return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).build();
+
+        Booking booking = bookingService.findById(id).orElse(null);
+        if (booking == null || !isOwner(booking, user)) {
+            return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN).build();
+        }
+
+        List<com.travelgo.entity.Payment> payments = paymentRepository.findByBooking_Id(id);
+        byte[] pdfBytes = pdfReceiptService.generateReceipt(booking, payments);
+
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "receipt-" + id + ".pdf");
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        return new org.springframework.http.ResponseEntity<>(pdfBytes, headers, org.springframework.http.HttpStatus.OK);
     }
 }

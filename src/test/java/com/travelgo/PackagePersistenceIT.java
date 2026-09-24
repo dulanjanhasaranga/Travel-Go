@@ -17,7 +17,7 @@ public class PackagePersistenceIT extends WorkflowIntegrationTests {
     @Autowired OriginalCatalogueService originals;
     PackageRequest request(String name, String price, int days) {
         return new PackageRequest(name,tour.getCategory().getId(),tour.getDestination().getId(),"Test description",
-                new BigDecimal(price),days,"Not included","Guided walk",12,"/images/paris.jpg", null, null, null);
+                new BigDecimal(price),days,"Not included","Guided walk",12,"/images/paris.jpg", null, null, null, null);
     }
     @Test void staffCrudReachesDatabaseAndPublicPagesAndPreservesBooking() throws Exception {
         String name="Persistence package "+UUID.randomUUID();
