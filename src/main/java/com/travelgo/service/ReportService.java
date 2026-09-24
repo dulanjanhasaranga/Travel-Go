@@ -12,6 +12,7 @@ import com.travelgo.entity.Payment;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -221,8 +222,8 @@ public class ReportService {
             for (Booking b : bookings) {
                 Row row = sheet.createRow(rowIdx++);
                 long procTime = b.getUpdatedAt() != null ? java.time.temporal.ChronoUnit.DAYS.between(b.getCreatedAt(), b.getUpdatedAt()) : 0;
-                long reworkCount = bookingNoteRepository.findByBooking_Id(b.getId()).stream()
-                        .filter(n -> "INFO_REQUEST".equals(n.getNoteType().name()))
+                long reworkCount = bookingNoteRepository.findByBooking_IdOrderByCreatedAtAsc(b.getId()).stream()
+                        .filter(n -> "INFO_REQUEST".equals(n.getNoteType()))
                         .count();
                 BigDecimal totalPaid = paymentRepository.findByBooking_Id(b.getId()).stream()
                         .filter(p -> p.getPaymentStatus() == com.travelgo.enums.PaymentStatus.PAID)
@@ -274,8 +275,8 @@ public class ReportService {
             Font rowFont = new Font(Font.HELVETICA, 10, Font.NORMAL);
             for (Booking b : bookings) {
                 long procTime = b.getUpdatedAt() != null ? java.time.temporal.ChronoUnit.DAYS.between(b.getCreatedAt(), b.getUpdatedAt()) : 0;
-                long reworkCount = bookingNoteRepository.findByBooking_Id(b.getId()).stream()
-                        .filter(n -> "INFO_REQUEST".equals(n.getNoteType().name()))
+                long reworkCount = bookingNoteRepository.findByBooking_IdOrderByCreatedAtAsc(b.getId()).stream()
+                        .filter(n -> "INFO_REQUEST".equals(n.getNoteType()))
                         .count();
                 BigDecimal totalPaid = paymentRepository.findByBooking_Id(b.getId()).stream()
                         .filter(p -> p.getPaymentStatus() == com.travelgo.enums.PaymentStatus.PAID)

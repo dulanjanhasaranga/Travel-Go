@@ -75,6 +75,14 @@ public class DataInitializer implements CommandLineRunner {
             e.printStackTrace();
         }
 
+        try {
+            System.out.println("Fixing consultant role...");
+            jdbcTemplate.execute("UPDATE users SET role_id = (SELECT id FROM roles WHERE role_name = 'TRAVEL_CONSULTANT') WHERE email = 'consultant@travelgo.com'");
+            System.out.println("Consultant role fixed!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         // 1. Create permissions
         createPermissions();
 
