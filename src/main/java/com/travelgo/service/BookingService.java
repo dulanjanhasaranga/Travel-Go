@@ -38,6 +38,7 @@ public class BookingService {
     private void changeStatus(Booking b, BookingStatus newStatus, String remarks) {
         if (b.getBookingStatus() != newStatus || b.getId() == null) {
             b.setBookingStatus(newStatus);
+            if (b.getId() == null) repository.save(b);
             BookingStatusHistory h = new BookingStatusHistory();
             h.setBooking(b);
             h.setStatus(newStatus);
