@@ -99,7 +99,7 @@ public class BookingService {
         b.setDeparture(departure);
         b.setNumberOfTravelers(request.numberOfTravelers()); b.setPackageUnitPrice(p.getBasePrice());
         b.setTotalPackageAmount(p.getBasePrice().multiply(BigDecimal.valueOf(request.numberOfTravelers())));
-        rules.money(b.getTotalPackageAmount(), false); b.setBookingStatus(BookingStatus.PENDING);
+        rules.money(b.getTotalPackageAmount(), false); changeStatus(b, BookingStatus.PENDING, "Booking created");
         b.setPackagePaymentDeadline(b.getTravelDate().atStartOfDay().minusDays(3)); repository.saveAndFlush(b);
         
         SupplierHold hold = new SupplierHold();
@@ -141,7 +141,7 @@ public class BookingService {
         notifyConsultants("BOOKING_UPDATED", "Booking updated", "Booking #" + b.getId() + " travel details were updated by customer.", b.getId());
         return repository.save(b);
     }
-    public void cancelBooking(Long id) { Booking b=rules.lock(id); rules.owner(b); rules.requireEditable(b); b.setBookingStatus(BookingStatus.CANCELLED); refunds.processCancellationRefunds(b); email.booking(b,true); rules.bookingNotice(b, "BOOKING_CANCELLED", "Booking cancelled", "Booking #" + b.getId() + " was cancelled."); notifyConsultants("BOOKING_CANCELLED", "Booking cancelled", "Booking #" + b.getId() + " was cancelled by customer.", b.getId()); auditService.logAction("CANCEL_BOOKING", "Booking", b.getId(), "Booking was cancelled."); }
+    public void cancelBooking(Long id) { Booking b=rules.lock(id); rules.owner(b); rules.requireEditable(b); changeStatus(b, BookingStatus.CANCELLED, "Customer cancelled booking"); refunds.processCancellationRefunds(b); email.booking(b,true); rules.bookingNotice(b, "BOOKING_CANCELLED", "Booking cancelled", "Booking #" + b.getId() + " was cancelled."); notifyConsultants("BOOKING_CANCELLED", "Booking cancelled", "Booking #" + b.getId() + " was cancelled by customer.", b.getId()); auditService.logAction("CANCEL_BOOKING", "Booking", b.getId(), "Booking was cancelled."); }
     public boolean canConfirm(Booking b) {
         try {
             rules.eligible(b);
@@ -159,7 +159,7 @@ public class BookingService {
         rules.requirePaid(b, PaymentType.VISA_DOCUMENTATION);
         rules.requirePaid(b, PaymentType.PACKAGE_DEPOSIT);
         rules.requirePaid(b, PaymentType.PACKAGE_BALANCE);
-        b.setBookingStatus(BookingStatus.CONFIRMED);
+        changeStatus(b, BookingStatus.CONFIRMED, "All payments received. Booking confirmed.");
         auditService.logAction("CONFIRM_BOOKING", "Booking", b.getId(), "Booking was confirmed by staff.");
         rules.bookingNotice(b, "BOOKING_CONFIRMED", "Booking confirmed", "Booking #" + b.getId() + " is confirmed. Your trip is scheduled.");
         messagingTemplate.convertAndSend("/topic/staff-updates", "{\"type\":\"BOOKING_CONFIRMED\",\"bookingId\":" + b.getId() + "}");
@@ -175,7 +175,7 @@ public class BookingService {
         if (b.getBookingStatus() != BookingStatus.PENDING && b.getBookingStatus() != BookingStatus.PROCESSING
                 && b.getBookingStatus() != BookingStatus.INFO_REQUIRED)
             throw new IllegalStateException("Only pending, processing, or info-required bookings can be declined.");
-        b.setBookingStatus(BookingStatus.DECLINED);
+        changeStatus(b, BookingStatus.DECLINED, reason);
         b.setDeclineReason(reason.trim());
         refunds.processCancellationRefunds(b);
         auditService.logAction("DECLINE_BOOKING", "Booking", b.getId(), "Booking was declined. Reason: " + reason);
@@ -195,7 +195,7 @@ public class BookingService {
         Booking b = rules.lock(bookingId);
         if (b.getBookingStatus() != BookingStatus.PENDING && b.getBookingStatus() != BookingStatus.PROCESSING)
             throw new IllegalStateException("Info can only be requested on pending or processing bookings.");
-        b.setBookingStatus(BookingStatus.INFO_REQUIRED);
+        changeStatus(b, BookingStatus.INFO_REQUIRED, message);
         BookingNote note = new BookingNote();
         note.setBooking(b);
         note.setAuthor(rules.actor());
@@ -218,7 +218,7 @@ public class BookingService {
         rules.owner(b);
         if (b.getBookingStatus() != BookingStatus.INFO_REQUIRED)
             throw new IllegalStateException("No information request is pending for this booking.");
-        b.setBookingStatus(BookingStatus.PENDING);
+        changeStatus(b, BookingStatus.PENDING, "Customer provided requested information: " + message);
         BookingNote note = new BookingNote();
         note.setBooking(b);
         note.setAuthor(rules.actor());
