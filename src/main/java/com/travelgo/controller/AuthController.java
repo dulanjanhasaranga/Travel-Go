@@ -23,10 +23,12 @@ public class AuthController {
 
     private final UserService userService;
     private final com.travelgo.service.DemoAccountService demoAccounts;
+    private final com.travelgo.service.AccountRecoveryService accountRecoveryService;
 
-    public AuthController(UserService userService, com.travelgo.service.DemoAccountService demoAccounts) {
+    public AuthController(UserService userService, com.travelgo.service.DemoAccountService demoAccounts, com.travelgo.service.AccountRecoveryService accountRecoveryService) {
         this.userService = userService;
         this.demoAccounts = demoAccounts;
+        this.accountRecoveryService = accountRecoveryService;
     }
 
     @GetMapping("/login")

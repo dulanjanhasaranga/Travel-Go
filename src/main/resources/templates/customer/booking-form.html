@@ -186,7 +186,7 @@
                             <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
                                 <select name="hotelId" id="hotelSelect" class="form-control-custom" style="flex: 1;">
                                     <option value="">No Hotel Add-on (I'll arrange my own stay)</option>
-                                    <option th:each="hotel : ${hotels}" th:attr="data-rate=${hotel.pricePerNight}, data-stars=${hotel.starRating}, data-address=${hotel.address}, data-desc=${hotel.description}, data-image=${@travelImages.resolve(hotel.image)}, data-name=${hotel.name}"
+                                    <option th:each="hotel : ${hotels}" th:with="resolvedImage=${@travelImages.resolve(hotel.image)}" th:attr="data-rate=${hotel.pricePerNight}, data-stars=${hotel.starRating}, data-address=${hotel.address}, data-desc=${hotel.description}, data-image=${resolvedImage}, data-name=${hotel.name}"
                                             th:value="${hotel.id}"
                                             th:text="${hotel.name + ' (' + hotel.starRating + '★) - $' + hotel.pricePerNight + '/night'}">
                                     </option>

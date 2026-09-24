@@ -50,6 +50,7 @@ public class DemoLoginController {
         SecurityContextHolder.setContext(context);
         contexts.saveContext(context, request, response);
         request.getSession().setAttribute("accountPasswordVersion", login.principal().getPassword());
+        request.getSession().removeAttribute("permissionHash");
         new HttpSessionRequestCache().removeRequest(request, response);
         return "redirect:" + login.destination();
     }

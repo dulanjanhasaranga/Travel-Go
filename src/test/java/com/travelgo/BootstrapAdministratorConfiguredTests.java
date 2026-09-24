@@ -31,7 +31,7 @@ class BootstrapAdministratorConfiguredTests {
 
     @Test
     void explicitCredentialsCreateExactlyOneActiveNonDemoAdministrator() {
-        assertEquals(1, users.count());
+        assertEquals(2, users.count()); // bootstrap admin + secondary admin for maker-checker
         User user = users.findByEmailIgnoreCase("first.admin@travelgo.example.invalid").orElseThrow();
         assertEquals("First TravelGO Administrator", user.getName());
         assertEquals("ADMIN", user.getRole().getRoleName());

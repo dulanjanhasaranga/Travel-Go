@@ -211,8 +211,7 @@ public class DataInitializer implements CommandLineRunner {
         if (officerRole != null) {
             assignPermissionsIfMissing(officerRole,
                     "VISA_VIEW", "VISA_MANAGE",
-                    "PAYMENT_VIEW", "PAYMENT_MANAGE",
-                    "BOOKING_VIEW");
+                    "PAYMENT_VIEW", "PAYMENT_MANAGE");
         }
     }
 

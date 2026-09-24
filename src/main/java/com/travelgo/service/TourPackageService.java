@@ -62,7 +62,9 @@ public class TourPackageService {
     @org.springframework.transaction.annotation.Transactional
     public void deleteById(Long id) {
         rules.requireRole("TRAVEL_CONSULTANT");
-        repository.delete(locked(id));
+        TourPackage pkg = locked(id);
+        pkg.setActive(false);
+        repository.save(pkg);
     }
 
     @org.springframework.transaction.annotation.Transactional

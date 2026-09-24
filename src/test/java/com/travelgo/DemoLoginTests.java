@@ -36,6 +36,7 @@ class DemoLoginTests {
     @Autowired WebApplicationContext context;
     @Autowired UserRepository users;
     @Autowired RoleRepository roles;
+    @Autowired com.travelgo.repository.PermissionRepository permissions;
     @Autowired DemoAccountService accounts;
     @Autowired CustomUserDetailsService details;
     @Autowired CsrfTokenRepository csrfTokens;
@@ -46,7 +47,40 @@ class DemoLoginTests {
         mvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
         users.deleteAll();
         roles.deleteAll();
+        permissions.deleteAll();
         accounts.provision(); // Explicit fixture in this isolated H2 database, never startup seeding.
+        seedPermissionsForStaffRoles();
+    }
+
+    /** Seed permissions matching DataInitializer so PERM_*-based URL rules work. */
+    private void seedPermissionsForStaffRoles() {
+        var permNames = java.util.Map.of(
+                "TRAVEL_CONSULTANT", java.util.List.of("DESTINATION_VIEW","DESTINATION_MANAGE","PACKAGE_VIEW","PACKAGE_MANAGE","BOOKING_VIEW","BOOKING_MANAGE"),
+                "VISA_OFFICER", java.util.List.of("VISA_VIEW","VISA_MANAGE","PAYMENT_VIEW","PAYMENT_MANAGE"));
+        // Seed all referenced permission entities
+        var allNames = new java.util.HashSet<String>();
+        permNames.values().forEach(allNames::addAll);
+        // also add admin-level permissions
+        allNames.addAll(java.util.List.of("USER_VIEW","USER_MANAGE","STAFF_VIEW","STAFF_MANAGE","ROLE_VIEW","ROLE_MANAGE","PERMISSION_VIEW","SYSTEM_SETTINGS_VIEW","SYSTEM_SETTINGS_MANAGE","DASHBOARD_VIEW"));
+        for (String name : allNames) {
+            if (!permissions.existsByPermissionName(name)) {
+                permissions.save(new com.travelgo.entity.Permission(name, name, name.split("_")[0]));
+            }
+        }
+        // Assign to roles
+        for (var entry : permNames.entrySet()) {
+            roles.findByRoleName(entry.getKey()).ifPresent(role -> {
+                var perms = new java.util.HashSet<>(role.getPermissions());
+                entry.getValue().forEach(pn -> permissions.findByPermissionName(pn).ifPresent(perms::add));
+                role.setPermissions(perms);
+                roles.save(role);
+            });
+        }
+        // Admin gets all
+        roles.findByRoleName("ADMIN").ifPresent(role -> {
+            role.setPermissions(new java.util.HashSet<>(permissions.findAll()));
+            roles.save(role);
+        });
     }
 
     @ParameterizedTest
@@ -62,8 +96,9 @@ class DemoLoginTests {
         var security = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
         assertEquals(account.getEmail(), security.getAuthentication().getName());
         assertNull(security.getAuthentication().getCredentials());
-        assertEquals(java.util.List.of("ROLE_" + account.getRole()), security.getAuthentication().getAuthorities()
-                .stream().map(org.springframework.security.core.GrantedAuthority::getAuthority).toList());
+        assertTrue(security.getAuthentication().getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_" + account.getRole())),
+                "Expected ROLE_" + account.getRole() + " authority");
         mvc.perform(get(account.getDestination()).session(session)).andExpect(status().isOk());
         mvc.perform(post("/auth/logout").session(session).with(csrf())).andExpect(redirectedUrl("/auth/login?logout=true"));
         assertTrue(session.isInvalid());

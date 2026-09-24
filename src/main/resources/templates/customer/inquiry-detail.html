@@ -55,7 +55,7 @@
                 </div>
             </div>
             
-            <div th:if="${!inquiry.replyText}" style="padding: 2rem; text-align: center; color: var(--text-muted); background: var(--bg-subtle); border-radius: var(--radius-md); border: 1px dashed var(--border-subtle);">
+            <div th:unless="${inquiry.replyText}" style="padding: 2rem; text-align: center; color: var(--text-muted); background: var(--bg-subtle); border-radius: var(--radius-md); border: 1px dashed var(--border-subtle);">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px; margin: 0 auto 1rem; opacity: 0.5;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 <div style="font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-heading);">Awaiting Response</div>
                 <p style="margin: 0;">Our travel consultants are reviewing your inquiry and will reply soon.</p>

@@ -58,6 +58,7 @@ public class WorkflowIntegrationTests {
     @Autowired VisaStatusHistoryRepository historyRepo;
     @Autowired NotificationRepository notificationRepo;
     @Autowired TravelerRepository travelerRepo;
+    @Autowired com.travelgo.service.ReviewService reviewService;
     @Autowired BookingHotelRepository bookingHotelRepo;
     @Autowired UserRepository userRepo;
     @Autowired RoleRepository roleRepo;
@@ -109,7 +110,28 @@ public class WorkflowIntegrationTests {
         Role role=roleRepo.findByRoleName(roleName).orElseGet(() -> { Role r=new Role(); r.setRoleName(roleName); return roleRepo.save(r); });
         User user=new User("Test user",UUID.randomUUID()+"@example.invalid","unused-test-password",role); return userRepo.save(user);
     }
-    void login(User u) { SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(u.getEmail(),"unused",List.of(new SimpleGrantedAuthority("ROLE_"+u.getRole().getRoleName())))); }
+    void login(User u) { SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(u.getEmail(),"unused",authorities(u.getRole().getRoleName()))); }
+    /** Build ROLE_* + PERM_* authorities matching DataInitializer.assignStaffPermissions(). */
+    static List<SimpleGrantedAuthority> authorities(String roleName) {
+        List<String> auths = new java.util.ArrayList<>();
+        auths.add("ROLE_" + roleName);
+        switch (roleName) {
+            case "TRAVEL_CONSULTANT" -> auths.addAll(List.of("PERM_DESTINATION_VIEW","PERM_DESTINATION_MANAGE","PERM_PACKAGE_VIEW","PERM_PACKAGE_MANAGE","PERM_BOOKING_VIEW","PERM_BOOKING_MANAGE"));
+            case "VISA_OFFICER" -> auths.addAll(List.of("PERM_VISA_VIEW","PERM_VISA_MANAGE","PERM_PAYMENT_VIEW","PERM_PAYMENT_MANAGE"));
+            case "ADMIN" -> auths.addAll(List.of("PERM_USER_VIEW","PERM_USER_MANAGE","PERM_STAFF_VIEW","PERM_STAFF_MANAGE","PERM_ROLE_VIEW","PERM_ROLE_MANAGE","PERM_PERMISSION_VIEW","PERM_SYSTEM_SETTINGS_VIEW","PERM_SYSTEM_SETTINGS_MANAGE","PERM_DASHBOARD_VIEW","PERM_PACKAGE_VIEW","PERM_PACKAGE_MANAGE","PERM_DESTINATION_VIEW","PERM_DESTINATION_MANAGE","PERM_VISA_VIEW","PERM_VISA_MANAGE","PERM_BOOKING_VIEW","PERM_BOOKING_MANAGE","PERM_PAYMENT_VIEW","PERM_PAYMENT_MANAGE"));
+            default -> {} // CUSTOMER needs no PERM_*
+        }
+        return auths.stream().map(SimpleGrantedAuthority::new).toList();
+    }
+    static org.springframework.test.web.servlet.request.RequestPostProcessor staffUser(String email, String roleName) {
+        return request -> {
+            org.springframework.security.core.context.SecurityContext context = org.springframework.security.core.context.SecurityContextHolder.createEmptyContext();
+            var principal = new org.springframework.security.core.userdetails.User(email, "unused", authorities(roleName));
+            context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, "unused", authorities(roleName)));
+            org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.securityContext(context).postProcessRequest(request);
+            return request;
+        };
+    }
     BookingRequest.TravelerInput traveler() { return new BookingRequest.TravelerInput("Traveler", "P123",LocalDate.of(1990,1,1),"Other","Test"); }
     Booking create(boolean withHotel) { login(customer); return bookings.createBooking(new BookingRequest(tour.getId(),LocalDate.of(2030,2,1),1,withHotel?hotel.getId():null,List.of(traveler()))); }
     VisaApplication apply(Booking b) { login(customer); return visas.createVisaApplication(b,VisaType.values()[0]); }
@@ -152,6 +174,40 @@ public class WorkflowIntegrationTests {
         assertThrows(org.springframework.security.access.AccessDeniedException.class,() -> visas.createVisaApplication(b,VisaType.values()[0]));
         assertThrows(org.springframework.security.access.AccessDeniedException.class,() -> pay(b,PaymentType.FULL_PACKAGE,"100"));
     }
+    
+    @Test void backendAcceptsOnlyValidReviewsForCompletedTrips() {
+        Booking b = create(false); // pending booking
+        
+        com.travelgo.entity.Review review1 = new com.travelgo.entity.Review();
+        review1.setBooking(b); review1.setRating(5);
+        assertThrows(IllegalArgumentException.class, () -> reviewService.save(review1));
+        
+        // Fast forward booking to completed
+        login(consultant);
+        tx.executeWithoutResult(s -> bookingRepo.findById(b.getId()).orElseThrow().setBookingStatus(com.travelgo.enums.BookingStatus.CONFIRMED));
+        login(customer);
+        clock.instant = clock.instant.plus(java.time.Duration.ofDays(b.getTourPackage().getDurationDays() + 1)); // After trip ends
+        
+        // Test rating limits
+        com.travelgo.entity.Review review2 = new com.travelgo.entity.Review();
+        review2.setBooking(b); review2.setRating(99);
+        assertThrows(IllegalArgumentException.class, () -> reviewService.save(review2));
+        
+        com.travelgo.entity.Review review3 = new com.travelgo.entity.Review();
+        review3.setBooking(b); review3.setRating(0);
+        assertThrows(IllegalArgumentException.class, () -> reviewService.save(review3));
+        
+        // Test successful review
+        com.travelgo.entity.Review review4 = new com.travelgo.entity.Review();
+        review4.setBooking(b); review4.setRating(5); review4.setComment("Great trip!");
+        reviewService.save(review4);
+        
+        // Test only one review allowed
+        com.travelgo.entity.Review review5 = new com.travelgo.entity.Review();
+        review5.setBooking(b); review5.setRating(4);
+        assertThrows(IllegalArgumentException.class, () -> reviewService.save(review5));
+    }
+    
     @Test void documentsRequireOwnerAndValidContentAndPreserveLegacyPaths() throws Exception {
         Booking b=create(false); VisaApplication v=apply(b);
         assertThrows(IllegalArgumentException.class,() -> documents.upload(v.getId(),"Bad",new MockMultipartFile("file","image.png","image/png","not an image".getBytes())));
@@ -236,8 +292,8 @@ public class WorkflowIntegrationTests {
         mvc.perform(get("/visa-documents/"+d.getId()+"/download").with(user(other.getEmail()).roles("CUSTOMER"))).andExpect(status().isNotFound());
         mvc.perform(get("/visa-documents/"+d.getId()+"/download").with(user(customer.getEmail()).roles("CUSTOMER"))).andExpect(status().isOk()).andExpect(header().string("X-Content-Type-Options","nosniff"));
         mvc.perform(get("/uploads/visa-documents/test.pdf").with(user(customer.getEmail()).roles("CUSTOMER"))).andExpect(status().isForbidden());
-        mvc.perform(post("/staff/visas/"+v.getId()+"/verify-all").with(user(consultant.getEmail()).roles("TRAVEL_CONSULTANT")).with(csrf())).andExpect(status().isForbidden());
-        mvc.perform(post("/staff/bookings/"+b.getId()+"/confirm").with(user(officer.getEmail()).roles("VISA_OFFICER")).with(csrf())).andExpect(status().isForbidden());
+        mvc.perform(post("/staff/visas/"+v.getId()+"/verify-all").with(staffUser(consultant.getEmail(),"TRAVEL_CONSULTANT")).with(csrf())).andExpect(status().isForbidden());
+        mvc.perform(post("/staff/bookings/"+b.getId()+"/confirm").with(staffUser(officer.getEmail(),"VISA_OFFICER")).with(csrf())).andExpect(status().isForbidden());
         mvc.perform(post("/customer/bookings/"+b.getId()+"/cancel").with(user(customer.getEmail()).roles("CUSTOMER"))).andExpect(status().isForbidden());
         mvc.perform(get("/admin/users").with(user(customer.getEmail()).roles("CUSTOMER"))).andExpect(status().isForbidden());
     }
@@ -252,19 +308,19 @@ public class WorkflowIntegrationTests {
             .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("name=\"expectedUpdatedAt\""))));
         mvc.perform(get("/customer/visas").with(user(customer.getEmail()).roles("CUSTOMER"))).andExpect(status().isOk()).andExpect(view().name("customer/visas"));
         mvc.perform(get("/customer/payments/checkout/"+b.getId()).with(user(customer.getEmail()).roles("CUSTOMER"))).andExpect(status().isOk()).andExpect(view().name("customer/payment-checkout"));
-        mvc.perform(get("/staff/visas").with(user(officer.getEmail()).roles("VISA_OFFICER"))).andExpect(status().isOk()).andExpect(view().name("staff/visas"));
-        mvc.perform(get("/staff/payments").with(user(officer.getEmail()).roles("VISA_OFFICER"))).andExpect(status().isOk()).andExpect(view().name("staff/payments"));
-        mvc.perform(get("/staff/dashboard").with(user(officer.getEmail()).roles("VISA_OFFICER"))).andExpect(status().isOk()).andExpect(view().name("staff/dashboard"));
-        mvc.perform(get("/staff/dashboard").with(user(consultant.getEmail()).roles("TRAVEL_CONSULTANT"))).andExpect(status().isOk()).andExpect(view().name("staff/dashboard"));
+        mvc.perform(get("/staff/visas").with(staffUser(officer.getEmail(),"VISA_OFFICER"))).andExpect(status().isOk()).andExpect(view().name("staff/visas"));
+        mvc.perform(get("/staff/payments").with(staffUser(officer.getEmail(),"VISA_OFFICER"))).andExpect(status().isOk()).andExpect(view().name("staff/payments"));
+        mvc.perform(get("/staff/dashboard").with(staffUser(officer.getEmail(),"VISA_OFFICER"))).andExpect(status().isOk()).andExpect(view().name("staff/dashboard"));
+        mvc.perform(get("/staff/dashboard").with(staffUser(consultant.getEmail(),"TRAVEL_CONSULTANT"))).andExpect(status().isOk()).andExpect(view().name("staff/dashboard"));
     }
     @Test void staffVisaPageOffersVerificationOnlyAfterDocumentsAreSubmitted() throws Exception {
         Booking b=create(false); VisaApplication v=apply(b);
         String verifyAllPath="/staff/visas/"+v.getId()+"/verify-all";
-        mvc.perform(get("/staff/visas").with(user(officer.getEmail()).roles("VISA_OFFICER")))
+        mvc.perform(get("/staff/visas").with(staffUser(officer.getEmail(),"VISA_OFFICER")))
             .andExpect(status().isOk())
             .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString(verifyAllPath))));
         login(customer); VisaDocument document=documents.upload(v.getId(),"Passport",pdf());
-        mvc.perform(get("/staff/visas").with(user(officer.getEmail()).roles("VISA_OFFICER")))
+        mvc.perform(get("/staff/visas").with(staffUser(officer.getEmail(),"VISA_OFFICER")))
             .andExpect(status().isOk())
             .andExpect(content().string(org.hamcrest.Matchers.containsString(verifyAllPath)))
             .andExpect(content().string(org.hamcrest.Matchers.containsString("/staff/visas/documents/"+document.getId()+"/verify")));
@@ -282,10 +338,10 @@ public class WorkflowIntegrationTests {
     @Test void staffRoleMatrixCoversEveryRestrictedSection() throws Exception {
         SecurityContextHolder.clearContext();
         for (String path : List.of("/staff/packages","/staff/destinations","/staff/hotels","/staff/categories","/staff/inquiries","/staff/bookings")) {
-            mvc.perform(get(path).with(user(officer.getEmail()).roles("VISA_OFFICER"))).andExpect(status().isForbidden());
+            mvc.perform(get(path).with(staffUser(officer.getEmail(),"VISA_OFFICER"))).andExpect(status().isForbidden());
         }
         for (String path : List.of("/staff/visas","/staff/payments")) {
-            mvc.perform(get(path).with(user(consultant.getEmail()).roles("TRAVEL_CONSULTANT"))).andExpect(status().isForbidden());
+            mvc.perform(get(path).with(staffUser(consultant.getEmail(),"TRAVEL_CONSULTANT"))).andExpect(status().isForbidden());
         }
     }
     @Test void concurrentRejectionCreatesOneRefundAndOneDecision() throws Exception {

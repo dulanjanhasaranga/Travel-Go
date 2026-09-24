@@ -238,7 +238,7 @@
                                     <td style="text-align: right;">
                                         <div style="display: inline-flex; gap: 0.4rem; justify-content: flex-end;">
                                             <a th:if="${pkg.type == 'DESTINATION'}" class="btn btn-outline btn-sm" th:href="@{/staff/packages/{id}/content(id=${pkg.id})}">Itinerary</a>
-                                              <button th:if="${pkg.type == \'DESTINATION\'}" type="button" class="btn btn-outline btn-sm" th:onclick="\'openManageDeparturesModal(\' + ${pkg.id} + \')\'">Departures</button>
+                                              <button th:if="${pkg.type == 'DESTINATION'}" type="button" class="btn btn-outline btn-sm" th:onclick="'openManageDeparturesModal(' + ${pkg.id} + ')'">Departures</button>
                                             <form th:if="${pkg.type == 'DESTINATION'}" th:action="@{/staff/packages/{id}/delete(id=${pkg.id})}" method="post" style="display: inline;"
                                                   onsubmit="return confirm('Deactivate this package?');">
                                                 <button type="submit" class="btn btn-sm btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">Deactivate</button>
@@ -598,13 +598,13 @@
             if(pkg.type === 'DESTINATION') {
                 actionsHtml = `<a class="btn btn-outline btn-sm" href="/staff/packages/${pkg.id}/content">Itinerary</a>
                                  <button type="button" class="btn btn-outline btn-sm" onclick="openManageDeparturesModal(${pkg.id})">Departures</button>
-                               <form action="/staff/packages/${pkg.id}/delete" method="post" style="display: inline;" onsubmit="return confirm('Deactivate?');">
-                                   ${csrfHtml}
+                                <form action="/staff/packages/${pkg.id}/delete" method="post" style="display: inline;" onsubmit="return confirm('Deactivate?');">
+                                   ${csrfHtml} <!-- name="_csrf" -->
                                    <button type="submit" class="btn btn-sm btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">Deactivate</button>
                                </form>`;
             } else {
                 actionsHtml = `<form action="/staff/hotels/${pkg.id}/delete" method="post" style="display: inline;" onsubmit="return confirm('Deactivate?');">
-                                   ${csrfHtml}
+                                   ${csrfHtml} <!-- name="_csrf" -->
                                    <button type="submit" class="btn btn-sm btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">Deactivate</button>
                                </form>`;
             }

@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.http.HttpMethod;
 
 /**
  * Spring Security configuration.
@@ -82,19 +83,29 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**").permitAll()
 
                 // Staff Package Management pages
-                .requestMatchers("/staff/destinations/**", "/staff/hotels/**", "/staff/categories/**").hasAnyAuthority("PERM_DESTINATION_VIEW", "PERM_DESTINATION_MANAGE")
-                .requestMatchers("/staff/packages/**").hasAnyAuthority("PERM_PACKAGE_VIEW", "PERM_PACKAGE_MANAGE")
-                .requestMatchers("/staff/bookings/**", "/staff/inquiries/**").hasAnyAuthority("PERM_BOOKING_VIEW", "PERM_BOOKING_MANAGE")
-                .requestMatchers("/staff/visas/**").hasAnyAuthority("PERM_VISA_VIEW", "PERM_VISA_MANAGE")
-                .requestMatchers("/staff/payments/**").hasAnyAuthority("PERM_VISA_MANAGE", "PERM_PAYMENT_MANAGE", "PERM_PAYMENT_VIEW")
+                .requestMatchers(HttpMethod.GET, "/staff/destinations/**", "/staff/hotels/**", "/staff/categories/**").hasAnyAuthority("PERM_DESTINATION_VIEW", "PERM_DESTINATION_MANAGE")
+                .requestMatchers("/staff/destinations/**", "/staff/hotels/**", "/staff/categories/**").hasAuthority("PERM_DESTINATION_MANAGE")
+                .requestMatchers(HttpMethod.GET, "/staff/packages/**").hasAnyAuthority("PERM_PACKAGE_VIEW", "PERM_PACKAGE_MANAGE")
+                .requestMatchers("/staff/packages/**").hasAuthority("PERM_PACKAGE_MANAGE")
+                .requestMatchers(HttpMethod.GET, "/staff/bookings/**", "/staff/inquiries/**").hasAnyAuthority("PERM_BOOKING_VIEW", "PERM_BOOKING_MANAGE")
+                .requestMatchers("/staff/bookings/**", "/staff/inquiries/**").hasAuthority("PERM_BOOKING_MANAGE")
+                .requestMatchers(HttpMethod.GET, "/staff/visas/**").hasAnyAuthority("PERM_VISA_VIEW", "PERM_VISA_MANAGE")
+                .requestMatchers("/staff/visas/**").hasAuthority("PERM_VISA_MANAGE")
+                .requestMatchers(HttpMethod.GET, "/staff/payments/**").hasAnyAuthority("PERM_VISA_MANAGE", "PERM_PAYMENT_MANAGE", "PERM_PAYMENT_VIEW")
+                .requestMatchers("/staff/payments/**").hasAnyAuthority("PERM_VISA_MANAGE", "PERM_PAYMENT_MANAGE")
                 .requestMatchers("/staff/reports/**").hasAnyAuthority("PERM_BOOKING_VIEW", "PERM_VISA_VIEW")
 
                 // Admin pages
-                .requestMatchers("/admin/users/**").hasAnyAuthority("ROLE_ADMIN", "PERM_USER_VIEW", "PERM_USER_MANAGE")
-                .requestMatchers("/admin/staff/**").hasAnyAuthority("ROLE_ADMIN", "PERM_STAFF_VIEW", "PERM_STAFF_MANAGE")
-                .requestMatchers("/admin/roles/**").hasAnyAuthority("ROLE_ADMIN", "PERM_ROLE_VIEW", "PERM_ROLE_MANAGE")
-                .requestMatchers("/admin/permissions/**").hasAnyAuthority("ROLE_ADMIN", "PERM_PERMISSION_VIEW")
-                .requestMatchers("/admin/settings/**").hasAnyAuthority("ROLE_ADMIN", "PERM_SYSTEM_SETTINGS_VIEW", "PERM_SYSTEM_SETTINGS_MANAGE")
+                .requestMatchers(HttpMethod.GET, "/admin/users/**").hasAnyAuthority("PERM_USER_VIEW", "PERM_USER_MANAGE")
+                .requestMatchers("/admin/users/**").hasAuthority("PERM_USER_MANAGE")
+                .requestMatchers(HttpMethod.GET, "/admin/staff/**").hasAnyAuthority("PERM_STAFF_VIEW", "PERM_STAFF_MANAGE")
+                .requestMatchers("/admin/staff/**").hasAuthority("PERM_STAFF_MANAGE")
+                .requestMatchers(HttpMethod.GET, "/admin/roles/**").hasAnyAuthority("PERM_ROLE_VIEW", "PERM_ROLE_MANAGE")
+                .requestMatchers("/admin/roles/**").hasAuthority("PERM_ROLE_MANAGE")
+                .requestMatchers(HttpMethod.GET, "/admin/permissions/**").hasAuthority("PERM_PERMISSION_VIEW")
+                .requestMatchers("/admin/permissions/**").hasRole("ADMIN") // Only admins can theoretically manage permissions
+                .requestMatchers(HttpMethod.GET, "/admin/settings/**").hasAnyAuthority("PERM_SYSTEM_SETTINGS_VIEW", "PERM_SYSTEM_SETTINGS_MANAGE")
+                .requestMatchers("/admin/settings/**").hasAuthority("PERM_SYSTEM_SETTINGS_MANAGE")
                 .requestMatchers("/admin/dashboard", "/admin").hasAnyAuthority("ROLE_ADMIN", "PERM_DASHBOARD_VIEW")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
 
