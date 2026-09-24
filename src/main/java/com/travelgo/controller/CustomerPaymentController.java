@@ -59,6 +59,7 @@ public class CustomerPaymentController {
                               @RequestParam(value = "paymentType", required = false) String paramPaymentType,
                               @RequestParam(value = "amount", required = false) BigDecimal paramAmount,
                               @RequestParam(value = "session_id", required = false) String sessionId,
+                              @RequestParam(value = "canceled", required = false) String canceled,
                               @AuthenticationPrincipal UserDetails userDetails,
                               Model model,
                               RedirectAttributes redirectAttributes) {
@@ -113,6 +114,17 @@ public class CustomerPaymentController {
                 } else {
                     model.addAttribute("successMessage", "Payment processed successfully via Stripe!");
                 }
+            } else if ("true".equals(canceled)) {
+                try {
+                    PaymentType type = PaymentType.FULL_PACKAGE;
+                    if (paramPaymentType != null) {
+                        try { type = PaymentType.valueOf(paramPaymentType); } catch (Exception ignored) {}
+                    }
+                    paymentService.recordPaymentFailure(booking, type, "Stripe Checkout", "FAIL-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+                } catch (Exception e) {
+                    // Ignore exception if it fails to log
+                }
+                model.addAttribute("errorMessage", "Payment was canceled or declined. Please try again.");
             }
 
             model.addAttribute("booking", booking);
@@ -164,7 +176,7 @@ public class CustomerPaymentController {
             }
 
             String successUrl = publicBaseUrl + "/customer/payments/checkout/" + bookingId + "?success=true&paymentType=" + type.name() + "&amount=" + amount;
-            String cancelUrl = publicBaseUrl + "/customer/payments/checkout/" + bookingId + "?canceled=true";
+            String cancelUrl = publicBaseUrl + "/customer/payments/checkout/" + bookingId + "?canceled=true&paymentType=" + type.name();
             
             String checkoutUrl = stripeService.createCheckoutSession(booking, type, amount, successUrl, cancelUrl);
             

@@ -56,6 +56,16 @@ public class TourPackage {
 
     private String image;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "tour_package_transports",
+        joinColumns = @JoinColumn(name = "tour_package_id"),
+        inverseJoinColumns = @JoinColumn(name = "transport_id")
+    )
+    private java.util.List<Transport> transports = new java.util.ArrayList<>();
+    public java.util.List<Transport> getTransports() { return transports; }
+    public void setTransports(java.util.List<Transport> transports) { this.transports = transports; }
+
     @Column(nullable = false)
     private boolean isActive = true;
 

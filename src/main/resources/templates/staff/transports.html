@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transport Management - TravelGO Staff</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/travelgo-logo.png}">
+</head>
+<body>
+    <div class="admin-layout">
+        <div th:replace="~{fragments/consultant-sidebar :: consultant-sidebar('transports')}"></div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <span>Travel Consultant Workspace</span>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Transports</span>
+                        </div>
+                        <h2 class="topbar-title">Partner Transports & Transfers</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="openAddTransportModal()" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        + Add Transport
+                    </button>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div th:if="${successMessage}" class="alert alert-success" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span th:text="${successMessage}">Operation successful</span>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <span th:text="${errorMessage}">Error occurred</span>
+                </div>
+
+                <div class="stats-grid" style="margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Total Transports</span>
+                            <div class="stat-icon stat-icon-amber">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="${#lists.size(transports)}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--text-heading); font-weight: 600;">Partner Transports</span>
+                            <span>Flights, buses, trains</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-toolbar">
+                    <div class="search-box">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" id="transportSearchInput" placeholder="Search transports by name..." onkeyup="filterTransports()" />
+                    </div>
+
+                    <div>
+                        <select id="destFilter" class="filter-select" onchange="filterTransports()">
+                            <option value="">All Destinations</option>
+                            <option th:each="d : ${destinations}" th:value="${d.city}" th:text="${d.city + ', ' + d.country}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-heading); display: flex; align-items: center; gap: 0.5rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; color: #D97706;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Partner Transports Directory (<span id="visibleTransportCount" th:text="${#lists.size(transports)}">0</span>)
+                            </h3>
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">Manage transit options for packages</span>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="openAddTransportModal()" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;">
+                            + Add Transport
+                        </button>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="data-table" id="transportsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Transport Name & Route</th>
+                                    <th>Mode</th>
+                                    <th>Destination</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="t : ${transports}"
+                                    th:attr="data-name=${#strings.toLowerCase(t.name)},
+                                             data-dest=${t.destination != null ? t.destination.city : ''}">
+                                    <td style="font-family: monospace; font-weight: 700; color: var(--text-muted);" th:text="'#' + ${t.id}">#1</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.85rem;">
+                                            <div>
+                                                <strong style="color: var(--text-heading); font-size: 0.92rem;" th:text="${t.name}">Air France 123</strong>
+                                                <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${t.departureLocation + ' → ' + t.arrivalLocation}">CDG → LHR</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-info" th:text="${t.mode}">FLIGHT</span>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 600; color: var(--text-heading);" th:text="${t.destination != null ? t.destination.city : '—'}">Paris</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${t.destination != null ? t.destination.country : ''}">France</div>
+                                    </td>
+                                    <td>
+                                        <span style="font-weight: 700; color: #059669;" th:text="'$' + ${#numbers.formatDecimal(t.price, 1, 2)}">$150.00</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" th:classappend="${t.active} ? 'badge-success' : 'badge-danger'"
+                                              th:text="${t.active ? 'ACTIVE' : 'INACTIVE'}">ACTIVE</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <div style="display: inline-flex; gap: 0.4rem; justify-content: flex-end;">
+                                            <button type="button" class="btn btn-outline btn-sm"
+                                                    style="padding: 0.25rem 0.6rem; font-size: 0.78rem;"
+                                                    th:attr="onclick=|openEditTransportModal(${t.id}, '${#strings.escapeJavaScript(t.name)}', ${t.destination != null ? t.destination.id : 0}, '${#strings.escapeJavaScript(t.mode)}', '${#strings.escapeJavaScript(t.departureLocation)}', '${#strings.escapeJavaScript(t.arrivalLocation)}', ${t.price}, '${#strings.escapeJavaScript(t.description != null ? t.description : '')}')|">
+                                                Edit
+                                            </button>
+                                            <form th:if="${t.active}" th:action="@{/staff/transports/{id}/delete(id=${t.id})}" method="post" style="display: inline;"
+                                                  onsubmit="return confirm('Are you sure you want to deactivate transport: ' + this.getAttribute('data-name') + '?');"
+                                                  th:attr="data-name=${t.name}">
+                                                <button type="submit" class="btn btn-sm btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">
+                                                    Deactivate
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div th:if="${#lists.isEmpty(transports)}" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+                            <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-heading);">No transports found</div>
+                            <p>Click <strong>+ Add Transport</strong> to record transit options.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="addSlidePanelBackdrop" class="slide-backdrop" onclick="closeAddTransportModal()"></div>
+        <div id="addSlidePanel" class="slide-panel">
+            <div class="slide-panel-header">
+                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #1E293B; display: flex; align-items: center; gap: 0.65rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0D9488;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add New Partner Transport
+                </h3>
+                <button type="button" class="btn btn-outline btn-sm" onclick="closeAddTransportModal()" style="padding: 0.4rem; border-color: transparent;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <form th:action="@{/staff/transports/create}" method="post" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+                <div class="slide-panel-body">
+                    <div class="form-group">
+                        <label class="form-label">Transport Name *</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Qatar Airways QR842" required />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Destination *</label>
+                            <select name="destinationId" class="form-control" required>
+                                <option value="">Select Destination...</option>
+                                <option th:each="d : ${destinations}" th:value="${d.id}" th:text="${d.city + ', ' + d.country}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Mode *</label>
+                            <select name="mode" class="form-control" required>
+                                <option value="FLIGHT">Flight</option>
+                                <option value="TRAIN">Train</option>
+                                <option value="BUS">Bus</option>
+                                <option value="FERRY">Ferry</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Departure Location *</label>
+                            <input type="text" name="departureLocation" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Arrival Location *</label>
+                            <input type="text" name="arrivalLocation" class="form-control" required />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Price ($) *</label>
+                        <input type="number" step="0.01" name="price" class="form-control" placeholder="189.00" required />
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Transport details..."></textarea>
+                    </div>
+                </div>
+                <div class="slide-panel-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeAddTransportModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;">
+                        Save Transport
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div id="editSlidePanelBackdrop" class="slide-backdrop" onclick="closeEditTransportModal()"></div>
+        <div id="editSlidePanel" class="slide-panel">
+            <div class="slide-panel-header">
+                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #1E293B; display: flex; align-items: center; gap: 0.65rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0284C7;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit Partner Transport
+                </h3>
+                <button type="button" class="btn btn-outline btn-sm" onclick="closeEditTransportModal()" style="padding: 0.4rem; border-color: transparent;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <form id="editTransportForm" method="post" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+                <div class="slide-panel-body">
+                    <div class="form-group">
+                        <label class="form-label">Transport Name *</label>
+                        <input type="text" id="editTransportName" name="name" class="form-control" required />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Destination *</label>
+                            <select id="editTransportDestId" name="destinationId" class="form-control" required>
+                                <option value="">Select Destination...</option>
+                                <option th:each="d : ${destinations}" th:value="${d.id}" th:text="${d.city + ', ' + d.country}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Mode *</label>
+                            <select id="editTransportMode" name="mode" class="form-control" required>
+                                <option value="FLIGHT">Flight</option>
+                                <option value="TRAIN">Train</option>
+                                <option value="BUS">Bus</option>
+                                <option value="FERRY">Ferry</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Departure Location *</label>
+                            <input type="text" id="editTransportDeparture" name="departureLocation" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Arrival Location *</label>
+                            <input type="text" id="editTransportArrival" name="arrivalLocation" class="form-control" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Price ($) *</label>
+                        <input type="number" step="0.01" id="editTransportPrice" name="price" class="form-control" required />
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Description</label>
+                        <textarea id="editTransportDesc" name="description" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="slide-panel-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeEditTransportModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%); border: none;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openAddTransportModal() {
+            document.getElementById('addSlidePanelBackdrop').classList.add('open');
+            document.getElementById('addSlidePanel').classList.add('open');
+        }
+        function closeAddTransportModal() {
+            document.getElementById('addSlidePanelBackdrop').classList.remove('open');
+            document.getElementById('addSlidePanel').classList.remove('open');
+        }
+
+        function openEditTransportModal(id, name, destId, mode, dep, arr, price, desc) {
+            document.getElementById('editSlidePanelBackdrop').classList.add('open');
+            document.getElementById('editSlidePanel').classList.add('open');
+            var form = document.getElementById('editTransportForm');
+            form.action = '/staff/transports/' + id + '/edit';
+            document.getElementById('editTransportName').value = name || '';
+            document.getElementById('editTransportDestId').value = destId || '';
+            document.getElementById('editTransportMode').value = mode || 'FLIGHT';
+            document.getElementById('editTransportDeparture').value = dep || '';
+            document.getElementById('editTransportArrival').value = arr || '';
+            document.getElementById('editTransportPrice').value = price || '';
+            document.getElementById('editTransportDesc').value = desc || '';
+        }
+        function closeEditTransportModal() {
+            document.getElementById('editSlidePanelBackdrop').classList.remove('open');
+            document.getElementById('editSlidePanel').classList.remove('open');
+        }
+
+        function filterTransports() {
+            var q = (document.getElementById('transportSearchInput').value || '').toLowerCase().trim();
+            var dest = document.getElementById('destFilter').value;
+
+            var rows = document.querySelectorAll('#transportsTable tbody tr');
+            var visible = 0;
+            rows.forEach(function(r) {
+                var search = r.getAttribute('data-name') || '';
+                var d = r.getAttribute('data-dest') || '';
+
+                var matchQuery = !q || search.includes(q);
+                var matchDest = !dest || d === dest;
+
+                if (matchQuery && matchDest) {
+                    r.style.display = '';
+                    visible++;
+                } else {
+                    r.style.display = 'none';
+                }
+            });
+            var countEl = document.getElementById('visibleTransportCount');
+            if (countEl) countEl.innerText = visible;
+        }
+
+        window.addEventListener('click', function(e) {
+            var addModal = document.getElementById('addTransportModal');
+            var editModal = document.getElementById('editTransportModal');
+            if (e.target == addModal) closeAddTransportModal();
+            if (e.target == editModal) closeEditTransportModal();
+        });
+    </script>
+<script th:src="@{/js/main.js}"></script></body>
+</html>

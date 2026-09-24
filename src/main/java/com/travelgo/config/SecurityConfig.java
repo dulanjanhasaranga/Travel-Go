@@ -83,8 +83,8 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**").permitAll()
 
                 // Staff Package Management pages
-                .requestMatchers(HttpMethod.GET, "/staff/destinations/**", "/staff/hotels/**", "/staff/categories/**").hasAnyAuthority("PERM_DESTINATION_VIEW", "PERM_DESTINATION_MANAGE")
-                .requestMatchers("/staff/destinations/**", "/staff/hotels/**", "/staff/categories/**").hasAuthority("PERM_DESTINATION_MANAGE")
+                .requestMatchers(HttpMethod.GET, "/staff/destinations/**", "/staff/hotels/**", "/staff/transports/**", "/staff/categories/**").hasAnyAuthority("PERM_DESTINATION_VIEW", "PERM_DESTINATION_MANAGE")
+                .requestMatchers("/staff/destinations/**", "/staff/hotels/**", "/staff/transports/**", "/staff/categories/**").hasAuthority("PERM_DESTINATION_MANAGE")
                 .requestMatchers(HttpMethod.GET, "/staff/packages/**").hasAnyAuthority("PERM_PACKAGE_VIEW", "PERM_PACKAGE_MANAGE")
                 .requestMatchers("/staff/packages/**").hasAuthority("PERM_PACKAGE_MANAGE")
                 .requestMatchers(HttpMethod.GET, "/staff/bookings/**", "/staff/inquiries/**").hasAnyAuthority("PERM_BOOKING_VIEW", "PERM_BOOKING_MANAGE")

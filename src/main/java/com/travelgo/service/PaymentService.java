@@ -65,6 +65,16 @@ public class PaymentService {
         Booking b = rules.lock(request.getBooking().getId()); rules.owner(b);
         return pay(b, request.getPaymentType(), request.getAmount(), request.getPaymentMethod(), null, null);
     }
+    public Payment recordPaymentFailure(Booking b, PaymentType type, String method, String reference) {
+        b = rules.lock(b.getId()); rules.owner(b);
+        Payment p = new Payment(); p.setBooking(b); p.setPaymentType(type); p.setAmount(rules.expected(b, type));
+        p.setPaymentMethod(method); p.setPaymentStatus(PaymentStatus.FAILED);
+        p.setTransactionReference(reference == null || reference.isBlank() ? "FAIL-" + UUID.randomUUID() : reference.trim());
+        p.setExpiresAt(type == PaymentType.VISA_DOCUMENTATION ? rules.visa(b).getPaymentExpiresAt() : b.getPackagePaymentDeadline());
+        repository.save(p);
+        rules.notify(b.getUser(), "PAYMENT_FAILED", "Payment attempt failed", "The payment attempt for booking #" + b.getId() + " failed. Check your payment page before retrying.", "PAYMENT", p.getId());
+        return p;
+    }
     private Payment pay(Booking b, PaymentType type, BigDecimal amount, String method, String reference, Payment pending) {
         if (type == null) throw new IllegalArgumentException("Payment type is required.");
         quote(b, type, amount);
