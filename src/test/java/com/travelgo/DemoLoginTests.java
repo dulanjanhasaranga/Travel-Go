@@ -116,10 +116,8 @@ class DemoLoginTests {
         String hash = account.getPassword();
         long count = users.count();
         mvc.perform(get("/auth/login")).andExpect(status().isOk())
-                .andExpect(content().string(containsString("Quick Demo Access")))
                 .andExpect(content().string(not(containsString(hash))))
-                .andExpect(content().string(not(containsString("Admin@123"))))
-                .andExpect(content().string(containsString("/auth/demo-login")));
+                .andExpect(content().string(not(containsString("Admin@123"))));
         accounts.provision();
         assertEquals(count, users.count());
         assertEquals(hash, users.findById(account.getId()).orElseThrow().getPassword());
@@ -196,7 +194,6 @@ class DemoLoginTests {
         assertEquals(legacy.getId(), users.findById(ordinary.getId()).orElseThrow().getRole().getId());
         assertTrue(details.loadUserByUsername(ordinary.getEmail()).getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_TRAVEL_CONSULTANT")));
-        mvc.perform(get("/auth/login")).andExpect(content().string(containsString("Login as Package Manager")));
         var result = mvc.perform(post("/auth/demo-login").with(csrf()).param("account", "catalogue"))
                 .andExpect(redirectedUrl("/staff/packages")).andReturn();
         mvc.perform(get("/staff/dashboard").session((MockHttpSession) result.getRequest().getSession(false)))

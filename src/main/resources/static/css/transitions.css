@@ -78,45 +78,7 @@ main, .main-content, .admin-main, .staff-main {
     /* The router will remove this class quickly to let it fade back to default (opacity 1, translateY 0) */
 }
 
-/* -----------------------------------------
-   3. NAVIGATION ACTIVE STATES (NAVBAR)
------------------------------------------ */
-#primary-navigation .nav-link {
-    position: relative;
-    transition: color 0.2s ease;
-}
-
-/* The animated underline indicator */
-#primary-navigation .nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: var(--brand-accent, #0284C7);
-    transform: scaleX(0);
-    transform-origin: right;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-#primary-navigation .nav-link:hover::after {
-    transform: scaleX(1);
-    transform-origin: left;
-}
-
-#primary-navigation .nav-link.active::after,
-#primary-navigation .nav-link[aria-current="page"]::after {
-    transform: scaleX(1);
-    transform-origin: left;
-    background-color: var(--brand-primary, #0f172a);
-}
-
-#primary-navigation .nav-link.active,
-#primary-navigation .nav-link[aria-current="page"] {
-    font-weight: 700;
-    color: var(--brand-primary, #0f172a);
-}
+/* Removed conflicting navigation underline transitions to use premium pill styling instead. */
 
 /* -----------------------------------------
    4. BUTTON & LINK MICRO-INTERACTIONS

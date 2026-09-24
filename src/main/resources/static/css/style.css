@@ -189,30 +189,31 @@ img {
    Navigation Bar (Public)
    ========================================================= */
 .navbar {
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    border-radius: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 4rem;
     position: sticky;
-    top: 1rem;
-    margin: 1rem auto;
-    max-width: calc(100% - 2rem);
+    top: 1.5rem;
+    margin: 1.5rem auto;
+    max-width: 1200px;
+    padding: 0 1rem;
     z-index: 1000;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-    transition: box-shadow var(--transition-base), background-color var(--transition-base);
-    animation: floatNav 6s ease-in-out infinite;
-}
-
-@keyframes floatNav {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-5px); }
-    100% { transform: translateY(0px); }
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.06);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .navbar.scrolled {
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-    background-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.95);
+    max-width: 100%;
+    top: 0;
+    margin-top: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
 }
 
 /* Removed .orb and flying animations to keep the background clean and professional */
@@ -273,35 +274,19 @@ img {
 .nav-link {
     font-family: var(--font-heading);
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--text-body);
-    padding: 0.5rem 0.85rem;
-    border-radius: var(--radius-sm);
-    transition: all var(--transition-fast);
-    position: relative;
-}
-
-.nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: 2px;
-    left: 50%;
-    transform: translateX(-50%) scaleX(0);
-    width: 20px;
-    height: 2px;
-    background: var(--brand-accent);
+    padding: 0.5rem 1rem;
     border-radius: var(--radius-full);
-    transition: transform var(--transition-base);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    text-decoration: none;
 }
 
-.nav-link:hover {
-    color: var(--brand-accent);
-    background-color: var(--brand-accent-light);
-}
-
-.nav-link:hover::after,
-.nav-link.active::after {
-    transform: translateX(-50%) scaleX(1);
+.nav-link:hover,
+.nav-link.active {
+    color: var(--brand-primary);
+    background-color: rgba(2, 132, 199, 0.08);
 }
 
 .nav-actions {
