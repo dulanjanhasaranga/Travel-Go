@@ -27,12 +27,24 @@ public class BookingService {
     private final BookingNoteRepository bookingNotes;
     private final AuditService auditService;
     private final RefundService refunds;
+    private final BookingStatusHistoryRepository historyRepo;
     public BookingService(BookingRepository repository, TourPackageRepository packages, HotelRepository hotels,
-            BookingHotelRepository bookingHotels, TravelerRepository travelers, WorkflowRules rules, Validator validator, UserRepository users, BookingEmailService email, DepartureRepository departures, SupplierHoldRepository supplierHolds, SimpMessagingTemplate messagingTemplate, BookingNoteRepository bookingNotes, AuditService auditService, RefundService refunds) {
+            BookingHotelRepository bookingHotels, TravelerRepository travelers, WorkflowRules rules, Validator validator, UserRepository users, BookingEmailService email, DepartureRepository departures, SupplierHoldRepository supplierHolds, SimpMessagingTemplate messagingTemplate, BookingNoteRepository bookingNotes, AuditService auditService, RefundService refunds, BookingStatusHistoryRepository historyRepo) {
         this.repository=repository; this.packages=packages; this.hotels=hotels; this.bookingHotels=bookingHotels;
         this.travelers=travelers; this.rules=rules; this.validator=validator;this.users=users;this.email=email;
         this.departures=departures; this.supplierHolds=supplierHolds;
-        this.messagingTemplate=messagingTemplate; this.bookingNotes=bookingNotes; this.auditService=auditService; this.refunds=refunds;
+        this.messagingTemplate=messagingTemplate; this.bookingNotes=bookingNotes; this.auditService=auditService; this.refunds=refunds; this.historyRepo=historyRepo;
+    }
+    private void changeStatus(Booking b, BookingStatus newStatus, String remarks) {
+        if (b.getBookingStatus() != newStatus || b.getId() == null) {
+            b.setBookingStatus(newStatus);
+            BookingStatusHistory h = new BookingStatusHistory();
+            h.setBooking(b);
+            h.setStatus(newStatus);
+            h.setRemarks(remarks);
+            try { h.setChangedBy(rules.actor()); } catch (Exception e) { h.setChangedBy(b.getUser()); }
+            historyRepo.save(h);
+        }
     }
     public List<Booking> findAll() { return repository.findAll(); }
     public Optional<Booking> findById(Long id) { return repository.findById(id); }
@@ -239,6 +251,9 @@ public class BookingService {
     /** Retrieve conversation notes for a booking. */
     public List<BookingNote> findNotes(Long bookingId) {
         return bookingNotes.findByBooking_IdOrderByCreatedAtAsc(bookingId);
+    }
+    public List<BookingStatusHistory> getStatusHistory(Long bookingId) {
+        return historyRepo.findByBooking_IdOrderByChangedAtAsc(bookingId);
     }
 }
 
