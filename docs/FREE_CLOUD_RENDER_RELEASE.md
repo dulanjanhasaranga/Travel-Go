@@ -38,6 +38,8 @@ The normal web service refuses to create tables. For a brand-new, empty Aiven `d
 | Runtime | Docker |
 | Dockerfile path | `Dockerfile.cloud-evaluation-init` |
 | Plan | Free |
+| Auto-Deploy | Off |
+| Health check path | Leave empty |
 
 Add these environment variables in Render. Values marked private must be entered in the dashboard only.
 
@@ -53,7 +55,7 @@ Add these environment variables in Render. Values marked private must be entered
 | `TRAVELGO_BOOTSTRAP_ADMIN_PASSWORD` | private local-script output |
 | `TRAVELGO_BOOTSTRAP_ADMIN_NAME` | administrator display name |
 
-The container checks that `defaultdb` has no tables before Hibernate creates the schema. It then creates the mapped tables, baseline roles/settings, first administrator, and durable authentication guard, then exits. Read the deployment log for `Data initialization complete`; delete this temporary service immediately after that successful message. If it stops with an error or the database is no longer empty, do not redeploy it.
+The container checks that `defaultdb` has no tables or views before Hibernate creates the schema. A dedicated non-web context then creates the mapped tables, baseline roles/settings, first administrator, and durable authentication guard, then exits. Read the deployment log for `Hosted schema initialization completed successfully`; delete this temporary service immediately after that successful message. Render may report a failed or stopped deployment because this one-time process exits without opening a web port. The success log, rather than the service status, confirms completion. If that message is absent, inspect the error before taking another action; do not rerun the initializer against a nonempty schema.
 
 Then, using the temporary administration connection, run [cloud-evaluation-create-app-user.sql](../database/cloud-evaluation-create-app-user.sql) after replacing its password locally. Enter that same password in Render later as `TRAVELGO_DB_PASSWORD` and the username `travelgo_demo_app`.
 

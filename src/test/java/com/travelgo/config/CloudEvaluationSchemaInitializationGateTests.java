@@ -45,7 +45,25 @@ class CloudEvaluationSchemaInitializationGateTests {
         ).forEach(environment::setProperty);
     }
 
-    void validate() { gate.postProcessEnvironment(environment, null); }
+    void validate() { gate.postProcessEnvironment(environment, new SpringApplication(CloudEvaluationSchemaApplication.class)); }
+
+    @Test void normalWebsiteApplicationCannotInitializeTheDatabase() {
+        assertThrows(IllegalStateException.class, () -> gate.postProcessEnvironment(environment,
+                new SpringApplication(com.travelgo.TravelGoApplication.class)));
+        assertFalse(inspected.get());
+    }
+
+    @Test void invalidAdministratorSettingsFailBeforeAnyDatabaseInspection() {
+        for (var invalid : Map.of(
+                "travelgo.bootstrap.admin.email", "invalid-email",
+                "travelgo.bootstrap.admin.password", "short",
+                "travelgo.bootstrap.admin.name", "A".repeat(101)).entrySet()) {
+            configuration();
+            environment.setProperty(invalid.getKey(), invalid.getValue());
+            assertThrows(IllegalStateException.class, this::validate);
+            assertFalse(inspected.get());
+        }
+    }
 
     @Test void approvedEmptySchemaConfigurationInspectsBeforeHibernateCanCreateTables() {
         assertDoesNotThrow(this::validate);

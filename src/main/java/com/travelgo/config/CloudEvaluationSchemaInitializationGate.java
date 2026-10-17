@@ -1,6 +1,7 @@
 package com.travelgo.config;
 
 import com.travelgo.util.SafeMySqlUrl;
+import com.travelgo.util.PasswordPolicy;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -38,6 +39,8 @@ public final class CloudEvaluationSchemaInitializationGate implements Environmen
     @Override public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         if (!Arrays.asList(environment.getActiveProfiles()).contains(PROFILE)) return;
         try {
+            if (application == null || !application.getAllSources().contains(CloudEvaluationSchemaApplication.class))
+                fail("Hosted schema initialization requires its dedicated initialization application.");
             validate(environment);
         } catch (InvalidRelease invalid) {
             throw invalid;
@@ -64,9 +67,7 @@ public final class CloudEvaluationSchemaInitializationGate implements Environmen
         equal(environment, "travelgo.auth.google.enabled", "false");
         equal(environment, "travelgo.catalogue.install", "false");
         equal(environment, "travelgo.catalogue.restore-original", "false");
-        if (environment.getProperty("travelgo.bootstrap.admin.email", "").isBlank()
-                || environment.getProperty("travelgo.bootstrap.admin.password", "").isBlank())
-            fail("Hosted schema initialization requires a private initial administrator email and password.");
+        validateAdministrator(environment);
         rejectOverrides(environment);
         DatabaseSettings database = database(environment);
         try {
@@ -76,6 +77,18 @@ public final class CloudEvaluationSchemaInitializationGate implements Environmen
         } catch (RuntimeException failure) {
             throw new InvalidRelease("Hosted demonstration schema must be an empty dedicated Aiven database before initialization.");
         }
+    }
+
+    private void validateAdministrator(ConfigurableEnvironment environment) {
+        String email = environment.getProperty("travelgo.bootstrap.admin.email", "").trim();
+        String password = environment.getProperty("travelgo.bootstrap.admin.password", "");
+        String name = environment.getProperty("travelgo.bootstrap.admin.name", "").trim();
+        if (email.length() > 150 || !email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"))
+            fail("Hosted schema initialization requires a valid initial administrator email.");
+        if (!PasswordPolicy.isValid(password))
+            fail("Hosted schema initialization requires an initial administrator password of 12 to 72 UTF-8 bytes.");
+        if (name.length() > 100)
+            fail("Hosted schema initialization administrator name must be 100 characters or fewer.");
     }
 
     private void rejectOverrides(ConfigurableEnvironment environment) {
@@ -145,10 +158,14 @@ public final class CloudEvaluationSchemaInitializationGate implements Environmen
         properties.setProperty("trustCertificateKeyStoreType", "PKCS12");
         properties.setProperty("trustCertificateKeyStorePassword", settings.truststorePassword());
         properties.setProperty("fallbackToSystemTrustStore", "false");
+        properties.setProperty("connectTimeout", "5000");
+        properties.setProperty("socketTimeout", "10000");
         try (Connection connection = DriverManager.getConnection(settings.url(), properties);
-             var statement = connection.prepareStatement("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_type='BASE TABLE'");
-             ResultSet result = statement.executeQuery()) {
-            if (!result.next() || result.getLong(1) != 0) throw new InvalidRelease("Hosted demonstration schema must be empty; do not rerun its initializer.");
+             var statement = connection.prepareStatement("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE()")) {
+            statement.setQueryTimeout(5);
+            try (ResultSet result = statement.executeQuery()) {
+                if (!result.next() || result.getLong(1) != 0) throw new InvalidRelease("Hosted demonstration schema must be empty; do not rerun its initializer.");
+            }
         } catch (InvalidRelease invalid) {
             throw invalid;
         } catch (SQLException unavailable) {
