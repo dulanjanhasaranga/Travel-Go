@@ -23,7 +23,7 @@ This is a public academic demonstration for fictional records. It is intentional
 
    ```powershell
    Set-Location 'C:\Users\User\Downloads\ISE\ISE'
-   .\scripts\new-cloud-evaluation-secrets.ps1 -AivenCaCertificatePath 'C:\path\to\aiven-ca.pem'
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-cloud-evaluation-secrets.ps1 -AivenCaCertificatePath 'C:\path\to\aiven-ca.pem'
    ```
 
    Copy each result directly into the appropriate provider or Render secret field. Do not save the output in the repository or send it in chat.
