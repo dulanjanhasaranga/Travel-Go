@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+<th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block></head>
+<body class="agency-workspace">
+    <div class="admin-layout">
+        <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('users')}"></div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <a th:href="@{/admin/users}">User management</a>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;" th:text="${user.name}">User details</span>
+                        </div>
+                        <h1 class="topbar-title">Manage user profile</h1>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <a th:href="@{/admin/users}" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to user list
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Alerts -->
+                <div th:if="${successMessage}" class="alert alert-success">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span th:text="${successMessage}"></span>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span th:text="${errorMessage}"></span>
+                </div>
+
+                <div class="grid grid-2">
+                    <!-- Left: Profile Edit Form -->
+                    <div class="card">
+                        <div class="table-header">
+                            <h4 style="margin: 0;">Account information</h4>
+                            <span class="badge" th:classappend="${user.active} ? 'badge-success' : 'badge-danger'"
+                                  th:text="${user.active ? 'Active' : 'Deactivated'}">Active</span>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/admin/users/{id}/update(id=${user.id})}" method="post"><fieldset class="permission-readonly-fields" th:disabled="${!#authorization.expression('hasAuthority(''PERM_USER_MANAGE'')')}">
+                                <div class="form-group">
+                                    <label class="form-label" for="user-email">Email address (login ID)</label>
+                                    <input id="user-email" type="text" class="form-control" th:value="${user.email}" disabled>
+                                    <div class="form-hint">Email address cannot be changed once registered.</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="user-name">Full Name *</label>
+                                    <input id="user-name" type="text" name="name" class="form-control" th:value="${user.name}" minlength="2" maxlength="100" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="user-phone">Contact phone</label>
+                                    <input id="user-phone" type="tel" name="phone" class="form-control" th:value="${user.phone}" maxlength="20" autocomplete="tel">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="user-address">Physical address</label>
+                                    <textarea id="user-address" name="address" class="form-control" th:text="${user.address}" maxlength="1000"></textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary" sec:authorize="hasAuthority('PERM_USER_MANAGE')">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                    </svg>
+                                    Request profile update
+                                </button>
+                            </fieldset></form>
+                        </div>
+                    </div>
+
+                    <!-- Right: Role & Account Governance -->
+                    <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+                        <!-- Role Assignment Card -->
+                        <div class="card">
+                            <div class="table-header">
+                                <h4 style="margin: 0;">Role assignment</h4>
+                                <span class="badge badge-info" th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(user.role.roleName.toString(),'_',' ')))}">Customer</span>
+                            </div>
+                            <div class="card-body">
+                                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                                    Request a role change for this account. The selected role determines its permissions.
+                                </p>
+                                <form th:action="@{/admin/users/{id}/assign-role(id=${user.id})}" method="post"><fieldset class="permission-readonly-fields" th:disabled="${!#authorization.expression('hasAuthority(''PERM_USER_MANAGE'')')}">
+                                    <div class="form-group">
+                                        <label class="form-label" for="user-role">System role</label>
+                                        <select id="user-role" name="roleId" class="form-control" required>
+                                            <option th:each="r : ${roles}" th:value="${r.id}" th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(r.roleName,'_',' ')))} + ' — ' + ${r.description}" th:selected="${r.id == user.role.id}"></option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-secondary btn-sm" data-confirm-click="Reassign role for this user?" sec:authorize="hasAuthority('PERM_USER_MANAGE')">
+                                        Request role change
+                                    </button>
+                                </fieldset></form>
+                            </div>
+                        </div>
+
+                        <!-- Status Toggle Card -->
+                        <div class="card">
+                            <div class="table-header">
+                                <h4 style="margin: 0;">Account access</h4>
+                            </div>
+                            <div class="card-body">
+                                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                                    Changes to account access take effect after a second administrator approves the request. Deactivated accounts cannot sign in.
+                                </p>
+                                <form th:action="@{/admin/users/{id}/toggle-status(id=${user.id})}" method="post"><fieldset class="permission-readonly-fields" th:disabled="${!#authorization.expression('hasAuthority(''PERM_USER_MANAGE'')')}">
+                                    <button type="submit" class="btn btn-sm" th:classappend="${user.active} ? 'btn-danger' : 'btn-primary'"
+                                            th:text="${user.active ? 'Request deactivation' : 'Request activation'}"
+                                            data-confirm-click="Are you sure you want to change this account access status?" sec:authorize="hasAuthority('PERM_USER_MANAGE')">
+                                        Toggle account status
+                                    </button>
+                                </fieldset></form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+    <script th:attr="nonce=${cspNonce}" th:src="@{/js/admin.js}"></script>
+</body>
+</html>

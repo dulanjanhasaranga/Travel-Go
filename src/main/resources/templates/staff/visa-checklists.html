@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visa document checklists - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}"><link rel="stylesheet" th:href="@{/css/visa-checklists.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="agency-workspace"><div class="admin-layout">
+    <div th:replace="~{fragments/visa-sidebar :: visa-sidebar('checklists')}"></div>
+    <div class="admin-main">
+        <header class="admin-topbar"><h1 class="topbar-title">Visa document checklists</h1><div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div><a th:href="@{/staff/visas}" class="btn btn-outline btn-sm">Applications</a></div></header>
+        <main class="admin-content">
+            <div th:if="${successMessage}" class="alert alert-success" role="status" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+            <div class="visa-checklist-heading">
+                <p>Use a reviewed embassy or visa authority source for each destination and visa category. Existing applications keep their assigned requirements.</p>
+                <a sec:authorize="hasAuthority('PERM_VISA_MANAGE')" th:href="@{/staff/visas/checklists/new}" class="btn btn-primary">Create draft</a>
+            </div>
+            <p th:if="${#lists.isEmpty(checklists)}" class="muted">No checklists are available. Review document requirements for each application.</p>
+            <div class="visa-checklist-grid">
+                <article th:each="c : ${checklists}" class="visa-checklist-card">
+                    <h2 th:text="${c.destination.city + ', ' + c.destination.country}">Destination</h2>
+                    <p><span th:text="${c.visaType.name() == 'VISIT' ? 'Tourist / visit' : 'Business / work'}"></span> · Revision <span th:text="${c.revision}"></span> · <strong th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(c.status.toString(),'_',' ')))}"></strong></p>
+                    <ul><li th:each="item : ${c.items}"><span th:text="${item.label}"></span> <span class="visa-requirement-status" th:text="${item.required ? '(required)' : '(optional)'}"></span></li></ul>
+                    <p class="muted" th:if="${c.minimumLeadDays == null}">Submission lead time requires officer review.</p>
+                    <p th:if="${c.minimumLeadDays != null}" th:text="'Minimum submission lead time: ' + ${c.minimumLeadDays} + ' calendar days'"></p>
+                    <p th:if="${c.sourceUrl != null}"><a th:href="${c.sourceUrl}" target="_blank" rel="noopener noreferrer">Recorded source</a></p>
+                    <div class="visa-checklist-actions">
+                        <a th:href="@{/staff/visas/checklists/{id}/edit(id=${c.id})}" class="btn btn-outline btn-sm" th:text="${c.status.name() == 'DRAFT' ? 'Review draft' : 'View / create revision'}"></a>
+                        <form sec:authorize="hasAuthority('PERM_VISA_MANAGE')" th:if="${c.status.name() == 'DRAFT'}" th:action="@{/staff/visas/checklists/{id}/publish(id=${c.id})}" method="post">
+                            <input type="hidden" name="lockVersion" th:value="${c.lockVersion}"><button type="submit" class="btn btn-primary btn-sm">Publish requirements</button>
+                        </form>
+                        <form sec:authorize="hasAuthority('PERM_VISA_MANAGE')" th:if="${c.status.name() == 'PUBLISHED'}" th:action="@{/staff/visas/checklists/{id}/retire(id=${c.id})}" method="post">
+                            <input type="hidden" name="lockVersion" th:value="${c.lockVersion}"><button type="submit" class="btn btn-outline btn-sm">Retire for new applications</button>
+                        </form>
+                    </div>
+                </article>
+            </div>
+        </main>
+    </div>
+</div><script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script><script th:attr="nonce=${cspNonce}" th:src="@{/js/admin.js}"></script></body>
+</html>

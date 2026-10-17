@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="x-apple-disable-message-reformatting">
+    <title th:text="${heading}">Your TravelGO update</title>
+    <style>
+        @media only screen and (max-width: 480px) {
+            .email-shell { padding: 12px 8px !important; }
+            .email-content { padding: 28px 22px !important; }
+            .email-title { font-size: 25px !important; }
+            .email-logo { width: 128px !important; height: 128px !important; }
+            .email-brand { font-size: 22px !important; }
+        }
+    </style>
+</head>
+<body style="margin:0;padding:0;background-color:#eef4fb;font-family:Arial,Helvetica,sans-serif;color:#24364e;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%">
+<div th:text="${intro}" style="display:none;font-size:1px;line-height:1px;color:#eef4fb;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all">An update from TravelGO.</div>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background-color:#eef4fb">
+    <tr><td class="email-shell" align="center" style="padding:32px 16px">
+        <!--[if mso]><table role="presentation" width="640" cellspacing="0" cellpadding="0" border="0"><tr><td><![endif]-->
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:640px;background-color:#ffffff;border:1px solid #dce6f2;border-radius:16px;border-collapse:separate;overflow:hidden">
+            <tr><td style="height:5px;line-height:5px;font-size:1px;background-color:#2458b8">&nbsp;</td></tr>
+            <tr><td style="padding:0 22px;border-bottom:1px solid #e4ecf6">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                        <td width="156" valign="middle" style="width:156px;padding:0 12px 0 0">
+                            <img class="email-logo" src="cid:travelgo-logo" width="156" height="156" alt="TravelGO" style="display:block;width:156px;height:156px;border:0;outline:none;text-decoration:none">
+                        </td>
+                        <td valign="middle" style="padding:16px 0">
+                            <p class="email-brand" style="margin:0 0 6px;color:#183d7c;font-size:26px;line-height:1.2;font-weight:700;letter-spacing:-0.5px">TravelGO</p>
+                            <p style="margin:0;color:#5b6e88;font-size:12px;line-height:1.6">Travel planning, bookings<br>and visa support</p>
+                        </td>
+                    </tr>
+                </table>
+            </td></tr>
+            <tr><td class="email-content" style="padding:34px 36px 32px">
+                <p style="margin:0 0 12px;color:#2458b8;font-size:11px;line-height:1.4;font-weight:700;letter-spacing:1.5px;text-transform:uppercase">Your travel update</p>
+                <h1 class="email-title" th:text="${heading}" style="margin:0 0 24px;color:#18345f;font-size:28px;line-height:1.25;font-weight:700;letter-spacing:-0.5px">Your TravelGO update</h1>
+                <p th:text="${'Hello ' + customerName + ','}" style="margin:0 0 14px;font-size:15px;line-height:1.7">Hello traveller,</p>
+                <p th:text="${intro}" style="margin:0 0 24px;font-size:15px;line-height:1.7">Here is the latest information about your journey.</p>
+                <table width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border:1px solid #dce7f6;border-radius:8px;border-collapse:separate;overflow:hidden;table-layout:fixed">
+                    <caption style="padding:0 0 10px;text-align:left;color:#244a83;font-size:13px;line-height:1.5;font-weight:700">Update summary</caption>
+                    <tr th:each="row : ${details}">
+                        <th scope="row" th:text="${row.key}" width="44%" style="width:44%;padding:14px 16px;background-color:#f1f6fd;color:#4d617d;text-align:left;vertical-align:top;border-bottom:1px solid #e4ecf6;font-size:13px;line-height:1.6;font-weight:400;overflow-wrap:anywhere">Detail</th>
+                        <td th:text="${row.value}" style="padding:14px 16px;color:#18345f;text-align:left;vertical-align:top;border-bottom:1px solid #e4ecf6;font-size:13px;line-height:1.6;font-weight:700;overflow-wrap:anywhere;word-break:break-word">Value</td>
+                    </tr>
+                </table>
+                <h2 style="margin:28px 0 10px;color:#18345f;font-size:18px;line-height:1.4;font-weight:700">Next steps</h2>
+                <p th:text="${nextStep}" style="margin:0 0 24px;font-size:15px;line-height:1.7">Review the details of your update.</p>
+                <table th:if="${link != null}" role="presentation" cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate;margin:0 0 24px">
+                    <tr><td align="center" bgcolor="#2458b8" style="background-color:#2458b8;border:1px solid #2458b8;border-radius:8px;mso-padding-alt:15px 24px">
+                        <a th:href="${link}" style="display:inline-block;padding:15px 24px;color:#ffffff;font-size:15px;line-height:20px;font-weight:700;text-align:center;text-decoration:none;border-radius:8px;mso-padding-alt:0">View booking details</a>
+                    </td></tr>
+                </table>
+                <table th:if="${simulatedPayments and link != null}" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0 0 20px;background-color:#f1f6fd;border:1px solid #dce7f6;border-radius:8px">
+                    <tr><td style="padding:16px 18px;color:#4d617d;font-size:13px;line-height:1.7"><strong style="color:#244a83">Payment notice</strong><br>Payments here are simulated; no money is charged.</td></tr>
+                </table>
+                <p th:if="${link != null}" style="margin:0;color:#60718a;font-size:12px;line-height:1.7">Check your booking details for supplier confirmation and your visa decision.</p>
+            </td></tr>
+            <tr><td style="padding:24px 28px;background-color:#183d7c;border-radius:0 0 15px 15px">
+                <p style="margin:0 0 6px;color:#ffffff;font-size:16px;line-height:1.4;font-weight:700">TravelGO travel team</p>
+                <p style="margin:0;color:#d7e5fc;font-size:12px;line-height:1.7">Travel planning &bull; Bookings &bull; Visa support</p>
+                <p th:text="${contact}" style="margin:14px 0 0;color:#d7e5fc;font-size:12px;line-height:1.7;overflow-wrap:anywhere">Contact the TravelGO team for help with your booking.</p>
+            </td></tr>
+        </table>
+        <!--[if mso]></td></tr></table><![endif]-->
+    </td></tr>
+</table>
+</body>
+</html>

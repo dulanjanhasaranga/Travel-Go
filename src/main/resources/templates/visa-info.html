@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Visa applications | TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="public-site journey-site">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="main-content journey-page">
+    <div class="journey-content">
+        <section class="journey-page-hero journey-page-hero-split journey-page-hero-compact" aria-labelledby="visa-title">
+            <div class="journey-page-intro"><p class="journey-page-kicker">Prepare for the journey</p><h1 id="visa-title">Visa applications</h1><p class="journey-page-lead">A clear path,<br>one step at a time.</p><p>Follow your application, document review and payment deadlines in your account.</p><a sec:authorize="isAnonymous() or hasRole('CUSTOMER')" class="btn btn-primary" th:href="@{/customer/visas}">My visa applications</a></div>
+            <div class="journey-page-photo journey-sky-photo" aria-hidden="true"><th:block th:replace="~{fragments/responsive-image :: sky('(max-width: 760px) 100vw, 45vw')}"></th:block></div>
+        </section>
+        <section class="journey-page-section" aria-labelledby="visa-process-title">
+            <div class="journey-section-heading"><p class="journey-page-kicker">The application process</p><h2 id="visa-process-title">From documents to your decision.</h2></div>
+            <div class="journey-process-grid">
+                <section class="journey-info-card"><span class="journey-step-marker" aria-hidden="true">01</span><h2>1. Booking and documents</h2><p>Choose your package, travel date and travelers. Start a visa application from your dashboard and check the document list for your destination.</p><p>Upload PDF, JPEG or PNG files up to 10 MB each while document submission is open. Your documents are available only to you and visa officers.</p></section>
+                <section class="journey-info-card"><span class="journey-step-marker" aria-hidden="true">02</span><h2>2. Document review and charges</h2><p>A visa officer reviews your documents before issuing the visa and documentation charges. Check the breakdown and payment deadline on your application.</p><p>The upfront quote is valid for 24 hours. If it expires before payment, contact the team for a new payment deadline.</p></section>
+                <section class="journey-info-card"><span class="journey-step-marker" aria-hidden="true">03</span><h2>3. Processing and decision</h2><p>Processing starts after upfront payment. Your officer records the decision and provides a reason if the application is rejected.</p><p>A rejection cancels the booking and creates a refund for the documentation charge. The visa charge is retained. Your account shows when the refund has been completed.</p></section>
+                <section class="journey-info-card"><span class="journey-step-marker" aria-hidden="true">04</span><h2>4. Final payment and confirmation</h2><p>Visa approval is required before final payment for every booking on this website. Pay the package and selected accommodation costs before the deadline, three days before departure.</p><p>Your booking is confirmed after the required payments and visa approval, with supplier confirmation where required. Before review or payment begins, you can update eligible bookings in your account. After that, contact the team or submit a cancellation request.</p></section>
+            </div>
+        </section>
+        <section class="journey-official-guidance" aria-labelledby="official-title">
+            <div><p class="journey-page-kicker">Before preparing your documents</p><h2 id="official-title">Check the official requirements</h2><p>Requirements depend on your destination, nationality and travel purpose. Check the relevant embassy or government website with your consultant before preparing your documents. Visa decisions and appointment availability are set by the issuing authority.</p></div>
+            <ul class="journey-reference-links"><li><a href="https://www.mofa.go.jp/j_info/visit/visa/index.html">Japan — Ministry of Foreign Affairs <span aria-hidden="true">↗</span></a></li><li><a href="https://www.gov.uk/standard-visitor">United Kingdom — GOV.UK visitor guidance <span aria-hidden="true">↗</span></a></li><li><a href="https://home-affairs.ec.europa.eu/policies/schengen/visa-policy/applying-schengen-visa_en">Schengen destinations — European Commission <span aria-hidden="true">↗</span></a></li></ul>
+            <p class="journey-guidance-note">Contact our team for guidance on other destinations. This website tracks your application with the agency; it does not submit applications directly to embassies.</p>
+            <div class="journey-page-actions"><a class="btn btn-primary" th:href="@{/contact}">Contact our team</a><a class="btn btn-outline" th:href="@{/packages}">View packages</a></div>
+        </section>
+    </div>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+</body>
+</html>

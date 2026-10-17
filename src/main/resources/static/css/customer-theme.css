@@ -1,0 +1,295 @@
+/* Customer workspace components use the same surface, text and status tokens as the public site. */
+.customer-workspace { background:var(--bg-main); }
+.customer-workspace main { min-width:0; }
+.customer-workspace .card,
+.customer-workspace .surface,
+.customer-workspace .status-card,
+.customer-workspace .glass-stepper,
+.customer-workspace .review-dialog,
+.customer-workspace .custom-modal-box {
+    background:var(--bg-surface);
+    color:var(--text-body);
+    border-color:var(--border-subtle);
+}
+.customer-workspace .card:hover,
+.customer-workspace .status-card:hover { transform:none; }
+.customer-workspace .glass-stepper { backdrop-filter:none; box-shadow:var(--shadow-sm); }
+.customer-workspace .glass-modal-box {
+    /* Override the older global glass-modal rule, which uses !important white surfaces. */
+    background:var(--bg-surface) !important;
+    border:1px solid var(--border-subtle) !important;
+    backdrop-filter:none !important;
+    box-shadow:var(--shadow-xl) !important;
+}
+.customer-workspace .custom-modal-header,
+.customer-workspace .custom-modal-footer { border-color:var(--border-subtle); }
+.customer-workspace .custom-modal-footer { flex-wrap:wrap; }
+.customer-workspace .custom-modal-close { width:44px; min-width:44px; height:44px; }
+.customer-workspace .form-control-custom,
+.customer-workspace .input-field-custom,
+.customer-workspace .profile-surface input,
+.customer-workspace .profile-surface textarea {
+    min-width:0;
+    min-height:46px;
+    background:var(--bg-surface);
+    color:var(--text-heading);
+    border-color:var(--border-strong);
+    color-scheme:inherit;
+}
+.customer-workspace .form-control-custom:focus,
+.customer-workspace .input-field-custom:focus {
+    background:var(--bg-surface);
+    border-color:var(--brand-accent);
+    outline:2px solid var(--brand-accent);
+    outline-offset:2px;
+    box-shadow:none;
+}
+.customer-workspace input::placeholder,
+.customer-workspace textarea::placeholder { color:var(--text-muted); opacity:1; }
+.customer-workspace input[type=file]::file-selector-button {
+    color:var(--text-heading);
+    background:var(--bg-subtle);
+    border:1px solid var(--border-strong);
+    border-radius:6px;
+    padding:8px 12px;
+    margin-right:12px;
+    cursor:pointer;
+}
+.customer-workspace .step-bubble { background:var(--bg-subtle); color:var(--text-muted); border-color:var(--border-strong); }
+.customer-workspace .step-item.active .step-bubble { background:var(--brand-accent); border-color:var(--brand-accent); color:#fff; }
+.customer-workspace .step-item.completed .step-bubble { background:#08784f; border-color:#08784f; color:#fff; }
+.customer-workspace .step-divider { background:var(--border-subtle); }
+.customer-workspace .step-divider.filled { background:var(--success); }
+.customer-workspace .step-title { color:var(--text-heading); }
+.customer-workspace .context-banner h3,
+.customer-workspace .context-banner h4 { color:inherit; }
+.customer-workspace .context-banner.banner-blue { background:var(--info-bg); border:1px solid var(--info-border); color:var(--info); }
+.customer-workspace .context-banner.banner-amber { background:var(--warning-bg); border:1px solid var(--warning-border); color:var(--warning); }
+.customer-workspace .context-banner.banner-green { background:var(--success-bg); border:1px solid var(--success-border); color:var(--success); }
+.customer-workspace .context-banner-icon { background:var(--bg-surface); }
+.customer-workspace .total-highlight-box { background:var(--info-bg); border-color:var(--info-border); }
+.customer-workspace .trust-pill { background:var(--success-bg); border-color:var(--success-border); color:var(--success); }
+.customer-workspace .trust-pill svg { color:currentColor; }
+.customer-workspace .method-card { color:var(--text-body); }
+.customer-workspace .method-card.active { background:var(--info-bg); }
+.customer-workspace .payment-box-header { background:var(--bg-subtle); }
+.customer-workspace .pay-submit-btn {
+    min-height:46px; padding:14px 20px; border-radius:var(--radius-control,10px);
+    color:#fff; background:var(--brand-accent); box-shadow:none;
+    font:600 1rem var(--font-body); transition:background-color .15s ease;
+}
+.customer-workspace .pay-submit-btn:hover { background:var(--brand-accent-hover); transform:none; box-shadow:none; }
+.customer-workspace .method-card:hover,.customer-workspace .wallet-btn:hover { transform:none; }
+.customer-workspace .concierge-card { background:var(--bg-subtle); border-color:var(--border-subtle); }
+.customer-workspace .concierge-icon { background:var(--brand-accent); }
+.customer-workspace .concierge-title { color:var(--text-heading); }
+.customer-workspace .concierge-desc { color:var(--text-body); }
+.customer-workspace .summary-destination { color:#cbd5e1; }
+.customer-workspace .summary-destination svg,.customer-workspace .summary-tag { color:#7dd3fc; }
+.customer-workspace .ticket-sidebar::before,
+.customer-workspace .ticket-sidebar::after { background:var(--bg-main); }
+.customer-workspace .timeline-item::before { box-shadow:0 0 0 4px var(--bg-surface); }
+.customer-workspace #replacementTravelers fieldset { border:1px solid var(--border-subtle); padding:16px; margin:16px 0; border-radius:var(--radius-md); min-width:0; }
+.customer-workspace #replacementTravelers label { display:block; color:var(--text-heading); font-size:.85rem; font-weight:600; margin-bottom:12px; }
+.customer-workspace #replacementTravelers label:last-child { margin-bottom:0; }
+.customer-workspace #replacementTravelers input { margin-top:6px; font-weight:400; }
+.customer-workspace .booking-payment-summary tbody tr:hover,
+.customer-workspace .booking-payment-summary tbody tr:focus-within { background:var(--bg-subtle); }
+.customer-workspace .customer-page-heading { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:20px; margin-bottom:32px; }
+.customer-workspace .customer-page-heading > div { min-width:0; flex:1 1 280px; }
+.customer-workspace .customer-page-heading > .btn { flex:0 1 auto; }
+.customer-workspace .inquiry-card-heading { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
+.customer-workspace .inquiry-card-heading > div { min-width:0; flex:1 1 240px; }
+.customer-workspace h1,.customer-workspace h2,.customer-workspace h3,.customer-workspace h4 { overflow-wrap:anywhere; }
+.customer-workspace .form-help { display:block; color:var(--text-muted); margin-top:6px; font-size:.85rem; }
+.customer-workspace .profile-actions { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+.customer-workspace .profile-surface .is-invalid { border-color:var(--danger); }
+.customer-workspace .profile-surface .field-error { margin:8px 0 0; }
+.customer-workspace .booking-request-layout > div { min-width:0; }
+.customer-workspace .booking-request-layout .summary-row { gap:12px; align-items:flex-start; }
+.customer-workspace .booking-request-layout .summary-value { min-width:0; text-align:right; overflow-wrap:anywhere; }
+.customer-workspace .booking-estimate > div { flex-wrap:wrap; gap:8px; }
+.customer-workspace .traveler-card { min-width:0; padding:20px; margin:0 0 16px; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); background:var(--bg-subtle); }
+.customer-workspace .traveler-card legend { padding:0 6px; color:var(--text-heading); font-size:1rem; font-weight:700; }
+.customer-workspace .traveler-card .form-group { margin-bottom:16px; }
+.customer-workspace .traveler-field-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.customer-workspace .traveler-field-grid > div { min-width:0; }
+.customer-workspace #replacementTravelers .traveler-field-grid { grid-template-columns:1fr; }
+.customer-workspace #replacementTravelers .form-label { margin-bottom:6px; }
+.customer-workspace #replacementTravelers input { margin-top:0; }
+.customer-workspace .review-dialog { max-height:calc(100dvh - 32px); overflow-y:auto; }
+.customer-workspace .review-dialog .btn { min-height:44px; }
+.customer-workspace .review-dialog button[aria-label] { min-width:44px; }
+.customer-workspace .review-dialog [hidden] { display:none; }
+.customer-workspace .review-dialog h2 { min-width:0; }
+.customer-workspace .inquiry-message,.customer-workspace .inquiry-reference { overflow-wrap:anywhere; }
+.customer-workspace .inquiry-card-meta { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px 16px; }
+.customer-workspace .inquiry-card:focus-visible { outline:3px solid var(--focus-ring); outline-offset:3px; }
+.customer-workspace .inquiry-detail-heading { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; }
+.customer-workspace .inquiry-detail-heading > div { min-width:0; }
+.customer-workspace .inquiry-detail-status { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:8px; }
+.customer-workspace .inquiry-submitted { text-align:right; }
+.customer-workspace .inquiry-message-card { padding:32px; }
+
+/* A calm, functional dashboard: no continuously moving navigation, cards or backgrounds. */
+.customer-workspace .visa-uploaded-documents { margin-bottom:20px; }
+.customer-workspace .visa-uploaded-documents h5 { font-size:1rem; margin:0 0 10px; color:var(--text-heading); }
+.customer-workspace .visa-document-list { list-style:none; margin:0; padding:0; }
+.customer-workspace .visa-document-list li { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:12px 0; border-top:1px solid var(--border-subtle); }
+.customer-workspace .visa-document-copy { flex:1 1 160px; min-width:0; overflow-wrap:anywhere; }
+.customer-workspace .visa-document-copy time { display:block; margin-top:4px; }
+.customer-workspace .dash-hero {
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:24px;
+    background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--radius-lg);
+    padding:clamp(24px,4vw,40px); margin-bottom:24px; box-shadow:var(--shadow-sm);
+}
+.customer-workspace .dash-hero h1 { margin:10px 0; font-size:clamp(1.8rem,3.5vw,2.5rem); color:var(--text-heading); }
+.customer-workspace .dash-hero .eyebrow { color:var(--link-color,var(--brand-accent)); }
+.customer-workspace .metrics-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:20px; margin-bottom:32px; }
+.customer-workspace .metric-card {
+    display:flex; align-items:center; gap:16px; min-width:0;
+    background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:24px;
+}
+.customer-workspace .metric-icon {
+    display:flex; align-items:center; justify-content:center; width:44px; height:44px; flex:0 0 44px;
+    color:var(--info); background:var(--info-bg); border-radius:10px;
+}
+.customer-workspace .metric-icon svg { width:24px; height:24px; }
+.customer-workspace .metric-label { font-size:.8rem; font-weight:600; color:var(--text-muted); margin-bottom:6px; }
+.customer-workspace .metric-value { color:var(--text-heading); font-size:2rem; line-height:1.1; font-weight:750; }
+.customer-workspace .nav-pills {
+    display:flex; flex-wrap:wrap; gap:8px; width:100%; margin-bottom:24px;
+    border-bottom:1px solid var(--border-subtle); padding:0 0 16px;
+}
+.customer-workspace .nav-pills a {
+    display:inline-flex; align-items:center; min-height:44px; padding:10px 16px; border-radius:8px;
+    color:var(--text-body); font-size:.9rem; font-weight:600;
+}
+.customer-workspace .nav-pills a:hover { color:var(--link-color,var(--brand-accent)); background:var(--bg-subtle); }
+.customer-workspace .nav-pills a[aria-current=page] { color:var(--link-color,var(--brand-accent)); background:var(--info-bg); }
+.customer-workspace .ticket-list { display:flex; flex-direction:column; gap:16px; }
+.customer-workspace .ticket-card {
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;
+    background:var(--bg-surface); color:var(--text-body); padding:24px;
+    border:1px solid var(--border-subtle); border-left:4px solid var(--border-strong); border-radius:var(--radius-lg);
+    transition:border-color .15s ease,box-shadow .15s ease;
+}
+.customer-workspace .ticket-card:hover { border-color:var(--brand-accent); box-shadow:var(--shadow-sm); }
+.customer-workspace .ticket-card.status-confirmed { border-left-color:var(--success); }
+.customer-workspace .ticket-card.status-pending { border-left-color:var(--warning); }
+.customer-workspace .ticket-card.status-processing { border-left-color:var(--info); }
+.customer-workspace .ticket-left { min-width:0; }
+.customer-workspace .ticket-left .ticket-id { display:block; color:var(--text-muted); font-size:.8rem; font-weight:600; margin-bottom:6px; letter-spacing:.04em; }
+.customer-workspace .ticket-title { color:var(--text-heading); font-size:1.2rem; margin:0 0 8px; }
+.customer-workspace .ticket-meta { display:flex; flex-wrap:wrap; gap:12px; color:var(--text-muted); font-size:.9rem; }
+.customer-workspace .ticket-meta svg { width:16px; height:16px; display:inline-block; vertical-align:middle; margin-right:4px; }
+.customer-workspace .ticket-right { display:flex; align-items:center; gap:12px; min-width:0; max-width:100%; }
+.customer-workspace .ticket-arrow { display:flex; align-items:center; justify-content:center; width:36px; height:36px; flex:0 0 36px; background:var(--bg-subtle); border-radius:50%; color:var(--text-body); }
+.customer-workspace .stepper-container { padding:0; }
+.customer-workspace .stepper-container .step-item { display:flex; flex-direction:row; align-items:flex-start; text-align:left; gap:16px; margin-bottom:24px; }
+.customer-workspace .stepper-container .step-item:last-child { margin-bottom:0; }
+.customer-workspace .step-number { width:48px; height:48px; flex:0 0 48px; display:flex; align-items:center; justify-content:center; background:var(--bg-surface); border:1px solid var(--border-strong); border-radius:50%; color:var(--text-body); font-weight:700; }
+.customer-workspace .stepper-container .step-content { align-items:flex-start; min-width:0; }
+.customer-workspace .stepper-container h4 { margin:2px 0 6px; font-size:1rem; }
+.customer-workspace .stepper-container p { margin:0; font-size:.9rem; color:var(--text-muted); }
+.customer-workspace .section-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin:32px 0 24px; }
+.customer-workspace .section-header h2 { margin:0; font-size:1.6rem; }
+.customer-workspace .premium-empty { text-align:center; padding:40px 24px; background:var(--bg-surface); border:1px dashed var(--border-strong); border-radius:var(--radius-lg); }
+.customer-workspace .premium-empty svg { width:48px; height:48px; color:var(--text-muted); margin-bottom:16px; }
+.customer-workspace .card-img-wrapper { overflow:hidden; }
+.customer-workspace .card-img { width:100%; height:200px; object-fit:cover; }
+
+/* Booking and visa pages retain container gutters instead of inheriting section padding. */
+.customer-workspace .customer-page-shell { padding-top:36px; padding-bottom:64px; }
+.customer-workspace .customer-page-shell .customer-page-heading h1 { font-size:clamp(1.8rem,3.5vw,2.2rem); margin:0 0 10px; }
+.customer-workspace .customer-page-shell .customer-page-heading p { margin:0; color:var(--text-muted); }
+.customer-workspace .customer-page-actions { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+.customer-workspace .customer-panel { padding:28px; }
+.customer-workspace .customer-panel h2,.customer-workspace .booking-history > h2 { font-size:1.25rem; margin:0 0 20px; }
+.customer-workspace .customer-panel-heading h2 { margin-bottom:8px; }
+.customer-workspace .customer-panel-heading p { margin:0; color:var(--text-muted); }
+.customer-workspace .customer-panel-heading { margin-bottom:24px; }
+.customer-workspace .visa-application-panel { margin-bottom:28px; }
+.customer-workspace .visa-application-fields { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:20px; align-items:start; }
+.customer-workspace .visa-application-fields > div { min-width:0; }
+.customer-workspace .visa-application-fields .form-control-custom { min-height:48px; font-size:1rem; }
+.customer-workspace .visa-application-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px; border-top:1px solid var(--border-subtle); margin-top:24px; padding-top:20px; }
+.customer-workspace .visa-application-footer p { flex:1 1 320px; max-width:650px; color:var(--text-muted); font-size:.9rem; margin:0; }
+.customer-workspace .visa-application-footer .btn { flex:0 1 auto; min-height:46px; }
+.customer-workspace .visa-application-metadata { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px; margin-bottom:24px; padding:16px; background:var(--bg-subtle); border-radius:var(--radius-md); }
+.customer-workspace .visa-application-metadata > div { min-width:0; overflow-wrap:anywhere; }
+.customer-workspace .visa-application-list .status-card:last-child { margin-bottom:0; }
+.customer-workspace .customer-booking-list { display:flex; flex-direction:column; gap:20px; }
+.customer-workspace .customer-booking-card { display:grid; grid-template-columns:200px minmax(0,1fr); padding:0; overflow:hidden; }
+.customer-workspace .customer-booking-photo { display:block; min-width:0; background:var(--bg-subtle); }
+.customer-workspace .customer-booking-photo img { width:100%; height:100%; min-height:220px; object-fit:cover; }
+.customer-workspace .customer-booking-content { min-width:0; padding:24px; }
+.customer-workspace .customer-booking-heading { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px 24px; }
+.customer-workspace .customer-booking-heading > div:first-child { flex:1 1 240px; min-width:0; }
+.customer-workspace .customer-booking-reference { display:block; color:var(--text-muted); font-size:.8rem; font-weight:600; margin-bottom:6px; }
+.customer-workspace .customer-booking-heading h3 { font-size:1.25rem; margin:0 0 6px; }
+.customer-workspace .customer-booking-location { color:var(--text-muted); font-size:.9rem; margin:0; }
+.customer-workspace .customer-booking-state { min-width:0; }
+.customer-workspace .customer-detail-label,.customer-workspace .customer-booking-facts dt { display:block; font-size:.8rem; font-weight:600; color:var(--text-muted); margin-bottom:6px; }
+.customer-workspace .customer-booking-state .badge { white-space:normal; }
+.customer-workspace .customer-booking-facts { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; padding:20px 0; margin:20px 0 0; border-top:1px solid var(--border-subtle); }
+.customer-workspace .customer-booking-facts > div { min-width:0; }
+.customer-workspace .customer-booking-facts dd { color:var(--text-heading); font-size:.95rem; font-weight:600; margin:0; overflow-wrap:anywhere; }
+.customer-workspace .customer-booking-actions { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+.customer-workspace .customer-booking-actions .btn { min-height:44px; }
+.customer-workspace .customer-booking-actions form { margin:0; }
+.customer-workspace .customer-booking-review { font-size:.9rem; color:var(--text-body); background:var(--bg-subtle); border:1px solid var(--border-subtle); border-radius:8px; padding:12px 14px; margin:0 0 20px; overflow-wrap:anywhere; }
+.customer-workspace .customer-cancel-button { color:var(--danger); border-color:var(--danger-border); }
+.customer-workspace .customer-empty-state { text-align:center; padding:40px 24px; }
+.customer-workspace .customer-empty-state p { color:var(--text-muted); max-width:440px; margin:0 auto 24px; }
+@media(max-width:980px) {
+    .customer-workspace .customer-booking-card { grid-template-columns:160px minmax(0,1fr); }
+    .customer-workspace .customer-booking-facts { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:600px) {
+    .customer-workspace .customer-page-shell { padding-top:28px; padding-bottom:48px; }
+    .customer-workspace .customer-page-actions { width:100%; }
+    .customer-workspace .customer-panel { padding:20px; }
+    .customer-workspace .visa-application-fields { grid-template-columns:1fr; gap:16px; }
+    .customer-workspace .visa-application-footer { gap:16px; margin-top:20px; }
+    .customer-workspace .visa-application-footer .btn { width:100%; }
+    .customer-workspace .visa-application-list .status-card { padding:20px; }
+    .customer-workspace .visa-application-list .glass-stepper { padding:20px; }
+    .customer-workspace .visa-application-metadata { grid-template-columns:minmax(0,1fr); gap:16px; }
+    .customer-workspace .customer-booking-card { grid-template-columns:minmax(0,1fr); }
+    .customer-workspace .customer-booking-photo img { height:180px; min-height:0; }
+    .customer-workspace .customer-booking-content { padding:20px; }
+    .customer-workspace .customer-booking-heading { gap:14px; }
+    .customer-workspace .customer-booking-heading > div:first-child { flex-basis:100%; }
+    .customer-workspace .customer-booking-facts { gap:20px 12px; }
+    .customer-workspace .customer-booking-actions > a,.customer-workspace .customer-booking-actions > form { flex:1 1 120px; }
+    .customer-workspace .customer-booking-actions form .btn { width:100%; }
+}
+@media(max-width:1100px) { .customer-workspace .metrics-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) {
+    .customer-workspace .booking-request-layout .card { padding:20px !important; }
+    .customer-workspace .traveler-card { padding:16px; }
+    .customer-workspace .traveler-field-grid { grid-template-columns:1fr; }
+    .customer-workspace .profile-actions { align-items:stretch; }
+    .customer-workspace .profile-actions .btn { flex:1 1 100%; }
+    .customer-workspace .inquiry-submitted { text-align:left; }
+    .customer-workspace .inquiry-message-card { padding:20px; }
+    .customer-workspace .review-dialog { padding:24px 20px; }
+    .customer-workspace .metrics-grid { gap:12px; }
+    .customer-workspace .metric-card { padding:16px; gap:10px; flex-direction:column; align-items:flex-start; }
+    .customer-workspace .metric-label { font-size:.75rem; }
+    .customer-workspace .metric-value { font-size:1.75rem; }
+    .customer-workspace .nav-pills a { padding:10px 12px; }
+    .customer-workspace .ticket-card { padding:20px; }
+    .customer-workspace .ticket-right .badge { white-space:normal; }
+    .customer-workspace .timeline-container,
+    .customer-workspace .booking-payment-summary { padding:24px 16px !important; }
+    .customer-workspace .timeline-header { flex-wrap:wrap; gap:12px; }
+    .customer-workspace .ticket-main { min-width:0; }
+    .customer-workspace .custom-modal-header,.customer-workspace .custom-modal-body,.customer-workspace .custom-modal-footer { padding:20px; }
+    .customer-workspace .checkout-page-container .glass-stepper { border-radius:var(--radius-lg); padding:20px; }
+    .customer-workspace .payment-box-body { padding:20px; }
+    .customer-workspace .trip-meta-grid { grid-template-columns:1fr; }
+    .customer-workspace .history-item { flex-wrap:wrap; gap:10px; }
+    .customer-workspace .total-highlight-box { flex-wrap:wrap; gap:10px; }
+}

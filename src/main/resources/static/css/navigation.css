@@ -1,0 +1,326 @@
+/* Public and customer navigation: one set of control sizes, surfaces and states. */
+
+header.navbar {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  top: 0;
+  border: 0;
+  border-bottom: 1px solid var(--border-subtle,#e2e8f0);
+  border-radius: 0;
+  background: var(--bg-surface,#fff);
+  box-shadow: none;
+  backdrop-filter: none;
+  animation: none;
+  transform: none;
+  position: sticky;
+}
+
+header.navbar.scrolled {
+  background: var(--bg-surface,#fff);
+  box-shadow: var(--shadow-sm);
+}
+
+header.navbar .nav-container {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 20px;
+  height: auto;
+  min-height: 80px;
+  padding-block: 12px;
+}
+
+header.navbar .brand-logo {
+  flex: none;
+  gap: 9px;
+  color: var(--text-heading,#0f172a);
+  font-size: 1.4rem;
+}
+
+header.navbar .brand-logo .brand-wordmark {
+  color: inherit;
+}
+
+header.navbar .brand-wordmark>span {
+  color: #c45316;
+}
+
+header.navbar .official-mark {
+  width: 44px;
+  height: 44px;
+  flex-basis: 44px;
+}
+
+header.navbar .nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+}
+
+header.navbar .nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 9px;
+  border-radius: 8px;
+  font-size: .84rem;
+  font-weight: 600;
+  color: var(--text-body,#334155);
+  white-space: nowrap;
+}
+
+header.navbar .nav-link::after {
+  display: none;
+}
+
+header.navbar .nav-link:hover,
+header.navbar .nav-link[aria-current] {
+  background: var(--brand-accent-light,#e0f2fe);
+  color: var(--link-color,#185999);
+}
+
+header.navbar .nav-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+header.navbar .nav-control,
+header.navbar .notification-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle,#e2e8f0);
+  border-radius: 10px;
+  background: var(--bg-surface,#fff);
+  color: var(--text-heading,#0f172a);
+  font: 600 .85rem/1.2 var(--font-body,system-ui);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .16s ease,border-color .16s ease;
+}
+
+header.navbar .nav-control:hover,
+header.navbar .notification-toggle:hover,
+header.navbar details[open]>.nav-control,
+header.navbar .notification-center[open]>.notification-toggle {
+  background: var(--bg-subtle,#f1f5f9);
+  border-color: var(--border-strong,#cbd5e1);
+  color: var(--text-heading,#0f172a);
+  transform: none;
+  box-shadow: none;
+}
+
+header.navbar .nav-control:focus-visible,
+header.navbar .nav-link:focus-visible,
+header.navbar .account-popover a:focus-visible,
+header.navbar .account-popover button:focus-visible {
+  outline: 3px solid var(--focus-ring,#216fbe);
+  outline-offset: 3px;
+}
+
+header.navbar .nav-control svg {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+}
+
+header.navbar .nav-icon-control,
+header.navbar .notification-toggle {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+}
+
+header.navbar .nav-control-primary {
+  background: #216fbe;
+  border-color: #216fbe;
+  color: #fff;
+}
+
+header.navbar .nav-control-primary:hover {
+  background: #185999;
+  border-color: #185999;
+  color: #fff;
+}
+
+header.navbar .nav-auth-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+header.navbar .nav-toggle {
+  display: none;
+  flex-direction: row;
+}
+
+.theme-sun {
+  display: none;
+}
+
+[data-theme="dark"] .theme-moon {
+  display: none;
+}
+
+[data-theme="dark"] .theme-sun {
+  display: block;
+}
+
+.account-menu {
+  position: relative;
+}
+
+.account-toggle {
+  list-style: none;
+}
+
+.account-toggle::-webkit-details-marker {
+  display: none;
+}
+
+header.navbar .account-chevron {
+  width: 14px;
+  height: 14px;
+  flex-basis: 14px;
+  transition: transform .16s ease;
+}
+
+.account-menu[open] .account-chevron {
+  transform: rotate(180deg);
+}
+
+.account-popover {
+  position: absolute;
+  z-index: 1100;
+  right: 0;
+  top: calc(100% + 10px);
+  width: 250px;
+  max-width: calc(100vw - 32px);
+  padding: 8px;
+  border: 1px solid var(--border-subtle,#e2e8f0);
+  border-radius: 14px;
+  background: var(--bg-surface,#fff);
+  box-shadow: var(--shadow-xl);
+}
+
+.account-menu-heading {
+  margin: 0;
+  padding: 10px 12px 8px;
+  color: var(--text-muted,#64748b);
+  font-size: .75rem;
+  font-weight: 600;
+}
+
+.account-menu-links {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-popover a,
+.account-signout button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-body,#334155);
+  font: 500 .9rem/1.4 var(--font-body,system-ui);
+  text-align: left;
+  cursor: pointer;
+}
+
+.account-popover a:hover,
+.account-popover a[aria-current="page"],
+.account-signout button:hover {
+  background: var(--bg-subtle,#f1f5f9);
+  color: var(--text-heading,#0f172a);
+}
+
+.account-signout {
+  padding-top: 8px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border-subtle,#e2e8f0);
+}
+
+@media (max-width:1199px) {
+  header.navbar .nav-container {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  header.navbar .nav-actions {
+    margin-left: auto;
+  }
+
+  header.navbar .nav-links {
+    flex-basis: 100%;
+    order: 3;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 4px;
+    border-top: 1px solid var(--border-subtle,#e2e8f0);
+    padding-top: 12px;
+  }
+
+  .nav-ready header.navbar .nav-toggle {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .nav-ready header.navbar .nav-links:not(.is-open) {
+    display: none;
+  }
+}
+
+@media (max-width:600px) {
+  header.navbar {
+    position: relative;
+  }
+
+  header.navbar .nav-container {
+    padding-block: 12px;
+  }
+
+  header.navbar .nav-actions {
+    flex-basis: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  header.navbar .nav-links {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  header.navbar .nav-link {
+    justify-content: flex-start;
+    font-size: .9rem;
+  }
+
+  header.navbar .nav-control,
+  header.navbar .notification-toggle {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  header.navbar *,
+  .account-chevron {
+    transition: none;
+  }
+}

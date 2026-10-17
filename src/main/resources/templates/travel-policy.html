@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle + ' — TravelGO'}">Travel policies | TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="stylesheet" th:href="@{/css/agency-workflow.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="public-site journey-site">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="main-content journey-page journey-policy-page">
+    <div class="journey-content">
+        <header class="journey-policy-header"><p class="journey-page-kicker">Travel information</p><h1 th:text="${pageTitle}"></h1><p class="journey-policy-meta" th:text="${policy.title + ' · Version ' + policy.id + ' · Published ' + #temporals.format(policy.publishedAt,'dd MMM yyyy')}"></p></header>
+        <div class="journey-policy-layout">
+            <nav class="journey-policy-navigation" aria-label="Policy sections"><p class="journey-page-kicker">In this policy</p><a th:href="@{/policies/{id}/terms(id=${policy.id})}">Booking terms</a><a th:href="@{/policies/{id}/privacy(id=${policy.id})}">Privacy policy</a><a th:href="@{/policies/{id}/cancellation-policy(id=${policy.id})}">Cancellation and refunds</a><p>For questions about these policies, <a th:href="@{/contact}">contact our team</a>.</p></nav>
+            <article class="workflow-card workflow-copy journey-policy-copy" th:text="${policyContent}"></article>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+</body>
+</html>

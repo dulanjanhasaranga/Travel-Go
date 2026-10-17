@@ -1,0 +1,39 @@
+services:
+  - type: web
+    runtime: docker
+    name: travelgo-demo
+    plan: free
+    dockerfilePath: ./Dockerfile.cloud-evaluation
+    dockerContext: .
+    healthCheckPath: /healthz
+    envVars:
+      - key: TRAVELGO_CLOUD_EVALUATION_ACCEPTANCE
+        value: SYNTHETIC_DEMO_ONLY
+      - key: SUPABASE_DOCUMENT_BUCKET
+        value: travelgo-documents
+      - key: TRAVELGO_DB_TRUSTSTORE_PASSWORD
+        generateValue: true
+      - key: TRAVELGO_AUTH_RATE_HMAC_KEY
+        generateValue: true
+      - key: TRAVELGO_STAFF_MFA_ENCRYPTION_KEY
+        generateValue: true
+      - key: TRAVELGO_DB_URL
+        sync: false
+      - key: TRAVELGO_DB_USERNAME
+        sync: false
+      - key: TRAVELGO_DB_PASSWORD
+        sync: false
+      - key: TRAVELGO_AIVEN_CA_CERT_PEM_BASE64
+        sync: false
+      - key: TRAVELGO_PUBLIC_BASE_URL
+        sync: false
+      - key: TRAVELGO_MAIL_FROM
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: SUPABASE_PROJECT_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: CLOUDMERSIVE_API_KEY
+        sync: false

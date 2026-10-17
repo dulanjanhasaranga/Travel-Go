@@ -1,0 +1,203 @@
+/* Catalogue layouts: shared with the public journey design, scoped away from login/workspaces. */
+.journey-catalogue {
+    --catalogue-ink: #163533;
+    --catalogue-green: #14594c;
+    --catalogue-soft: #edf3ee;
+    --catalogue-sky: #e8f4f5;
+    --catalogue-line: #dce7e1;
+    --catalogue-warm: #e6a13b;
+}
+.journey-catalogue .container.section { padding-top: 2rem; padding-bottom: 4rem; }
+.journey-catalogue :is(h1, h2, h3) { letter-spacing: -.035em; }
+.journey-catalogue .journey-kicker { display: block; color: var(--catalogue-green); font-size: .7rem; font-weight: 700; letter-spacing: .13em; line-height: 1.7; text-transform: uppercase; }
+.journey-catalogue .catalogue-masthead { display: grid; grid-template-columns: .9fr 1.1fr; align-items: stretch; min-height: 410px; border-radius: 32px; background: var(--catalogue-soft); overflow: hidden; }
+.journey-catalogue .catalogue-masthead-copy { padding: clamp(2rem, 4.5vw, 4rem); padding-bottom: 6.5rem; align-self: center; }
+.journey-catalogue .catalogue-masthead h1 { color: var(--catalogue-ink); font-size: clamp(2.4rem, 4.5vw, 4.1rem); font-weight: 700; line-height: 1.12; margin: 1rem 0 1.25rem; }
+.journey-catalogue .catalogue-masthead h1 em { color: var(--catalogue-green); font-family: Georgia, 'Times New Roman', serif; font-weight: 400; }
+.journey-catalogue .catalogue-masthead-copy > p { max-width: 32rem; color: var(--text-body); font-size: .95rem; line-height: 1.8; margin-bottom: 1.5rem; }
+.journey-catalogue .catalogue-text-link { display: inline-flex; align-items: center; gap: 1rem; color: var(--catalogue-green); font-size: .88rem; font-weight: 700; text-decoration: none; }
+.journey-catalogue .catalogue-text-link span { display: inline-flex; width: 2rem; height: 2rem; align-items: center; justify-content: center; border: 1px solid currentColor; border-radius: 50%; }
+.journey-catalogue .catalogue-text-link:hover { text-decoration: underline; text-underline-offset: .25em; }
+.journey-catalogue .catalogue-masthead-photo { position: relative; min-width: 0; margin: 0; min-height: 410px; overflow: hidden; border-radius: 46% 0 0 0; }
+.journey-catalogue .catalogue-masthead-photo img { position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: center 65%; }
+.journey-catalogue .catalogue-masthead-photo figcaption { position: absolute; right: 1.75rem; top: 1.75rem; padding: .5rem .9rem; border: 1px solid #ffffff80; border-radius: 999px; background: #ffffffed; color: #163533; font-size: .72rem; font-weight: 600; }
+.journey-catalogue .catalogue-masthead--coast { background: var(--catalogue-sky); }
+.journey-catalogue .catalogue-masthead--coast .catalogue-masthead-photo { border-radius: 0 0 0 46%; }
+.journey-catalogue .catalogue-masthead--coast .catalogue-masthead-photo img { object-position: center 45%; }
+.journey-catalogue .catalogue-filters { position: relative; margin: -3.25rem 2rem 3.5rem; padding: 1.75rem 2rem 1.35rem; border: 1px solid var(--catalogue-line); border-radius: 22px; box-shadow: 0 14px 36px #1635330b; scroll-margin-top: 7rem; }
+.journey-catalogue .catalogue-search-heading { display: flex; gap: 1rem; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 1.15rem; }
+.journey-catalogue .catalogue-search-heading h2 { font-size: 1.15rem; margin: 0; }
+.journey-catalogue .catalogue-search-heading p { font-size: .8rem; color: var(--text-muted); margin: 0; }
+.journey-catalogue .catalogue-primary-fields { display: grid; grid-template-columns: 1fr 1fr .85fr auto; gap: 1rem; align-items: end; }
+.journey-catalogue .catalogue-search-form label { font-size: .75rem; font-weight: 600; display: block; min-width: 0; }
+.journey-catalogue .catalogue-search-form label .form-control { margin-top: .45rem; }
+.journey-catalogue .catalogue-search-form .form-control,
+.journey-catalogue .catalogue-destination-fields .form-control { border-radius: 10px; background: var(--field-bg); min-height: 48px; }
+.journey-catalogue .catalogue-primary-fields > .btn { min-height: 48px; gap: 1.2rem; }
+.journey-catalogue .catalogue-more-filters { border-top: 1px solid var(--catalogue-line); margin-top: 1.25rem; }
+.journey-catalogue .catalogue-more-filters summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem 0 .25rem; color: var(--text-body); font-weight: 600; font-size: .8rem; cursor: pointer; list-style: none; }
+.journey-catalogue .catalogue-more-filters summary::-webkit-details-marker { display: none; }
+.journey-catalogue .catalogue-more-filters summary span { font-size: 1.2rem; line-height: 1; transition: transform .2s ease; }
+.journey-catalogue .catalogue-more-filters[open] summary span { transform: rotate(45deg); }
+.journey-catalogue .catalogue-more-filters .filter-grid { padding-top: 1rem; gap: 1rem; }
+.journey-catalogue .filter-note { font-size: .75rem; margin-top: .75rem !important; }
+.journey-catalogue .catalogue-destination-fields { grid-template-columns: 1.4fr 1fr 1fr auto; gap: 1rem; }
+.journey-catalogue .catalogue-destination-fields label { font-size: .75rem; }
+.journey-catalogue .catalogue-destination-fields .filter-actions { justify-content: flex-end; }
+.journey-catalogue .catalogue-destination-fields .filter-actions .btn { flex: 0 1 auto; min-height: 48px; }
+.journey-catalogue .catalogue-results { align-items: baseline; gap: 1rem 1.5rem; margin-bottom: 1.5rem; }
+.journey-catalogue .catalogue-results-summary { display: flex; align-items: baseline; flex-wrap: wrap; gap: .4rem 1rem; }
+.journey-catalogue .catalogue-results h2 { margin: 0; font-size: 1.25rem; line-height: 1.4; letter-spacing: -.025em; }
+.journey-catalogue .catalogue-result-count { color: var(--text-muted); font-size: .82rem; line-height: 1.5; }
+.journey-catalogue .catalogue-price-note { max-width: 24rem; font-size: .8rem; line-height: 1.65; }
+.journey-catalogue :is(.journey-package-grid, .journey-destination-grid) { gap: 1.5rem; }
+.journey-catalogue :is(.journey-package-card, .journey-destination-card) { display: flex; flex-direction: column; padding: .55rem; border: 1px solid var(--catalogue-line); border-radius: 22px; background: var(--bg-surface); box-shadow: none; }
+.journey-catalogue :is(.journey-package-card, .journey-destination-card):hover { box-shadow: 0 12px 30px #1635330c; }
+.journey-catalogue :is(.journey-package-card, .journey-destination-card) .card-image-wrap { display: block; position: relative; overflow: hidden; border-radius: 16px; background: var(--bg-subtle); height: 230px; flex-shrink: 0; }
+.journey-catalogue :is(.journey-package-card, .journey-destination-card) .card-img { height: 100%; width: 100%; object-fit: cover; transition: transform .5s ease; }
+.journey-catalogue :is(.journey-package-card, .journey-destination-card):hover .card-img { transform: scale(1.035); }
+.journey-catalogue .catalogue-duration { position: absolute; top: .85rem; left: .85rem; right: auto; display: inline-flex; align-items: center; width: max-content; max-width: calc(100% - 1.7rem); padding: .35rem .75rem; border-radius: 999px; background: #fffffff2; color: #163533; font-size: .7rem; font-weight: 700; line-height: 1.4; white-space: nowrap; }
+.journey-catalogue :is(.journey-package-card, .journey-destination-card) .card-body { display: flex; flex-direction: column; flex: 1; padding: 1.2rem .85rem .85rem; }
+.journey-catalogue .catalogue-card-meta { display: flex; align-items: baseline; flex-wrap: wrap; gap: .35rem .75rem; justify-content: space-between; margin-bottom: .7rem; color: var(--catalogue-green); font-size: .68rem; font-weight: 600; }
+.journey-catalogue .catalogue-card-meta span:last-child:not(:first-child) { color: var(--text-muted); }
+.journey-catalogue :is(.journey-package-card, .journey-destination-card) h3 { font-size: 1.25rem; line-height: 1.4; margin: 0 0 .65rem; overflow-wrap: anywhere; }
+.journey-catalogue :is(.journey-package-card, .journey-destination-card) h3 a { color: var(--text-heading); text-decoration: none; }
+.journey-catalogue :is(.journey-package-card, .journey-destination-card) h3 a:hover { text-decoration: underline; text-underline-offset: .2em; }
+.journey-catalogue .journey-destination-card .journey-kicker { margin-bottom: .4rem; }
+.journey-catalogue .catalogue-card-description { color: var(--text-muted); font-size: .82rem; line-height: 1.75; margin: 0 0 1.2rem; }
+.journey-catalogue .catalogue-card-price { display: flex; justify-content: space-between; gap: .75rem; align-items: center; border-top: 1px solid var(--catalogue-line); padding: 1rem 0 .9rem; margin-top: auto; }
+.journey-catalogue .catalogue-price-label { display: block; color: var(--text-muted); font-size: .68rem; font-weight: 500; margin-bottom: .2rem; }
+.journey-catalogue .catalogue-card-price strong { display: block; color: var(--text-heading); font-size: 1.3rem; line-height: 1.4; letter-spacing: -.04em; }
+.journey-catalogue .catalogue-card-price .muted { font-size: .7rem; }
+.journey-catalogue .catalogue-card-price p { margin: 0; }
+.journey-catalogue .catalogue-round-link { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; flex-shrink: 0; border: 1px solid var(--catalogue-line); border-radius: 50%; color: var(--catalogue-green); background: var(--catalogue-soft); font-size: 1.2rem; text-decoration: none; transition: background .2s, color .2s; }
+.journey-catalogue .catalogue-round-link:hover { background: var(--catalogue-green); color: var(--bg-surface); }
+.journey-catalogue .catalogue-card-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+.journey-catalogue .catalogue-card-actions .btn:only-child { grid-column: 1 / -1; }
+.journey-catalogue .catalogue-card-actions .btn { justify-content: center; min-height: 44px; padding-inline: .5rem; font-size: .78rem; }
+.journey-catalogue .catalogue-empty { max-width: 38rem; padding: 3.5rem 2rem; margin: 2rem auto; text-align: center; border-radius: 22px; }
+.journey-catalogue .catalogue-empty h2 { margin: .65rem 0; }
+.journey-catalogue .catalogue-empty p { color: var(--text-muted); margin-bottom: 1.5rem; }
+.journey-catalogue .catalogue-consultation { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 2rem; margin-top: 3.5rem; padding: 2.5rem 3rem; border-radius: 24px; background: var(--catalogue-soft); }
+.journey-catalogue .catalogue-consultation h2 { font-size: clamp(1.65rem, 3vw, 2.25rem); margin: .5rem 0; }
+.journey-catalogue .catalogue-consultation p { max-width: 35rem; color: var(--text-muted); font-size: .9rem; margin: 0; }
+.journey-catalogue .catalogue-consultation .btn { gap: 1rem; }
+.journey-catalogue .breadcrumbs { flex-wrap: wrap; font-size: .75rem; padding-block: 0 1.2rem; margin: 0; }
+.journey-catalogue .breadcrumbs span:last-child { overflow-wrap: anywhere; }
+.journey-catalogue .detail-hero { border-radius: 28px; min-height: 450px; margin-bottom: 1.25rem; }
+.journey-catalogue .detail-hero > img { height: 450px; }
+.journey-catalogue .detail-hero::after { background: linear-gradient(180deg, #0b221805 20%, #0b2218c7 100%); }
+.journey-catalogue .detail-hero-copy { max-width: 900px; padding: clamp(1.5rem, 4vw, 3rem); }
+.journey-catalogue .detail-hero h1 { max-width: 830px; margin-block: .65rem; font-size: clamp(2rem, 4.2vw, 3.5rem); line-height: 1.15; }
+.journey-catalogue .detail-hero .eyebrow { color: #ffffff; font-size: .72rem; letter-spacing: .12em; }
+.journey-catalogue .detail-hero-copy p { color: #f4f7f4; font-size: .9rem; }
+.journey-catalogue .catalogue-detail-nav { display: flex; flex-wrap: wrap; gap: .5rem; padding: .25rem 0 1.75rem; }
+.journey-catalogue .catalogue-detail-nav a { display: inline-flex; justify-content: center; align-items: center; gap: .75rem; min-height: 44px; padding: .55rem 1.15rem; border: 1px solid var(--catalogue-line); border-radius: 999px; color: var(--text-body); background: var(--bg-surface); font-size: .78rem; font-weight: 600; text-decoration: none; transition: color .2s, background .2s; }
+.journey-catalogue .catalogue-detail-nav a:last-child { margin-left: auto; color: var(--catalogue-green); background: var(--catalogue-soft); }
+.journey-catalogue .catalogue-detail-nav a:hover { color: var(--catalogue-green); border-color: var(--catalogue-green); }
+.journey-catalogue .detail-layout { grid-template-columns: minmax(0, 1fr) minmax(290px, 330px); gap: 1.75rem; }
+.journey-catalogue .detail-layout .stack { gap: 1.5rem; }
+.journey-catalogue.journey-detail .surface { padding: clamp(1.3rem, 3vw, 2.25rem); border-radius: 22px; border-color: var(--catalogue-line); box-shadow: none; scroll-margin-top: 7rem; }
+.journey-catalogue.journey-detail .surface h2 { font-size: 1.65rem; margin: .5rem 0 1rem; line-height: 1.3; }
+.journey-catalogue.journey-detail .surface h3 { font-size: 1.05rem; margin: 1.5rem 0 .6rem; line-height: 1.45; }
+.journey-catalogue.journey-detail .surface p { font-size: .88rem; line-height: 1.85; }
+.journey-catalogue .catalogue-trip-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; border-block: 1px solid var(--catalogue-line); padding: 1.15rem 0; margin: 1.75rem 0; }
+.journey-catalogue .catalogue-trip-facts > div { min-width: 0; }
+.journey-catalogue .catalogue-trip-facts dt { font-size: .67rem; color: var(--text-muted); margin-bottom: .3rem; }
+.journey-catalogue .catalogue-trip-facts dd { font-size: .8rem; font-weight: 600; color: var(--text-heading); overflow-wrap: anywhere; }
+.journey-catalogue .catalogue-trip-facts a { color: var(--catalogue-green); }
+.journey-catalogue .map-container iframe { height: 240px; border-radius: 14px; }
+.journey-catalogue .catalogue-inclusions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; margin: 1.5rem 0; }
+.journey-catalogue .catalogue-inclusions > div { padding: 1.25rem; border-radius: 14px; background: var(--catalogue-soft); }
+.journey-catalogue .catalogue-inclusions > div:only-child { grid-column: 1 / -1; }
+.journey-catalogue .catalogue-inclusions > div:nth-child(2) { background: var(--bg-subtle); }
+.journey-catalogue .catalogue-inclusions h3 { margin-top: .5rem !important; }
+.journey-catalogue .catalogue-inclusions p { margin-bottom: 0; }
+.journey-catalogue .catalogue-itinerary .preserve-lines { border-left: 2px solid var(--catalogue-warm); padding-left: 1.3rem; margin: 1.5rem 0 0; line-height: 2; }
+.journey-catalogue .catalogue-before-booking { background: var(--catalogue-soft); }
+.journey-catalogue .booking-summary { background: var(--catalogue-soft); top: 110px; }
+.journey-catalogue .booking-summary h2 { font-size: 2rem !important; margin-bottom: 1.5rem !important; }
+.journey-catalogue .booking-summary .eyebrow { color: var(--text-muted); font-size: .7rem; }
+.journey-catalogue .booking-summary .price { color: var(--text-heading); font-size: 2.25rem !important; font-weight: 700; letter-spacing: -.055em; line-height: 1.3 !important; margin: .35rem 0 .75rem; }
+.journey-catalogue .booking-summary .btn { white-space: normal; text-align: center; gap: .5rem; min-height: 48px; }
+.journey-catalogue .booking-summary p.muted { font-size: .75rem; border-top: 1px solid var(--catalogue-line); padding-top: 1rem; margin-top: 1.1rem; margin-bottom: 0; }
+.journey-catalogue .departure-option { border-radius: 14px; border-color: var(--catalogue-line); padding: 1rem; background: var(--catalogue-soft); gap: .75rem; }
+.journey-catalogue .departure-option > div { min-width: 110px; }
+.journey-catalogue .departure-label { font-size: .65rem; }
+.journey-catalogue .departure-places { font-size: .73rem; color: var(--catalogue-green); }
+.journey-catalogue .catalogue-hotel-grid { gap: 1rem; margin-top: 1.5rem; }
+.journey-catalogue .hotel-preview { padding: .75rem; border-color: var(--catalogue-line); border-radius: 16px; min-width: 0; }
+.journey-catalogue .hotel-preview h3 { margin: .75rem 0 .5rem !important; }
+.journey-catalogue .hotel-preview p { font-size: .78rem !important; line-height: 1.75 !important; }
+.journey-catalogue .hotel-preview .catalogue-photo img { border-radius: 10px; height: 175px; }
+.journey-catalogue .hotel-preview .catalogue-photo figcaption { font-size: .68rem; }
+.journey-catalogue .hotel-preview p.catalogue-hotel-price { border-top: 1px solid var(--catalogue-line); padding-top: .8rem; margin-top: 1rem; }
+.journey-catalogue .catalogue-hotel-price strong { color: var(--text-heading); }
+.journey-catalogue .destination-package { padding: .75rem; grid-template-columns: 175px minmax(0, 1fr); gap: 1.25rem; border-radius: 16px; border-color: var(--catalogue-line); }
+.journey-catalogue .destination-package > img { height: 100%; min-height: 200px; border-radius: 10px; }
+.journey-catalogue .destination-package h3 { margin: .6rem 0 !important; }
+.journey-catalogue .destination-package .badge { font-size: .68rem; background: var(--catalogue-soft); color: var(--catalogue-green); border-color: var(--catalogue-line); }
+.journey-catalogue .catalogue-planning-sidebar { position: sticky; top: 110px; }
+.journey-catalogue .catalogue-planning-sidebar .surface { background: var(--catalogue-soft); }
+.journey-catalogue .catalogue-planning-sidebar .btn { display: flex; align-items: center; justify-content: center; gap: .5rem; margin-top: .75rem; white-space: normal; }
+.journey-catalogue .catalogue-planning-steps { list-style: none; padding: 0; margin: 1.75rem 0; }
+.journey-catalogue .catalogue-planning-steps li { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: .8rem; padding: 1rem 0; border-top: 1px solid var(--catalogue-line); }
+.journey-catalogue .catalogue-planning-steps li > span { color: var(--catalogue-green); font-size: .7rem; font-weight: 700; padding-top: .15rem; }
+.journey-catalogue .catalogue-planning-steps h3 { margin: 0 0 .35rem !important; font-size: .85rem !important; }
+.journey-catalogue .catalogue-planning-steps p { margin: 0; font-size: .78rem !important; }
+[data-theme="dark"] .journey-catalogue { --catalogue-ink: #e7f1ed; --catalogue-green: #a4d7c2; --catalogue-soft: #1b322e; --catalogue-sky: #1b3136; --catalogue-line: #344a43; }
+[data-theme="dark"] .journey-catalogue .catalogue-filters { box-shadow: 0 14px 36px #00000016; }
+[data-theme="dark"] .journey-catalogue .catalogue-round-link:hover { color: #102820; }
+@media (max-width: 1100px) {
+    .journey-catalogue .catalogue-filters { margin-inline: 1.25rem; padding: 1.5rem; }
+    .journey-catalogue .catalogue-primary-fields { grid-template-columns: 1fr 1fr; }
+    .journey-catalogue .catalogue-destination-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .journey-catalogue .catalogue-destination-fields .filter-actions { justify-content: flex-start; }
+    .journey-catalogue .detail-layout { grid-template-columns: minmax(0, 1fr) 295px; gap: 1.25rem; }
+    .journey-catalogue .catalogue-inclusions { grid-template-columns: minmax(0, 1fr); }
+    .journey-catalogue .catalogue-hotel-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+    .journey-catalogue .catalogue-masthead h1 { font-size: 2.75rem; }
+    .journey-catalogue .catalogue-masthead-copy { padding-inline: 2rem; }
+    .journey-catalogue .detail-layout { grid-template-columns: minmax(0, 1fr); }
+    .journey-catalogue .booking-summary, .journey-catalogue .catalogue-planning-sidebar { position: static; }
+    .journey-catalogue .catalogue-hotel-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .journey-catalogue :is(.journey-package-grid, .journey-destination-grid) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+    .journey-catalogue .container.section { padding-top: 1.25rem; padding-bottom: 2.5rem; }
+    .journey-catalogue .catalogue-masthead { grid-template-columns: minmax(0, 1fr); border-radius: 22px; }
+    .journey-catalogue .catalogue-masthead-copy { padding: 1.75rem 1.5rem; }
+    .journey-catalogue .catalogue-masthead h1 { font-size: 2.8rem; }
+    .journey-catalogue .catalogue-masthead-copy > p { font-size: .88rem; }
+    .journey-catalogue .catalogue-masthead-photo, .journey-catalogue .catalogue-masthead--coast .catalogue-masthead-photo { min-height: 220px; border-radius: 65px 0 0 0; }
+    .journey-catalogue .catalogue-masthead-photo figcaption { top: 1rem; right: 1rem; }
+    .journey-catalogue .catalogue-filters { margin: 1rem 0 2.5rem; padding: 1.25rem; border-radius: 18px; }
+    .journey-catalogue .catalogue-search-heading { gap: .35rem; }
+    .journey-catalogue .catalogue-primary-fields, .journey-catalogue .catalogue-destination-fields { grid-template-columns: minmax(0, 1fr); }
+    .journey-catalogue .catalogue-primary-fields > .btn { margin-top: .25rem; }
+    .journey-catalogue .catalogue-destination-fields .filter-actions .btn { flex: 1; }
+    .journey-catalogue .catalogue-results { align-items: flex-start; gap: .75rem; }
+    .journey-catalogue :is(.journey-package-grid, .journey-destination-grid) { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+    .journey-catalogue :is(.journey-package-card, .journey-destination-card) .card-image-wrap { height: 240px; }
+    .journey-catalogue .catalogue-consultation { padding: 1.75rem 1.5rem; gap: 1.5rem; border-radius: 20px; margin-top: 2.5rem; }
+    .journey-catalogue .catalogue-consultation .btn { width: 100%; justify-content: center; }
+    .journey-catalogue .detail-hero { min-height: 370px; border-radius: 22px; }
+    .journey-catalogue .detail-hero > img { height: 370px; }
+    .journey-catalogue .detail-hero h1 { font-size: 2rem; }
+    .journey-catalogue .detail-hero-copy p { font-size: .78rem; }
+    .journey-catalogue .catalogue-detail-nav { gap: .4rem; padding-bottom: 1.25rem; }
+    .journey-catalogue .catalogue-detail-nav a { font-size: .7rem; padding: .5rem .9rem; }
+    .journey-catalogue .catalogue-detail-nav a:last-child { margin-left: 0; }
+    .journey-catalogue .catalogue-trip-facts { gap: .75rem; }
+    .journey-catalogue .catalogue-trip-facts dt { font-size: .63rem; }
+    .journey-catalogue .catalogue-trip-facts dd { font-size: .72rem; }
+    .journey-catalogue .catalogue-hotel-grid { grid-template-columns: minmax(0, 1fr); }
+    .journey-catalogue .destination-package { grid-template-columns: minmax(0, 1fr); }
+    .journey-catalogue .destination-package > img { height: 210px; min-height: 0; }
+    .journey-catalogue .map-container iframe { height: 210px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .journey-catalogue :is(.card, .card-img, .catalogue-round-link, .catalogue-detail-nav a, .catalogue-more-filters summary span) { transition: none; transform: none !important; }
+}

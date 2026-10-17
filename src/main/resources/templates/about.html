@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>About us | TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="public-site journey-site">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="main-content journey-page">
+    <div class="journey-content">
+        <section class="journey-page-hero journey-page-hero-split" aria-labelledby="about-title">
+            <div class="journey-page-intro">
+                <p class="journey-page-kicker">Our agency</p>
+                <h1 id="about-title" th:text="${'About ' + settings.companyName}">About TravelGO</h1>
+                <p class="journey-page-lead">A little planning.<br>A world of possibilities.</p>
+                <p>Tour packages, visa document review and booking support, brought together in one place.</p>
+                <a class="btn btn-primary" th:href="@{/contact}">Meet your next journey</a>
+            </div>
+            <figure class="journey-page-photo">
+                <th:block th:replace="~{fragments/responsive-image :: image('/images/paris.jpg', 'The Eiffel Tower and the Paris skyline', '(max-width: 760px) 100vw, 50vw', false)}"></th:block>
+                <figcaption>Paris, France</figcaption>
+            </figure>
+        </section>
+        <section class="journey-editorial" aria-labelledby="agency-title">
+            <div><p class="journey-page-kicker">Travel, thoughtfully planned</p><h2 id="agency-title">Your plans.<br>Our attention.</h2></div>
+            <p class="journey-editorial-copy" th:text="${settings != null ? settings.companyDescription : 'Browse tour packages and contact our team for booking and visa assistance.'}">Browse tour packages and contact our team for booking and visa assistance.</p>
+        </section>
+        <section class="journey-page-section" aria-labelledby="help-title">
+            <div class="journey-section-heading"><p class="journey-page-kicker">How we help</p><h2 id="help-title">From the first idea to your booking.</h2></div>
+            <div class="journey-service-grid">
+                <article class="journey-info-card"><span class="journey-step-marker" aria-hidden="true">01</span><h3>Package planning</h3><p>Review your package and optional hotel costs before booking. Visa and documentation charges are quoted separately after document review.</p><a th:href="@{/packages}">Explore tour packages <span aria-hidden="true">↗</span></a></article>
+                <article class="journey-info-card"><span class="journey-step-marker" aria-hidden="true">02</span><h3>Visa assistance</h3><p>Visa officers review your uploaded documents and record application charges and decisions.</p><a th:href="@{/visa-info}">Read the visa guide <span aria-hidden="true">↗</span></a></article>
+                <article class="journey-info-card"><span class="journey-step-marker" aria-hidden="true">03</span><h3>Booking updates</h3><p>View booking details, visa applications, payment records and messages in your account.</p><a sec:authorize="isAnonymous() or hasRole('CUSTOMER')" th:href="@{/customer/bookings}">View your bookings <span aria-hidden="true">↗</span></a></article>
+            </div>
+        </section>
+        <aside class="journey-page-callout"><div><p class="journey-page-kicker">Start a conversation</p><h2>Where would you like to go?</h2><p>Tell our team what you have in mind.</p></div><a class="btn btn-primary" th:href="@{/contact}">Contact our team <span aria-hidden="true">↗</span></a></aside>
+    </div>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+</body>
+</html>

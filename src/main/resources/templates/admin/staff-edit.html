@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Staff Account - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+<th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block></head>
+<body class="agency-workspace">
+    <div class="admin-layout">
+        <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('staff')}"></div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <a th:href="@{/admin/staff}">Staff directory</a>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;" th:text="${staffUser.name}">Edit staff</span>
+                        </div>
+                        <h1 class="topbar-title">Edit staff profile</h1>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <a th:href="@{/admin/staff}" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to staff list
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="card" style="max-width: 650px; margin: 0 auto;">
+                    <div class="table-header">
+                        <h4 style="margin: 0;">Update staff details</h4>
+                        <span class="badge" th:classappend="${staffUser.active} ? 'badge-success' : 'badge-danger'"
+                              th:text="${staffUser.active ? 'Active' : 'Deactivated'}">Active</span>
+                    </div>
+
+                    <div class="card-body">
+                        <form th:action="@{/admin/staff/{id}/update(id=${staffUser.id})}" method="post"><fieldset class="permission-readonly-fields" th:disabled="${!#authorization.expression('hasAuthority(''PERM_STAFF_MANAGE'')')}">
+                            <div class="form-group">
+                                <label class="form-label" for="staff-email">Email address (read only)</label>
+                                <input id="staff-email" type="text" class="form-control" th:value="${staffUser.email}" disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="staff-name">Full Name *</label>
+                                <input id="staff-name" type="text" name="name" class="form-control" th:value="${staffUser.name}" minlength="2" maxlength="100" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="staff-role">Assigned role *</label>
+                                <select id="staff-role" name="roleName" class="form-control" required>
+                                    <option th:each="r : ${roles}" th:value="${r.roleName}" th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(r.roleName,'_',' ')))} + ' — ' + ${r.description}" th:selected="${r.id == staffUser.role.id}"></option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="staff-phone">Contact phone</label>
+                                <input id="staff-phone" type="tel" name="phone" class="form-control" th:value="${staffUser.phone}" maxlength="20" autocomplete="tel">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="staff-address">Address / office branch</label>
+                                <textarea id="staff-address" name="address" class="form-control" th:text="${staffUser.address}" maxlength="1000"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" sec:authorize="hasAuthority('PERM_STAFF_MANAGE')">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                </svg>
+                                Request staff update
+                            </button>
+                        </fieldset></form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+    <script th:attr="nonce=${cspNonce}" th:src="@{/js/admin.js}"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:replace="~{fragments/site-head :: theme-init}"></th:block><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Billing details — TravelGO</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/brand.css}"><link rel="stylesheet" th:href="@{/css/agency-workflow.css}"><th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block></head>
+<body><div th:replace="~{fragments/navbar :: navbar}"></div><main class="container" style="padding-block:3rem;max-width:760px"><a th:href="@{/customer/payments/checkout/{id}(id=${booking.id})}">Back to payment details</a>
+<section class="workflow-card"><h1>Billing details</h1><p>Your payment will be completed on PayHere. TravelGO does not collect your card number or security code.</p><p th:if="${payHereTestMode}" class="alert alert-info" role="status">PayHere sandbox. Use provider test details only; no real money is charged.</p>
+<p th:text="${'Booking #' + booking.id + ' · USD ' + billing.amount}"></p>
+<form class="workflow-stack" method="post" th:action="@{/customer/payments/payhere}" th:object="${billing}">
+<div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger" role="alert"><p>Please check the highlighted billing details.</p><ul><li th:each="err:${#fields.allErrors()}" th:text="${err}"></li></ul></div>
+<input type="hidden" th:field="*{bookingId}"><input type="hidden" th:field="*{paymentType}"><input type="hidden" th:field="*{amount}">
+<label>First name<input th:field="*{firstName}" autocomplete="given-name" required maxlength="50"></label>
+<label>Last name<input th:field="*{lastName}" autocomplete="family-name" required maxlength="50"></label>
+<label>Email<input type="email" th:field="*{email}" autocomplete="email" required maxlength="150"></label>
+<label>Phone<input type="tel" th:field="*{phone}" autocomplete="tel" required maxlength="20"></label>
+<label>Address<input th:field="*{address}" autocomplete="street-address" required maxlength="200"></label>
+<label>City<input th:field="*{city}" autocomplete="address-level2" required maxlength="100"></label>
+<label>Country<input th:field="*{country}" autocomplete="country-name" required maxlength="100"></label>
+<button class="btn btn-primary" type="submit">Review PayHere checkout</button></form></section></main><div th:replace="~{fragments/footer :: footer}"></div><script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script></body></html>

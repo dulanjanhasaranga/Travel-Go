@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+ <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+ <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="description" th:content="${'Tour packages, accommodation options and visa application support from ' + settings.companyName + '.'}" content="Tour packages and travel planning.">
+ <title th:text="${settings.companyName + ' | Tour packages and travel planning'}">TravelGO | Travel planning</title>
+ <link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/brand.css}">
+ <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+ <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="public-site landing-page journey-site">
+ <div th:replace="~{fragments/navbar :: navbar}"></div>
+ <main class="main-content">
+  <section class="escape-hero" aria-labelledby="journey-title">
+   <div class="escape-landscape"><th:block th:replace="~{fragments/responsive-image :: image('/images/swiss-alps-photo.jpg', 'Alpine mountains and a lake in Switzerland', '100vw', false)}"></th:block></div>
+   <div class="escape-hero-copy">
+    <p class="journey-kicker"><span aria-hidden="true"></span> A world worth exploring</p>
+    <h1 id="journey-title">A little further.<br><em>A whole new world.</em></h1>
+    <p>From mountain mornings to city discoveries, find a journey that feels like you.</p>
+    <a th:href="@{/packages}" class="btn btn-primary">Explore our tours <span aria-hidden="true">↗</span></a>
+   </div>
+   <a class="escape-location" th:href="@{/packages(destinationQuery='Switzerland')}"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Switzerland<small>A different point of view</small></span><span aria-hidden="true">↗</span></a>
+  </section>
+  <div class="container escape-search-container">
+   <form th:action="@{/packages}" method="get" class="escape-search" aria-label="Find a tour package">
+    <div class="search-field"><label for="homeDestination">Where would you like to go?</label><input id="homeDestination" name="destinationQuery" list="destination-suggestions" maxlength="255" placeholder="City or country" autocomplete="off"><datalist id="destination-suggestions"><option th:each="d : ${destinations}" th:value="${d.city + ', ' + d.country}"></option></datalist></div>
+    <div class="search-field"><label for="homeSearch">Your kind of journey</label><input id="homeSearch" name="search" type="text" maxlength="120" placeholder="Package name or activity"></div>
+    <div class="search-field"><label for="homeCategory">Travel style</label><select id="homeCategory" name="categoryId"><option value="">All tour types</option><option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}">Tour category</option></select></div>
+    <button type="submit" class="btn btn-primary">Find a tour <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button>
+   </form>
+  </div>
+  <section class="container journey-assurances" aria-label="Travel planning services">
+   <div><span class="assurance-icon" aria-hidden="true">↗</span><div><strong>Find your destination</strong><p>Explore our current tour collection.</p></div></div>
+   <div><span class="assurance-icon" aria-hidden="true">▤</span><div><strong>Know your itinerary</strong><p>Review the details before you book.</p></div></div>
+   <div><span class="assurance-icon" aria-hidden="true">◎</span><div><strong>Stay connected</strong><p>Keep in touch with your travel team.</p></div></div>
+  </section>
+  <section class="section" aria-labelledby="destinations-heading"><div class="container">
+   <div class="journey-section-heading"><div><p class="journey-kicker">Make room for somewhere new</p><h2 id="destinations-heading">Where will you go next?</h2></div><a th:href="@{/destinations}" class="journey-text-link">All destinations <span aria-hidden="true">↗</span></a></div>
+   <div class="escape-destinations" th:if="${not #lists.isEmpty(destinations)}"><a class="escape-destination reveal-up" th:each="dest,item : ${destinations}" th:if="${item.index < 4}" th:href="@{/destinations/{id}(id=${dest.id})}" th:with="displayImage=${@travelImages.resolve(dest.image)}"><th:block th:replace="~{fragments/responsive-image :: image(${displayImage}, ${dest.city + ', ' + dest.country}, '(max-width: 760px) 45vw, 25vw', true)}"></th:block><div><span th:text="${dest.country}">Country</span><h3 th:text="${dest.city}">Destination</h3></div><span class="destination-arrow" aria-hidden="true">↗</span></a></div>
+   <p th:if="${#lists.isEmpty(destinations)}" class="surface journey-empty">Our destination collection is being updated. <a th:href="@{/contact}">Talk to our team</a> about your travel plans.</p>
+  </div></section>
+  <section class="section journey-tour-section" aria-labelledby="tours-heading"><div class="container">
+   <div class="journey-section-heading"><div><p class="journey-kicker">Good journeys start with a plan</p><h2 id="tours-heading">Find your next adventure.</h2><p>Tour prices are per person. Accommodation and visa fees are quoted separately.</p></div><a th:href="@{/packages}" class="journey-text-link">View all tours <span aria-hidden="true">↗</span></a></div>
+   <aside th:replace="~{fragments/lkr-estimate :: preference}"></aside>
+   <div class="grid grid-3 journey-tours" th:if="${not #lists.isEmpty(packages)}"><article class="card reveal-up" th:each="pkg,item : ${packages}" th:if="${item.index < 6}">
+    <div class="card-image-wrap" th:with="displayImage=${@travelImages.tour(pkg.image,pkg.destination.city + ', ' + pkg.destination.country)}"><th:block th:replace="~{fragments/responsive-image :: image(${displayImage}, '', '(max-width: 480px) 100vw, (max-width: 1000px) 50vw, 33vw', true)}"></th:block><span class="card-img-badge" th:text="${pkg.durationDays + ' days'}">Duration</span></div>
+    <div class="card-body"><p class="journey-tour-location" th:text="${pkg.destination.city + ', ' + pkg.destination.country}">Destination</p><h3><a th:href="@{/packages/{id}(id=${pkg.id})}" th:text="${pkg.name}">Tour name</a></h3><p class="journey-tour-description" th:text="${pkg.description}">Tour description</p><div class="journey-tour-price"><div><small>From / person</small><strong th:text="${'USD ' + #numbers.formatDecimal(pkg.basePrice,1,'COMMA',2,'POINT')}">USD 0.00</strong><span th:replace="~{fragments/lkr-estimate :: estimate(${pkg.basePrice})}"></span></div><a th:href="@{/packages/{id}(id=${pkg.id})}" class="journey-circle-link" th:aria-label="${'View ' + pkg.name}">↗</a></div><a sec:authorize="isAnonymous() or hasRole('CUSTOMER')" th:href="@{/packages/{id}/book(id=${pkg.id})}" class="journey-book-link">Book this tour <span aria-hidden="true">→</span></a></div>
+   </article></div>
+   <p th:if="${#lists.isEmpty(packages)}" class="surface journey-empty">New tours will appear here when available. <a th:href="@{/contact}">Contact our team</a> for help planning.</p>
+  </div></section>
+  <section class="section" aria-labelledby="planning-heading"><div class="container journey-planning">
+   <div class="journey-planning-art reveal-up"><img th:src="@{/images/references/travel-world.jpg}" alt="Illustrated world of travel landmarks and aircraft" width="736" height="460" loading="lazy" decoding="async"><span>Every journey starts with a little curiosity.</span></div>
+   <div><p class="journey-kicker">Your plans, brought together</p><h2 id="planning-heading">Less to organise.<br>More to look forward to.</h2><p>Browse a tour, review your options and manage the next steps from your account. Our travel team is there when you need guidance.</p><ol class="journey-steps"><li><span>01</span><div><h3>Choose your journey</h3><p>Compare itineraries and optional accommodation.</p></div></li><li><span>02</span><div><h3>Prepare for departure</h3><p>Submit your visa documents for review and follow the quoted payment steps.</p></div></li><li><span>03</span><div><h3>Keep everything together</h3><p>Track your booking, confirmations and messages in one place.</p></div></li></ol><a th:href="@{/visa-info}" class="journey-text-link">Read the visa guide <span aria-hidden="true">↗</span></a></div>
+  </div></section>
+  <section class="section"><div class="container"><div class="journey-invitation"><div><p class="journey-kicker">Start with a conversation</p><h2>A whole world of possibilities.<br>One place to begin.</h2><p>Tell us where you would like to go. We’ll help you explore the available options.</p><a th:href="@{/contact}" class="btn">Talk to our travel team <span aria-hidden="true">↗</span></a></div><img th:src="@{/images/references/travel-globe.jpg}" alt="Travel illustration featuring landmarks around a globe" width="626" height="626" loading="lazy" decoding="async"></div></div></section>
+ </main>
+ <div th:replace="~{fragments/footer :: footer}"></div>
+ <button class="scroll-top-btn" aria-label="Scroll to top"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 15 7-7 7 7"/></svg></button>
+ <script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+</body></html>

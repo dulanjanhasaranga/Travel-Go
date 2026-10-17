@@ -1,0 +1,1 @@
+org.springframework.boot.EnvironmentPostProcessor=com.travelgo.config.ProductionEnvironmentValidator,com.travelgo.config.CloudEvaluationReleaseGate,com.travelgo.config.CloudEvaluationSchemaInitializationGate

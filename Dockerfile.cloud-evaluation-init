@@ -1,0 +1,19 @@
+FROM eclipse-temurin:17-jdk-jammy AS build
+WORKDIR /build
+COPY .mvn/wrapper/maven-wrapper.properties .mvn/wrapper/maven-wrapper.properties
+COPY mvnw pom.xml ./
+COPY src ./src
+RUN bash ./mvnw --batch-mode -Dmaven.test.skip=true package
+
+FROM eclipse-temurin:17-jdk-jammy AS runtime
+RUN groupadd --gid 10001 travelgo \
+    && useradd --uid 10001 --gid travelgo --no-create-home --shell /usr/sbin/nologin travelgo \
+    && mkdir -p /app \
+    && chown -R travelgo:travelgo /app
+WORKDIR /app
+COPY --from=build --chown=10001:10001 /build/target/travelgo-0.0.1-SNAPSHOT.jar /app/travelgo.jar
+COPY --chown=10001:10001 scripts/render-entrypoint.sh /app/render-entrypoint.sh
+COPY --chown=10001:10001 scripts/render-init-entrypoint.sh /app/render-init-entrypoint.sh
+RUN chmod 0555 /app/render-entrypoint.sh /app/render-init-entrypoint.sh
+USER 10001:10001
+ENTRYPOINT ["/app/render-init-entrypoint.sh"]

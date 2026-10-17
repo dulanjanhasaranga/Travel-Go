@@ -1,0 +1,188 @@
+/* Operational status refinement, 13 October 2026.
+   Presentation only. Written states, permissions, controls and workflows are
+   preserved; the shared workspace layout remains in workspace-clear.css. */
+:root body.agency-workspace {
+    --status-neutral: #52647f;
+    --status-neutral-bg: #f4f6f9;
+    --status-neutral-border: #d3dde9;
+    --status-progress: #315b95;
+    --status-progress-bg: #f1f5fb;
+    --status-progress-border: #cbdcf0;
+    --status-complete: #173b67;
+    --status-complete-bg: #f3f6fa;
+    --status-complete-border: #b8c9de;
+    --status-error: #9b3745;
+    --status-error-bg: #fcf3f4;
+    --status-error-border: #e4c2c7;
+    --workspace-success: var(--status-complete);
+    --workspace-success-bg: var(--status-complete-bg);
+    --workspace-warning: var(--status-neutral);
+    --workspace-warning-bg: var(--status-neutral-bg);
+    --workspace-info: var(--status-progress);
+    --workspace-info-bg: var(--status-progress-bg);
+    --workspace-danger: var(--status-error);
+    --workspace-danger-bg: var(--status-error-bg);
+    /* Legacy inline messages use these tokens instead of the workspace ones. */
+    --success: var(--status-complete);
+    --success-bg: var(--status-complete-bg);
+    --success-border: var(--status-complete-border);
+    --warning: var(--status-neutral);
+    --warning-bg: var(--status-neutral-bg);
+    --warning-border: var(--status-neutral-border);
+    --info: var(--status-progress);
+    --info-bg: var(--status-progress-bg);
+    --info-border: var(--status-progress-border);
+    --danger: var(--status-error);
+    --danger-bg: var(--status-error-bg);
+    --danger-border: var(--status-error-border);
+}
+
+:root[data-theme="dark"] body.agency-workspace {
+    --status-neutral: #bdcce1;
+    --status-neutral-bg: #1b2c44;
+    --status-neutral-border: #40536e;
+    --status-progress: #b6d2ff;
+    --status-progress-bg: #203654;
+    --status-progress-border: #49658a;
+    --status-complete: #d7e7ff;
+    --status-complete-bg: #20324d;
+    --status-complete-border: #546c8e;
+    --status-error: #f3b9c1;
+    --status-error-bg: #352b3c;
+    --status-error-border: #765263;
+}
+
+/* One compact label system: no bright green, yellow, purple or pink role tiles.
+   Color accompanies the existing label and never replaces its text. */
+:root body.agency-workspace :is(.badge, .role-badge, .payment-type-badge, .badge-destination, .badge-hotel) {
+    color: var(--status-neutral);
+    background: var(--status-neutral-bg);
+    border: 1px solid var(--status-neutral-border);
+    border-radius: 5px;
+    padding: 3px 8px;
+    font-size: .72rem;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: 0;
+    text-transform: none;
+    box-shadow: none;
+    background-image: none;
+}
+:root body.agency-workspace .badge-success {
+    color: var(--status-complete);
+    background: var(--status-complete-bg);
+    border-color: var(--status-complete-border);
+}
+:root body.agency-workspace .badge-info {
+    color: var(--status-progress);
+    background: var(--status-progress-bg);
+    border-color: var(--status-progress-border);
+}
+:root body.agency-workspace :is(.badge-warning, .badge-outline) {
+    color: var(--status-neutral);
+    background: var(--status-neutral-bg);
+    border-color: var(--status-neutral-border);
+}
+:root body.agency-workspace .badge-danger {
+    color: var(--status-error);
+    background: var(--status-error-bg);
+    border-color: var(--status-error-border);
+}
+
+/* Existing role cells use danger/warning classes for identity rather than
+   severity. Route + column markers are present in both source and installed
+   views; genuine rejection/payment badges elsewhere are not matched. */
+:root body.agency-workspace .data-table:has(a[href*="/admin/staff/"][href$="/edit"]) > tbody > tr > td:nth-child(2) > .badge,
+:root body.agency-workspace .data-table:has(a[href*="/admin/users/"]) > tbody > tr > td:nth-child(2) > .badge,
+:root body.agency-workspace .data-table:has(a[href*="/admin/roles/"]) > tbody > tr > td:first-child > .badge {
+    color: var(--status-neutral);
+    background: var(--status-neutral-bg);
+    border-color: var(--status-neutral-border);
+}
+
+/* Inactive catalogue entries and disabled accounts are availability states.
+   Their action buttons remain separately styled as destructive controls. */
+:root body.agency-workspace :is(#hotelsTable, #destTable, #transportsTable, #packagesTable) .badge-danger,
+:root body.agency-workspace .data-table:has(form[action*="/staff/categories/"]) .badge-danger,
+:root body.agency-workspace .data-table:has(a[href$="/staff/packages"]) > tbody > tr > td:nth-child(7) > .badge-danger,
+:root body.agency-workspace .data-table:has(form[action*="/admin/staff/"][action$="/toggle-status"]) > tbody > tr > td:nth-child(4) > .badge-danger,
+:root body.agency-workspace .data-table:has(form[action*="/admin/users/"][action$="/toggle-status"]) > tbody > tr > td:nth-child(4) > .badge-danger,
+:root body.agency-workspace .card:has(form[action*="/admin/staff/"][action$="/update"]) > .table-header > .badge-danger,
+:root body.agency-workspace .card:has(form[action*="/admin/users/"][action$="/update"]) > .table-header > .badge-danger,
+:root body.agency-workspace .data-table > tbody > tr[data-status="CANCELLED"] .badge-danger {
+    color: var(--status-neutral);
+    background: var(--status-neutral-bg);
+    border-color: var(--status-neutral-border);
+}
+
+/* Preserve 24px line icons; only the dedicated status-dot SVGs are reduced.
+   brand.css otherwise expands these 6px/8px circles to its generic icon size. */
+:root body.agency-workspace .badge > svg[viewBox="0 0 6 6"] {
+    width: 6px;
+    height: 6px;
+    flex: 0 0 6px;
+}
+:root body.agency-workspace .badge > svg[viewBox="0 0 8 8"] {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+}
+
+/* Feedback is a white surface with a fine edge, not a saturated status block.
+   Existing headings, icons, text, role and live-region behavior are untouched. */
+:root body.agency-workspace :is(.alert, .status-banner, .context-banner) {
+    color: var(--text-body);
+    background: var(--bg-surface);
+    background-image: none;
+    border-color: var(--border-subtle);
+    border-left: 3px solid var(--status-progress-border);
+    box-shadow: none;
+}
+:root body.agency-workspace :is(.alert-success, .status-success) {
+    background: var(--bg-surface);
+    border-left-color: var(--status-complete-border);
+}
+:root body.agency-workspace .alert-warning {
+    background: var(--bg-surface);
+    border-left-color: var(--status-neutral-border);
+}
+:root body.agency-workspace .alert-info {
+    background: var(--bg-surface);
+    border-left-color: var(--status-progress-border);
+}
+:root body.agency-workspace :is(.alert-danger, .status-error) {
+    background: var(--bg-surface);
+    border-left-color: var(--status-error);
+}
+:root body.agency-workspace :is(.alert-success, .status-success) > :is(svg, .status-icon) { color: var(--status-complete); }
+:root body.agency-workspace .alert-warning > svg { color: var(--status-neutral); }
+:root body.agency-workspace .alert-info > svg { color: var(--status-progress); }
+:root body.agency-workspace :is(.alert-danger, .status-error) > :is(svg, .status-icon) { color: var(--status-error); }
+
+/* Replace decorative rainbow row edges with one blue focus/hover accent. */
+:root body.agency-workspace .data-table > tbody > tr[data-status]::after { background: var(--status-progress-border); }
+:root body.agency-workspace .data-table > tbody > tr:is([data-status="REJECTED"], [data-status="DECLINED"])::after { background: var(--status-error-border); }
+
+/* Named legacy message exceptions. These rules do not match financial amounts
+   or controls, and keep their original written confirmation/outcome visible. */
+:root body.agency-workspace #inquiriesTable td :is(div, span)[style*="var(--success)"],
+:root body.agency-workspace .data-table td span[style*="var(--success)"] { color: var(--status-complete) !important; }
+:root body.agency-workspace .data-table td span[style*="#D97706"] { color: var(--status-neutral) !important; }
+:root body.agency-workspace .data-table td span:is([style*="var(--danger)"], [style*="#EF4444"]) { color: var(--status-error) !important; }
+:root body.agency-workspace .data-table > tbody > tr[data-status="CANCELLED"] td span[style*="var(--danger)"] { color: var(--status-neutral) !important; }
+:root body.agency-workspace .data-table td > .badge[style*="#e2e8f0"] {
+    color: var(--status-neutral) !important;
+    background: var(--status-neutral-bg) !important;
+    border-color: var(--status-neutral-border);
+}
+
+/* The two legacy outline buttons are actual rejection actions. Report export
+   links also use red inline text, so matching only by color would be incorrect. */
+:root body.agency-workspace form[action*="/admin/approvals/"][action$="/reject"] .btn,
+:root body.agency-workspace button[onclick*="openDeclineModal"] {
+    color: var(--status-error) !important;
+    background: var(--status-error-bg) !important;
+    border-color: var(--status-error-border) !important;
+}
+:root body.agency-workspace form[action*="/admin/approvals/"][action$="/reject"] .btn:hover,
+:root body.agency-workspace button[onclick*="openDeclineModal"]:hover { border-color: var(--status-error) !important; }

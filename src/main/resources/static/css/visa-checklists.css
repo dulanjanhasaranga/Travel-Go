@@ -1,0 +1,22 @@
+.visa-requirements { padding: 1rem 1.15rem; margin: 1rem 0; border: 1px solid var(--border-subtle); border-radius: var(--radius-md, 12px); background: var(--bg-subtle); }
+.visa-requirements h3, .visa-requirements h4 { margin: 0 0 .6rem; font-size: 1rem; }
+.visa-requirements p { margin: .5rem 0; color: var(--text-muted); line-height: 1.55; }
+.visa-requirements ul { margin: .65rem 0; padding-left: 1.25rem; }
+.visa-requirements li { margin: .45rem 0; overflow-wrap: anywhere; }
+.visa-requirement-status { margin-left: .4rem; color: var(--text-muted); font-size: .82rem; }
+.visa-checklist-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 1.2rem; }
+.visa-checklist-card { padding: 1.4rem; min-width: 0; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md, 12px); }
+.visa-checklist-card h2 { font-size: 1.15rem; margin: 0 0 .5rem; }
+.visa-checklist-card p, .visa-checklist-card li { overflow-wrap: anywhere; }
+.visa-checklist-actions { display: flex; flex-wrap: wrap; gap: .65rem; align-items: center; margin-top: 1rem; }
+.visa-checklist-form { max-width: 960px; padding: 1.5rem; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md, 12px); }
+.visa-checklist-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; }
+.visa-checklist-fields .full-width { grid-column: 1 / -1; }
+.visa-checklist-fields label { display: block; margin-bottom: .4rem; font-weight: 600; }
+.visa-checklist-fields input, .visa-checklist-fields select, .visa-checklist-fields textarea { width: 100%; min-width: 0; padding: .7rem; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg-surface); color: var(--text-primary); font: inherit; }
+.visa-checklist-fields small { display: block; margin-top: .4rem; color: var(--text-muted); line-height: 1.5; }
+.visa-checklist-heading { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+.visa-checklist-heading p { color: var(--text-muted); max-width: 65ch; }
+.visa-document-assignment { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .7rem; }
+.visa-document-assignment select { max-width: 100%; min-width: 0; background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-subtle); border-radius: 6px; padding: .45rem; }
+@media (max-width: 640px) { .visa-checklist-fields { grid-template-columns: 1fr; } .visa-checklist-form { padding: 1rem; } .visa-requirements { padding: .9rem; } }

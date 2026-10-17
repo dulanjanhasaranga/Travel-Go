@@ -1,0 +1,173 @@
+/* Blue/white website identity. Workspace layout and status refinements are
+   scoped in workspace-clear.css and site-ui-clear.css. */
+:root body:not(.agency-workspace) {
+    --site-action:#264180; --site-action-hover:#1c3266;
+    --brand-primary:#17315c; --brand-primary-light:#365b91;
+    --brand-accent:var(--site-action); --brand-accent-hover:var(--site-action-hover); --brand-accent-light:#e9f0fc;
+    --brand-secondary:#315ea8; --brand-secondary-hover:#264b88; --brand-secondary-light:#eaf2ff;
+    --bg-main:#fff; --bg-surface:#fff; --bg-subtle:#f2f6fc; --field-bg:#fff;
+    --text-heading:#17315c; --text-body:#405471; --text-muted:#5d708c;
+    --link-color:#264180; --focus-ring:#416db9;
+    --border-subtle:#e1e8f2; --border-strong:#bfcee3;
+    --auth-primary:var(--site-action); --auth-primary-hover:var(--site-action-hover); --auth-border-focus:var(--focus-ring);
+    --jp-ink:var(--text-heading); --jp-forest:var(--link-color); --jp-sky:#eaf2ff;
+    --jp-paper:var(--bg-surface); --jp-soft:var(--bg-subtle); --jp-line:var(--border-subtle); --jp-muted:var(--text-muted); --jp-accent:var(--focus-ring);
+    --catalogue-ink:var(--text-heading); --catalogue-green:var(--link-color); --catalogue-soft:var(--bg-subtle);
+    --catalogue-sky:#eaf2ff; --catalogue-line:var(--border-subtle); --catalogue-warm:#416db9;
+    background:var(--bg-main); color:var(--text-body);
+}
+:root[data-theme="dark"] body:not(.agency-workspace) {
+    --site-action:#315899; --site-action-hover:#3d6ab4;
+    --brand-primary:#e4edff; --brand-primary-light:#c0d3f2;
+    --brand-accent:#a9c9ff; --brand-accent-hover:#c4daff; --brand-accent-light:#203654;
+    --brand-secondary:#a9c9ff; --brand-secondary-hover:#c4daff; --brand-secondary-light:#203654;
+    --bg-main:#0d182b; --bg-surface:#15253e; --bg-subtle:#1b2f4b; --field-bg:#101f35;
+    --text-heading:#edf3ff; --text-body:#d0ddf1; --text-muted:#afc0db;
+    --link-color:#b1cdff; --focus-ring:#b1cdff; --border-subtle:#304562; --border-strong:#506889;
+    --jp-sky:#1b2f4b; --catalogue-sky:#1b2f4b; --catalogue-warm:#8eb9ff;
+}
+
+/* Keep the supplied Airborne PNG intact. Its transparent canvas is 1254 square;
+   the artwork occupies x=126..1132, y=347..964 (1007 x 618). No white tile. */
+:root body .official-mark {
+    width:96px; height:auto; aspect-ratio:1007 / 618; flex:0 0 96px;
+    background:transparent!important; border:0; border-radius:0; box-shadow:none;
+    overflow:hidden; vertical-align:middle;
+}
+:root body header.navbar .official-mark { width:104px; flex-basis:104px; }
+/* The supplied artwork is already a wordmark. Keep the configured agency name
+   available to assistive technology without duplicating it beside the logo.
+   Match the loaded Airborne source too: a saved custom URL or error fallback
+   may retain the custom-image class while displaying the official artwork. */
+:root body :is(.brand-logo,.footer-brand,.signin-brand,.auth-brand-logo,.system-brand,.sidebar-logo):has(.official-mark img:is(:not(.agency-logo-custom),[src$="/images/brand/travelgo-airborne.png"])) > span:last-child:not(.official-mark) {
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+:root body .official-mark img:is(:not(.agency-logo-custom),[src$="/images/brand/travelgo-airborne.png"]) {
+    position:absolute; width:124.528302%; height:auto; max-width:none;
+    left:-12.512413%; top:-56.148867%; object-fit:contain;
+}
+:root body .official-mark img.agency-logo-custom:not([src$="/images/brand/travelgo-airborne.png"]) {
+    position:absolute; inset:0; width:100%; height:100%; max-width:100%; object-fit:contain;
+}
+:root[data-theme="dark"] body .official-mark img:is(:not(.agency-logo-custom),[src$="/images/brand/travelgo-airborne.png"]) {
+    filter:brightness(1.7) saturate(.9);
+}
+:root body .sidebar-logo .official-mark { width:80px; flex-basis:80px; }
+:root body .sidebar-logo { min-width:0; gap:10px; }
+:root body .sidebar-logo>span:last-child { font-size:1.05rem; }
+:root body .signin-brand .official-mark { width:116px; flex-basis:116px; border-radius:8px; }
+:root body .system-brand .official-mark { width:96px; flex-basis:96px; }
+:root body .auth-brand-logo .official-mark { width:102px; flex-basis:102px; }
+
+/* Shared navigation, forms and actions, including the bare-body handoff pages. */
+:root body:not(.agency-workspace) header.navbar { background:var(--bg-surface); border-color:var(--border-subtle); }
+:root body:not(.agency-workspace) :is(.btn-primary,.signin-submit,.btn-auth-submit,.nav-control-primary,a.registration-contact) {
+    background:var(--site-action); border-color:var(--site-action); color:#fff; box-shadow:none;
+}
+:root body:not(.agency-workspace) :is(.btn-primary,.signin-submit,.btn-auth-submit,.nav-control-primary,a.registration-contact):hover {
+    background:var(--site-action-hover); border-color:var(--site-action-hover); color:#fff;
+}
+:root body:not(.agency-workspace) :is(.nav-link.active,.password-toggle) { color:var(--link-color); }
+:root body:not(.agency-workspace) .signin-form-wrap .eyebrow { color:var(--link-color); }
+:root body:not(.agency-workspace) :is(.auth-input:focus + .input-icon,.input-icon-wrapper:focus-within .input-icon) { color:var(--link-color); }
+:root body:not(.agency-workspace) .auth-form-panel a:not(.registration-contact):hover { color:var(--link-color); }
+:root body:not(.agency-workspace) :is(.pay-submit-btn,.step-item.active .step-bubble,.journey-steps [aria-current],.concierge-icon,.method-card.active .method-icon-wrap,.method-card.active .method-check,.page-item.active .page-link) {
+    background:var(--site-action); border-color:var(--site-action); color:#fff;
+}
+:root body:not(.agency-workspace) .pay-submit-btn:hover { background:var(--site-action-hover); }
+:root body:not(.agency-workspace) :is(input,select,textarea) { accent-color:#264180; }
+:root body:not(.agency-workspace) .profile-surface :is(input,select,textarea) {
+    background:var(--field-bg); color:var(--text-body); border-color:var(--border-strong);
+}
+:root body:not(.agency-workspace) .profile-surface .btn-primary { background:var(--site-action); border-color:var(--site-action); color:#fff; }
+:root body:not(.agency-workspace) .profile-surface .btn-primary:hover { background:var(--site-action-hover); border-color:var(--site-action-hover); }
+:root body:not(.agency-workspace) :is(a,button,input,select,textarea,summary):focus-visible {
+    outline:3px solid var(--focus-ring); outline-offset:4px;
+}
+:root body:not(.agency-workspace) .signin-main { background:var(--bg-main); }
+:root body:not(.agency-workspace) :is(.signup-note,.signin-help,.signin-form-wrap>p) { color:var(--text-muted); }
+:root body:not(.agency-workspace) .auth-visual-panel::before { background:linear-gradient(180deg,#142f5c38,#142f5c18 35%,#142f5cd9); }
+:root body:not(.agency-workspace) a.btn[href*="/payments/checkout"] { background:var(--site-action)!important; border-color:var(--site-action)!important; color:#fff!important; }
+:root body:not(.agency-workspace) .btn-primary[style*="#D97706"] { background:var(--site-action)!important; border-color:var(--site-action)!important; color:#fff!important; }
+
+/* Photographic areas have blue overlays; their white captions remain readable. */
+:root body:not(.agency-workspace) .escape-hero { background:#e5efff; }
+:root body:not(.agency-workspace) .escape-hero::before { background:linear-gradient(90deg,#f8fbfffa 0%,#f8fbffed 26%,#f8fbffa6 47%,#f8fbff18 75%); }
+:root body:not(.agency-workspace) .escape-hero :is(h1,.journey-kicker) { color:#17315c; }
+:root body:not(.agency-workspace) .escape-hero h1 em { color:#315ea8; }
+:root body:not(.agency-workspace) .escape-hero-copy>p:not(.journey-kicker) { color:#405471; }
+:root body:not(.agency-workspace) .escape-hero-copy .journey-kicker span { background:#416db9; }
+:root body:not(.agency-workspace) .escape-location { background:#fffffff2; color:#17315c; }
+:root body:not(.agency-workspace) .escape-location small { color:#52647f; }
+:root body:not(.agency-workspace) .escape-search { box-shadow:0 16px 48px #17315c12; }
+:root body:not(.agency-workspace) .escape-destination { background:#17315c; }
+:root body:not(.agency-workspace) .escape-destination::after { background:linear-gradient(transparent,#112a59cc); }
+:root body:not(.agency-workspace) .escape-destination>div>span { color:#e5eeff; }
+:root body:not(.agency-workspace) :is(.catalogue-duration,.catalogue-masthead-photo figcaption,.journey-page-photo figcaption,.card-img-badge) { color:#17315c; }
+:root body:not(.agency-workspace) .detail-hero::after { background:linear-gradient(180deg,#112a5905 20%,#112a59cc 100%); }
+:root body:not(.agency-workspace) .detail-hero-copy p { color:#f2f6ff; }
+:root body:not(.agency-workspace) .journey-planning-art { background:#eaf2ff; }
+:root body:not(.agency-workspace) .journey-planning-art>span { color:#405471; }
+:root body:not(.agency-workspace) .journey-invitation { background:#264180; }
+:root body:not(.agency-workspace) .journey-invitation .journey-kicker { color:#d3e3ff; }
+:root body:not(.agency-workspace) .journey-invitation p:not(.journey-kicker) { color:#e2edff; }
+:root body:not(.agency-workspace) .journey-invitation .btn { background:#fff; color:#264180; border-color:#fff; }
+:root body:not(.agency-workspace) .journey-invitation .btn:hover { background:#eaf2ff; border-color:#eaf2ff; }
+/* One blue page footer across all roles and both appearance modes. */
+:root body footer.footer { background:#264180!important; color:#e2ebff; border-top:1px solid #365894; }
+:root body footer.footer :is(h4,.footer-brand) { color:#fff!important; }
+/* Earlier footer copy has inline light-background colours. */
+:root body footer.footer :is(p,li,a) { color:#e2ebff!important; }
+:root body footer.footer .footer-brand { color:#fff!important; }
+:root body footer.footer h4::after,
+:root body footer.footer .footer-links a::before { background:#a9c9ff; }
+:root body footer.footer a:is(:hover,:focus-visible) { color:#fff!important; }
+:root body footer.footer a:focus-visible { outline:3px solid #a9c9ff; outline-offset:4px; }
+:root body footer.footer .footer-bottom { border-color:#ffffff30; color:#e2ebff; }
+/* A white wordmark keeps the supplied transparent artwork legible on blue.
+   Custom agency logos keep their own artwork. */
+:root body footer.footer .official-mark img:is(:not(.agency-logo-custom),[src$="/images/brand/travelgo-airborne.png"]) {
+    filter:brightness(0) invert(1);
+}
+
+/* Photos occupy their reserved frames immediately; motion never gates loading. */
+.responsive-photo { display:block; width:100%; height:100%; }
+.responsive-photo img { display:block; width:100%; height:100%; object-fit:cover; }
+:root body:not(.agency-workspace) .detail-hero > .responsive-photo { height:450px; }
+:root body:not(.agency-workspace) .destination-package > .responsive-photo { height:100%; min-height:200px; border-radius:10px; overflow:hidden; }
+:root body:not(.agency-workspace) :is(.signin-story,.auth-visual-panel) {
+    background-image:linear-gradient(180deg,#081e304d,#081e3014 35%,#081e30d4),image-set(url('/images/optimized/hero-travel-960.webp') 1x,url('/images/optimized/hero-travel-1600.webp') 2x);
+}
+:root body:not(.agency-workspace) :is(.reveal,.reveal-up,.reveal-left,.reveal-right,.reveal-zoom,.grid .card) {
+    animation-duration:.25s; animation-delay:0s!important; transition-duration:.25s;
+}
+:root body:not(.agency-workspace) :is(.escape-landscape,.catalogue-masthead-photo,.journey-page-photo,.card-image-wrap) { background:var(--bg-subtle); }
+
+:root[data-theme="dark"] body:not(.agency-workspace) .escape-hero::before { background:linear-gradient(90deg,#0d182bfa,#0d182be8 28%,#0d182ba0 49%,#0d182b00 83%); }
+:root[data-theme="dark"] body:not(.agency-workspace) .escape-hero { background:var(--bg-main); }
+:root[data-theme="dark"] body:not(.agency-workspace) .escape-location { background:var(--bg-surface); color:var(--text-heading); }
+:root[data-theme="dark"] body:not(.agency-workspace) .escape-location small { color:var(--text-muted); }
+:root[data-theme="dark"] body:not(.agency-workspace) :is(.catalogue-duration,.catalogue-masthead-photo figcaption,.journey-page-photo figcaption,.card-img-badge) {
+    background:var(--bg-surface); color:var(--text-heading); border-color:var(--border-subtle);
+}
+:root[data-theme="dark"] body:not(.agency-workspace) .escape-hero :is(h1,.journey-kicker) { color:#edf3ff; }
+:root[data-theme="dark"] body:not(.agency-workspace) .escape-hero h1 em { color:#b1cdff; }
+:root[data-theme="dark"] body:not(.agency-workspace) .escape-hero-copy>p:not(.journey-kicker) { color:#d0ddf1; }
+:root[data-theme="dark"] body:not(.agency-workspace) .journey-planning-art { background:#203654; }
+:root[data-theme="dark"] body:not(.agency-workspace) .journey-planning-art>span { color:#d0ddf1; }
+:root[data-theme="dark"] body:not(.agency-workspace) .catalogue-round-link:hover { color:#0d182b; }
+@media(max-width:760px) {
+    :root body header.navbar .official-mark { width:84px; flex-basis:84px; }
+    :root body header.navbar .brand-wordmark { font-size:1.2rem; }
+    :root body .signin-brand .official-mark { width:96px; flex-basis:96px; }
+    :root body .auth-brand-logo .official-mark { width:80px; flex-basis:80px; }
+}
+@media(max-width:600px) {
+    :root body:not(.agency-workspace) .detail-hero > .responsive-photo { height:370px; }
+    :root body:not(.agency-workspace) .destination-package > .responsive-photo { height:210px; min-height:0; }
+}
+@media(max-width:480px) {
+    :root body:not(.agency-workspace) .escape-hero::before { background:linear-gradient(90deg,#f8fbffed,#f8fbffb8 65%,#f8fbff40); }
+    :root[data-theme="dark"] body:not(.agency-workspace) .escape-hero::before { background:linear-gradient(90deg,#0d182bed,#0d182bb8 65%,#0d182b40); }
+}

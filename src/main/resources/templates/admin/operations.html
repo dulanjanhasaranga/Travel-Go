@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operations - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/admin.css}"><link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="stylesheet" th:href="@{/css/operations.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="agency-workspace"><div class="admin-layout">
+    <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('operations')}"></div>
+    <div class="admin-main">
+        <header class="admin-topbar"><div class="topbar-left"><div><div class="topbar-breadcrumb"><a th:href="@{/admin/dashboard}">Admin</a><span>/</span><span>Operations</span></div><h1 class="topbar-title">Service checks</h1></div></div><div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div><a class="btn btn-outline" th:href="@{/admin/operations}">Refresh checks</a></div></header>
+        <div class="admin-content">
+            <div class="alert alert-info"><span>Check the application services below. Verify provider delivery, supplier arrangements and backup recovery separately before launch.</span></div>
+            <p class="text-muted">Checked at <time th:datetime="${operations.checkedAt}" th:text="${#temporals.format(operations.checkedAt, 'dd MMM yyyy, HH:mm', agencyTimezone)}">—</time> <span th:text="${'(' + agencyTimezone + ')'}"></span>. Credentials and private document locations are hidden.</p>
+            <div class="grid grid-2">
+                <section class="card"><div class="table-header"><h2>Application dependencies</h2></div><div class="card-body">
+                    <p><strong>Database:</strong> <span th:text="${operations.dependencies.database} ? 'Connection available' : 'Unavailable — contact the system administrator'">—</span></p>
+                    <p><strong>Private document storage:</strong> <span th:text="${operations.dependencies.documents} ? 'Storage accessible' : 'Unavailable — contact the system administrator'">—</span></p>
+                    <p th:if="${operations.freeDocumentBytes >= 0}"><strong>Storage space available:</strong> <span th:text="${#numbers.formatDecimal(operations.freeDocumentBytes / 1073741824.0,1,1)} + ' GiB'">—</span></p>
+                    <p class="text-muted">Storage access is checked without writing a file. Verify uploads and backup recovery separately.</p>
+                </div></section>
+                <section class="card"><div class="table-header"><h2>Administrator coverage</h2></div><div class="card-body">
+                    <p><strong>Active administrators:</strong> <span th:text="${operations.activeAdministrators >= 0} ? ${operations.activeAdministrators} : 'Unavailable'">—</span></p>
+                    <p th:if="${operations.activeAdministrators >= 0 and operations.activeAdministrators < 2}">Appoint a second administrator to review protected account changes. Use the administrator provisioning procedure; keep customer accounts separate.</p>
+                    <p th:if="${operations.activeAdministrators >= 2}">Confirm that the administrators listed have the correct identities and review permissions.</p>
+                </div></section>
+                <section class="card"><div class="table-header"><h2>Customer messages</h2></div><div class="card-body">
+                    <p><strong>SMTP configuration:</strong> <span th:text="${operations.mailEnabled} ? 'Enabled' : 'Disabled'">—</span></p>
+                    <p><strong>Booking message dispatch:</strong> <span th:text="${operations.dispatchEnabled} ? 'Enabled' : 'Paused'">—</span></p>
+                    <p><strong>Queued messages:</strong> <span th:text="${operations.queuedEmails >= 0} ? ${operations.queuedEmails} : 'Unavailable'">—</span></p>
+                    <p><strong>Messages requiring review:</strong> <span th:text="${operations.reviewEmails >= 0} ? ${operations.reviewEmails} : 'Unavailable'">—</span></p>
+                    <p class="text-muted">Account verification and recovery emails are sent when SMTP is enabled, independently of booking dispatch. Test delivery and review queued recipients before enabling mail. Investigate uncertain sends before resending.</p>
+                </div></section>
+                <section class="card"><div class="table-header"><h2>External services</h2></div><div class="card-body">
+                    <p><strong>Checkout:</strong> <span th:text="${operations.simulatedPayments} ? 'Simulated payments' : 'Provider mode — verification required'">—</span></p>
+                    <p><strong>Stripe configuration:</strong> <span th:text="${operations.stripeEnabled} ? 'Enabled' : 'Disabled'">—</span></p>
+                    <p><strong>Google sign-in:</strong> <span th:text="${operations.googleEnabled} ? 'Enabled — provider verification required' : 'Disabled'">—</span></p>
+                    <p class="text-muted">Test payments, refunds and Google sign-in with the configured providers before launch.</p>
+                </div></section>
+            </div>
+            <section class="card" style="margin-top:1.5rem"><div class="table-header"><h2>Launch requirements</h2></div><div class="card-body">
+                <p><strong>Agency policies:</strong> <span th:text="${!policyCheckAvailable} ? 'Check unavailable' : (${policyPublished} ? 'Published version available for customer acceptance' : 'No approved policy version published')">—</span></p>
+                <p><strong>Published-policy gate:</strong> <span th:text="${publishedPolicyRequired} ? 'Required before new customer bookings' : 'Disabled for local use'">—</span></p>
+                <p><strong>Supplier confirmation gate:</strong> <span th:text="${supplierConfirmationRequired} ? 'Required before final payment and confirmation' : 'Disabled — enable before accepting real bookings'">—</span></p>
+                <p>Before launch, follow the release guide: test database and document recovery, verify HTTPS and service monitoring, and approve supplier details, photos and agency policies.</p>
+                <div class="flex gap-2" style="flex-wrap:wrap">
+                    <a class="btn btn-outline" th:href="@{/admin/settings}">Agency settings</a>
+                    <a class="btn btn-outline" th:href="@{/admin/reconciliation}" sec:authorize="hasAnyAuthority('PERM_PAYMENT_VIEW','PERM_PAYMENT_MANAGE')">Booking review</a>
+                    <a class="btn btn-outline" th:href="@{/admin/travel-policies}" sec:authorize="hasAnyAuthority('PERM_SYSTEM_SETTINGS_VIEW','PERM_SYSTEM_SETTINGS_MANAGE')">Travel policies</a>
+                </div>
+            </div></section>
+        </div>
+    </div>
+</div><script th:attr="nonce=${cspNonce}" th:src="@{/js/admin.js}"></script><script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script></body></html>

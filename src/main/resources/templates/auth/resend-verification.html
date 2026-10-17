@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <title>Request a verification email | TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="auth-site journey-site">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="container section">
+    <section class="surface profile-surface">
+        <h1>Request a verification email</h1>
+        <p>Enter the email address used to create your account. Each new verification email replaces the previous link.</p>
+        <div th:if="${!registrationAvailable}" role="status" class="alert alert-warning">Email verification is currently unavailable. Contact our team for account assistance.</div>
+        <div th:if="${errorMessage}" role="alert" class="alert alert-danger" th:text="${errorMessage}"></div>
+        <div th:if="${successMessage}" role="status" class="alert alert-success" th:text="${successMessage}"></div>
+        <form th:if="${registrationAvailable}" th:action="@{/auth/resend-verification}" method="post" class="stack">
+            <label for="email">Email address</label>
+            <input id="email" type="email" name="email" maxlength="150" autocomplete="email" required>
+            <button class="btn btn-primary" type="submit">Send verification email</button>
+        </form>
+        <p><a th:href="@{/auth/login}">Back to sign in</a> · <a th:href="@{/contact}">Contact our team</a></p>
+    </section>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+</body>
+</html>

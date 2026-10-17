@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"><body>
+<!-- Only established local destination photos have generated WebP alternatives. -->
+<picture class="responsive-photo" th:fragment="image(photo, altText, sizes, lazy)"
+         th:with="safePhoto=${@travelImages.resolve(photo)}, originalSources=${@travelImages.srcset(safePhoto)}, responsiveBase=${originalSources != null ? #strings.substringBefore(#strings.substringAfter(originalSources, '/images/'), '.jpg') : ''}">
+    <source th:if="${originalSources != null}" type="image/webp"
+            th:attr="srcset=${'/images/optimized/' + responsiveBase + '-640.webp 640w, /images/optimized/' + responsiveBase + '-960.webp 960w, /images/optimized/' + responsiveBase + '-1600.webp 1600w, /images/optimized/' + responsiveBase + '-1920.webp 1920w'}, sizes=${sizes}">
+    <img data-catalogue-photo th:src="${safePhoto}" th:alt="${altText}"
+         th:attr="srcset=${originalSources}, sizes=${sizes}, loading=${lazy ? 'lazy' : 'eager'}, fetchpriority=${lazy ? 'auto' : 'high'}" decoding="async"
+         data-image-fallback="property">
+</picture>
+<picture class="responsive-photo" th:fragment="sky(sizes)">
+    <source type="image/webp" srcset="/images/optimized/sky-journey-480.webp 480w, /images/optimized/sky-journey-960.webp 960w, /images/optimized/sky-journey-1280.webp 1280w" th:attr="sizes=${sizes}">
+    <img th:src="@{/images/modern/sky-journey-original.webp}" alt="" width="1672" height="941" loading="eager" fetchpriority="high" decoding="async">
+</picture>
+</body></html>

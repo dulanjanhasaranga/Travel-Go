@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Permissions - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+<th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block></head>
+<body class="agency-workspace">
+    <div class="admin-layout">
+        <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('roles')}"></div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <a th:href="@{/admin/roles}">Roles</a>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;" th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(role.roleName.toString(),'_',' ')))}">Role details</span>
+                        </div>
+                        <h1 class="topbar-title">Permissions for <span th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(role.roleName.toString(),'_',' ')))}">Administrator</span></h1>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <a th:href="@{/admin/roles}" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to roles
+                    </a>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Alerts -->
+                <div th:if="${successMessage}" class="alert alert-success">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span th:text="${successMessage}"></span>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span th:text="${errorMessage}"></span>
+                </div>
+
+                <section class="card" th:if="${missingBookingPermissions != null and !missingBookingPermissions.empty}" style="margin-bottom:1.5rem">
+                    <div class="card-body">
+                        <h2>Consultant booking access</h2>
+                        <p>This role needs booking permissions to open and manage bookings and customer inquiries.</p>
+                        <p>Permissions to add: <strong th:text="${#strings.listJoin(missingBookingPermissions, ', ')}"></strong>. Other permissions will be retained.</p>
+                        <form sec:authorize="hasAuthority('PERM_ROLE_MANAGE')" th:action="@{/admin/roles/{id}/booking-access(id=${role.id})}" method="post"><fieldset class="permission-readonly-fields" th:disabled="${!#authorization.expression('hasAuthority(''PERM_ROLE_MANAGE'')')}">
+                            <label class="form-label"><input type="checkbox" name="confirmed" value="true" required> Enable booking access for all accounts assigned to this role.</label>
+                            <button class="btn btn-primary" type="submit" sec:authorize="hasAuthority('PERM_ROLE_MANAGE')">Enable booking access</button>
+                        </fieldset></form>
+                    </div>
+                </section>
+                <div class="card">
+                    <div class="table-header">
+                        <div>
+                            <h4 style="margin: 0;">Permission settings</h4>
+                            <span style="font-size: 0.82rem; color: var(--text-muted);" th:text="${role.description}">Role description</span>
+                        </div>
+                    </div>
+
+                    <div class="card-body"><p class="alert alert-info">Permissions determine access within each role. Changes require affected users to sign in again. Administrators must keep the Role management permission.</p>
+                        <form th:action="@{/admin/roles/{id}/permissions(id=${role.id})}" method="post"><fieldset class="permission-readonly-fields" th:disabled="${!#authorization.expression('hasAuthority(''PERM_ROLE_MANAGE'')')}">
+                            <div th:each="permissionModule : ${modules}" style="margin-bottom: 2.5rem;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border-subtle); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">
+                                    <h4 style="color: var(--brand-accent); margin: 0; font-size: 1.1rem;">
+                                        Module: <span th:text="${permissionModule}">Users</span>
+                                    </h4>
+                                    <span class="badge badge-info" style="font-size: 0.7rem;">Permission area</span>
+                                </div>
+
+                                <div class="permissions-grid">
+                                    <label th:each="perm : ${allPermissions}" th:if="${perm.module == permissionModule}" th:for="'perm_' + ${perm.id}" class="permission-card">
+                                        <input type="checkbox" name="permissionIds" th:value="${perm.id}"
+                                               th:id="'perm_' + ${perm.id}"
+                                               th:checked="${#sets.contains(role.permissions, perm)}">
+                                        <div>
+                                            <div class="permission-title" th:text="${perm.permissionName}">USER_VIEW</div>
+                                            <div class="permission-desc" th:text="${perm.description}">View users list</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="margin-top: 1rem;" sec:authorize="hasAuthority('PERM_ROLE_MANAGE')">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                </svg>
+                                Save permissions
+                            </button>
+                        </fieldset></form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+    <script th:attr="nonce=${cspNonce}" th:src="@{/js/admin.js}"></script>
+</body>
+</html>

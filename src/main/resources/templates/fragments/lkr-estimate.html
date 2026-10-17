@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"><body>
+<th:block th:fragment="estimate(usd)"
+          th:with="estimate=${@lkrEstimates.format(usd)},estimateRate=${@lkrEstimates.rate},estimateDescription=${@lkrEstimates.description()}">
+    <span th:if="${estimate != null}" class="lkr-estimate"
+          th:attr="data-usd-estimate=${usd},data-lkr-rate=${estimateRate},title=${estimateDescription}"
+          th:text="${estimate}"></span>
+</th:block>
+<aside th:fragment="preference" th:if="${@lkrEstimates.available()}" th:with="rateSource=${@lkrEstimates.source}" class="currency-estimate-control">
+    <label><input type="checkbox" data-lkr-toggle> Show LKR estimates</label>
+    <p class="currency-estimate-note">Prices and payments are in USD. LKR estimates are for guidance; your bank may use a different rate and charge fees.
+        <a th:href="${rateSource}" target="_blank" rel="noopener noreferrer" th:text="${@lkrEstimates.description()}"></a>
+    </p>
+</aside>
+</body></html>

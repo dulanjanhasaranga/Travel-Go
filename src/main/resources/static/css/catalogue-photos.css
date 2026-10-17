@@ -1,0 +1,25 @@
+.catalogue-photo { margin: 0; min-width: 0; }
+.catalogue-photo img { display: block; width: 100%; height: 190px; object-fit: cover; border-radius: var(--radius-sm, 10px); background: var(--bg-subtle); }
+.catalogue-photo figcaption, .catalogue-photo-note { color: var(--text-muted); font-size: .78rem; line-height: 1.5; margin-top: .5rem; }
+.catalogue-photo--tour { margin-bottom: 1.5rem; }
+.catalogue-photo--tour img { height: 230px; }
+.catalogue-photo--compact { width: 80px; flex: 0 0 80px; }
+.catalogue-photo--compact img { width: 80px; height: 64px; border-radius: 8px; }
+.catalogue-photo--compact figcaption { font-size: .66rem; line-height: 1.3; }
+.catalogue-photo--hotel { margin-bottom: 1.25rem; }
+.catalogue-photo--related { margin-bottom: 1rem; }
+.catalogue-photo--related img { height: 160px; }
+.catalogue-hotel-selected { margin-block: 1rem; padding: 1rem; display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 1rem; align-items: start; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm, 10px); background: var(--bg-subtle); }
+.catalogue-hotel-selected[hidden] { display: none; }
+.catalogue-hotel-selected img { width: 96px; height: 80px; object-fit: cover; border-radius: 8px; }
+.catalogue-hotel-selected p { margin: .25rem 0; font-size: .85rem; overflow-wrap: anywhere; }
+.catalogue-hotel-selected strong { overflow-wrap: anywhere; }
+.catalogue-editor-preview { margin-top: .75rem; }
+.catalogue-editor-preview img { height: 150px; }
+@media (max-width: 480px) {
+  .catalogue-photo--tour img { height: 185px; }
+  .catalogue-photo--compact { width: 64px; flex-basis: 64px; }
+  .catalogue-photo--compact img { width: 64px; height: 56px; }
+  .catalogue-hotel-selected { grid-template-columns: 72px minmax(0, 1fr); gap: .75rem; }
+  .catalogue-hotel-selected img { width: 72px; height: 72px; }
+}
