@@ -1,0 +1,188 @@
+/* Shared action semantics. Loaded after the legacy workspace/theme overrides. */
+:root body {
+    --action-green: #166534;
+    --action-green-hover: #14532d;
+    --action-green-bg: #ecfdf3;
+    --action-green-border: #86d9aa;
+    --action-red: #b42318;
+    --action-red-hover: #991b1b;
+    --action-red-bg: #fff1f0;
+    --action-red-border: #f2b8b2;
+}
+:root body.agency-workspace,
+:root body:not(.agency-workspace) {
+    --success: var(--action-green);
+    --success-bg: var(--action-green-bg);
+    --success-border: var(--action-green-border);
+    --workspace-success: var(--action-green);
+    --workspace-success-bg: var(--action-green-bg);
+    --status-complete: var(--action-green);
+    --status-complete-bg: var(--action-green-bg);
+    --status-complete-border: var(--action-green-border);
+    --danger: var(--action-red);
+    --danger-bg: var(--action-red-bg);
+    --danger-border: var(--action-red-border);
+    --workspace-danger: var(--action-red);
+    --workspace-danger-bg: var(--action-red-bg);
+    --status-error: var(--action-red);
+    --status-error-bg: var(--action-red-bg);
+    --status-error-border: var(--action-red-border);
+}
+:root[data-theme="dark"] body {
+    --action-green: #a3e6bc;
+    --action-green-hover: #166534;
+    --action-green-bg: #18392a;
+    --action-green-border: #467e5c;
+    --action-red: #ffb4ab;
+    --action-red-hover: #b42318;
+    --action-red-bg: #412526;
+    --action-red-border: #9b5350;
+}
+:root[data-theme="dark"] body.agency-workspace,
+:root[data-theme="dark"] body:not(.agency-workspace) {
+    --success: var(--action-green);
+    --success-bg: var(--action-green-bg);
+    --success-border: var(--action-green-border);
+    --workspace-success: var(--action-green);
+    --workspace-success-bg: var(--action-green-bg);
+    --status-complete: var(--action-green);
+    --status-complete-bg: var(--action-green-bg);
+    --status-complete-border: var(--action-green-border);
+    --danger: var(--action-red);
+    --danger-bg: var(--action-red-bg);
+    --danger-border: var(--action-red-border);
+    --workspace-danger: var(--action-red);
+    --workspace-danger-bg: var(--action-red-bg);
+    --status-error: var(--action-red);
+    --status-error-bg: var(--action-red-bg);
+    --status-error-border: var(--action-red-border);
+}
+
+/* Status text and history use the same semantics as the existing badge classes.
+   Do not match generic .active navigation tabs or role identity badges. */
+:root body :is(.badge, .ticket-status, .timeline-status):is([data-status="ACTIVE"], [data-status="CONFIRMED"], [data-status="COMPLETED"], [data-status="APPROVED"], [data-status="PAID"]):not(.badge-warning):not(.badge-info) {
+    color: var(--action-green);
+    background: var(--action-green-bg);
+    border-color: var(--action-green-border);
+}
+:root body :is(.badge, .ticket-status, .timeline-status):is([data-status="INACTIVE"], [data-status="DEACTIVATED"], [data-status="DECLINED"], [data-status="REJECTED"], [data-status="FAILED"], [data-status="EXPIRED"]) {
+    color: var(--action-red);
+    background: var(--action-red-bg);
+    border-color: var(--action-red-border);
+}
+
+/* Explicit approval controls share green; ordinary navigation stays blue. */
+:root body .action-success,
+:root body .btn-success,
+:root body form:is([action$="/confirm"], [action$="/approve"]) .btn[type="submit"] {
+    color: var(--action-green) !important;
+    background: var(--action-green-bg) !important;
+    border-color: var(--action-green-border) !important;
+}
+:root body :is(.action-success, .btn-success):not(:disabled):is(:hover, :focus-visible),
+:root body form:is([action$="/confirm"], [action$="/approve"]) .btn[type="submit"]:not(:disabled):is(:hover, :focus-visible) {
+    color: #fff !important;
+    background: var(--action-green-hover) !important;
+    border-color: var(--action-green-hover) !important;
+}
+
+/* Content may wrap at words; an action must never collapse into letter columns.
+   Tables retain every column and scroll inside their existing table container. */
+:root body.agency-workspace .admin-content table { table-layout: auto; }
+:root body .data-table :is(.btn, .action-btn, button),
+:root body :is(.action-group, .action-cell, .customer-booking-actions) > :is(.btn, .action-btn, button),
+:root body :is(.action-group, .action-cell) form > button {
+    flex: 0 0 auto;
+    min-inline-size: max-content;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+}
+:root body.agency-workspace :is(.action-group, .action-cell) {
+    gap: 8px;
+    min-inline-size: 12rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+:root body.agency-workspace :is(.action-group, .action-cell) > form { flex: 0 0 auto; }
+:root body.agency-workspace #visaTable { min-inline-size: 1080px; }
+:root body.agency-workspace #visaTable :is(th, td):last-child { min-inline-size: 13rem; }
+:root body .data-table :is(.btn, .action-btn) > svg { flex: 0 0 16px; }
+
+/* A compact status/type label is indivisible, including in narrow dashboard
+   columns. The table wrapper handles horizontal overflow. */
+:root body .data-table :is(.badge, .payment-type-badge, .role-badge, .badge-destination, .badge-hotel) {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+    min-inline-size: max-content;
+    max-inline-size: none;
+    flex-shrink: 0;
+}
+
+/* Pencil/bin controls retain real accessible names and native button/link
+   behavior. If this stylesheet is unavailable the original text remains. */
+:root body :is(.btn, .action-btn, button, a).action-icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    flex: 0 0 40px;
+    inline-size: 40px;
+    min-inline-size: 40px;
+    min-block-size: 40px;
+    padding: 10px !important;
+    gap: 0;
+    font-size: 0 !important;
+    line-height: 0;
+    vertical-align: middle;
+}
+:root body .action-icon > svg { display: none; }
+:root body .action-icon::before {
+    content: "";
+    display: block;
+    flex: 0 0 18px;
+    inline-size: 18px;
+    block-size: 18px;
+    background: currentColor;
+    -webkit-mask: var(--action-glyph) center / contain no-repeat;
+    mask: var(--action-glyph) center / contain no-repeat;
+}
+:root body .action-edit { --action-glyph: url('/images/icons/pencil.svg'); }
+:root body .action-delete { --action-glyph: url('/images/icons/bin.svg'); }
+
+:root body :is(.btn, .action-btn, button, a, summary).action-danger,
+:root body :is(.btn, .action-btn).btn-danger,
+:root body :is(.action-reject, .action-delete) {
+    color: var(--action-red) !important;
+    background: var(--action-red-bg) !important;
+    border-color: var(--action-red-border) !important;
+}
+:root body :is(.btn, .action-btn, button, a, summary):is(.action-cancel, .action-danger, .action-delete, .action-reject, .btn-danger):not(:disabled):not([aria-disabled="true"]):is(:hover, :focus-visible) {
+    color: #fff !important;
+    background: var(--action-red-hover) !important;
+    border-color: var(--action-red-hover) !important;
+}
+:root body :is(.action-cancel, .action-danger, .action-delete):focus-visible {
+    outline: 3px solid var(--action-red-border) !important;
+    outline-offset: 3px;
+}
+
+/* Cancelled/rejected records keep their written status as well as red color. */
+:root body.agency-workspace .data-table > tbody > tr[data-status="CANCELLED"] .badge-danger,
+:root body :is(.badge, .ticket-status)[data-status="CANCELLED"],
+:root body .status-cancelled {
+    color: var(--action-red) !important;
+    background: var(--action-red-bg) !important;
+    border-color: var(--action-red-border) !important;
+}
+:root body.agency-workspace .data-table > tbody > tr[data-status="CANCELLED"] td span[style*="var(--danger)"] {
+    color: var(--action-red) !important;
+}
+:root body.agency-workspace .data-table > tbody > tr[data-status="CANCELLED"]::after {
+    background: var(--action-red-border);
+}
+:root body .filter-tab[data-filter="CANCELLED"]:is(:hover, .active) {
+    color: var(--action-red);
+    background: var(--action-red-bg);
+}

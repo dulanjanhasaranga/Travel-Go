@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head></head>
+<body>
+    <aside th:fragment="admin-sidebar(activeTab)" class="admin-sidebar">
+        <div class="sidebar-header">
+            <a th:href="@{/admin/dashboard}" class="sidebar-logo">
+                <span class="official-mark"><img th:with="agencyLogo=${@travelImages.logo(systemSettings != null ? systemSettings.logoUrl : null)}" th:src="${agencyLogo == '/images/travelgo-logo.png' ? '/images/brand/travelgo-airborne.png' : agencyLogo}" th:classappend="${agencyLogo != '/images/travelgo-logo.png' ? 'agency-logo-custom' : null}" data-image-fallback="brand" alt="" width="100" height="100"></span>
+                <span th:text="${systemSettings != null and !#strings.isEmpty(systemSettings.companyName) ? systemSettings.companyName : 'TravelGO'}">TravelGO</span>
+            </a>
+            <span class="sidebar-logo-badge">Admin console</span>
+        </div>
+
+        <div class="console-sidebar-search">
+            <label for="console-nav-search">Find a page</label>
+            <div class="console-search-field">
+                <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/></svg>
+                <input type="search" id="console-nav-search" data-console-nav-search placeholder="Search administration" autocomplete="off">
+            </div>
+        </div>
+
+        <nav class="console-navigation" aria-label="Administration">
+            <section class="console-nav-group">
+                <h2 class="sidebar-section-title">Overview</h2>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item" th:classappend="${activeTab == 'dashboard'} ? 'active' : ''">
+                        <a th:attr="aria-current=${activeTab == 'dashboard' ? 'page' : null}" th:href="@{/admin/dashboard}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+            <section class="console-nav-group">
+                <h2 class="sidebar-section-title">People &amp; access</h2>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item" th:classappend="${activeTab == 'users'} ? 'active' : ''" sec:authorize="hasAnyAuthority('PERM_USER_VIEW','PERM_USER_MANAGE')">
+                        <a th:attr="aria-current=${activeTab == 'users' ? 'page' : null}" th:href="@{/admin/users}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M16 3a4 4 0 0 1 0 8M22 21v-2a4 4 0 0 0-3-3.87M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/></svg>
+                            <span>User management</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item" th:classappend="${activeTab == 'staff'} ? 'active' : ''" sec:authorize="hasAnyAuthority('PERM_STAFF_VIEW','PERM_STAFF_MANAGE')">
+                        <a th:attr="aria-current=${activeTab == 'staff' ? 'page' : null}" th:href="@{/admin/staff}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M14 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM17 11h5M19.5 8.5v5"/></svg>
+                            <span>Staff directory</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item" th:classappend="${activeTab == 'approvals'} ? 'active' : ''">
+                        <a th:attr="aria-current=${activeTab == 'approvals' ? 'page' : null}" th:href="@{/admin/approvals}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H5v16h14V5h-4M9 3h6v4H9zM8 13l3 3 5-5"/></svg>
+                            <span>Account approvals</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item" th:classappend="${activeTab == 'roles'} ? 'active' : ''" sec:authorize="hasAnyAuthority('PERM_ROLE_VIEW','PERM_ROLE_MANAGE')">
+                        <a th:attr="aria-current=${activeTab == 'roles' ? 'page' : null}" th:href="@{/admin/roles}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3 3 7v5c0 5 9 9 9 9s9-4 9-9V7l-9-4ZM8 12l3 3 5-5"/></svg>
+                            <span>Roles &amp; permissions</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item" th:classappend="${activeTab == 'permissions'} ? 'active' : ''" sec:authorize="hasAnyAuthority('PERM_PERMISSION_VIEW')">
+                        <a th:attr="aria-current=${activeTab == 'permissions' ? 'page' : null}" th:href="@{/admin/permissions}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 0 1 2 2M21 9a6 6 0 0 1-7.74 5.74L11 17H9v2H7v2H3v-4l5.26-5.26A6 6 0 1 1 21 9Z"/></svg>
+                            <span>Permission directory</span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+            <section class="console-nav-group">
+                <h2 class="sidebar-section-title">Customer operations</h2>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item" th:classappend="${activeTab == 'inquiries'} ? 'active' : ''">
+                        <a th:attr="aria-current=${activeTab == 'inquiries' ? 'page' : null}" th:href="@{/admin/inquiries}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11a8 8 0 0 1-8 8H7l-4 3V5a3 3 0 0 1 3-3h7a8 8 0 0 1 8 9ZM7 8h10M7 12h7"/></svg>
+                            <span>Travel inquiries</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item" th:classappend="${activeTab == 'reconciliation'} ? 'active' : ''" sec:authorize="hasAnyAuthority('PERM_PAYMENT_VIEW','PERM_PAYMENT_MANAGE')">
+                        <a th:attr="aria-current=${activeTab == 'reconciliation' ? 'page' : null}" th:href="@{/admin/reconciliation}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 3H5v18h14V3h-3M9 3h6v4H9zM8 12h8M8 16h5"/></svg>
+                            <span>Booking review</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item" th:classappend="${activeTab == 'email-delivery'} ? 'active' : ''" sec:authorize="hasAnyAuthority('PERM_SYSTEM_SETTINGS_VIEW','PERM_SYSTEM_SETTINGS_MANAGE')">
+                        <a th:attr="aria-current=${activeTab == 'email-delivery' ? 'page' : null}" th:href="@{/admin/email-delivery}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h18v14H3zM3 5l9 7 9-7"/></svg>
+                            <span>Email delivery</span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+            <section class="console-nav-group">
+                <h2 class="sidebar-section-title">Website &amp; governance</h2>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item" th:classappend="${activeTab == 'content-review'} ? 'active' : ''" sec:authorize="hasAnyAuthority('PERM_SYSTEM_SETTINGS_VIEW','PERM_SYSTEM_SETTINGS_MANAGE')">
+                        <a th:attr="aria-current=${activeTab == 'content-review' ? 'page' : null}" th:href="@{/admin/content-review}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 3h10v18H7zM10 7h4M10 11h4M10 15h4"/></svg>
+                            <span>Content review</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item" th:classappend="${activeTab == 'travel-policies'} ? 'active' : ''" sec:authorize="hasAnyAuthority('PERM_SYSTEM_SETTINGS_VIEW','PERM_SYSTEM_SETTINGS_MANAGE')">
+                        <a th:attr="aria-current=${activeTab == 'travel-policies' ? 'page' : null}" th:href="@{/admin/travel-policies}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3 3 7v5c0 5 9 9 9 9s9-4 9-9V7l-9-4ZM8 9h8M8 13h6"/></svg>
+                            <span>Travel policies</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item" th:classappend="${activeTab == 'audit'} ? 'active' : ''">
+                        <a th:attr="aria-current=${activeTab == 'audit' ? 'page' : null}" th:href="@{/admin/audit-logs}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 3h10v18H7zM10 7h4M10 11h4M10 15h4"/></svg>
+                            <span>Activity log</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item" th:classappend="${activeTab == 'operations'} ? 'active' : ''" sec:authorize="hasAnyAuthority('PERM_SYSTEM_SETTINGS_VIEW','PERM_SYSTEM_SETTINGS_MANAGE')">
+                        <a th:attr="aria-current=${activeTab == 'operations' ? 'page' : null}" th:href="@{/admin/operations}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+                            <span>Service checks</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item" th:classappend="${activeTab == 'settings'} ? 'active' : ''" sec:authorize="hasAnyAuthority('PERM_SYSTEM_SETTINGS_VIEW','PERM_SYSTEM_SETTINGS_MANAGE')">
+                        <a th:attr="aria-current=${activeTab == 'settings' ? 'page' : null}" th:href="@{/admin/settings}">
+                            <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M10 3h4l1 3 3 1 3 3v4l-3 1-1 3-3 3h-4l-1-3-3-1-3-3v-4l3-1 1-3 3-3ZM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                            <span>Agency settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+            <p class="console-nav-empty" data-console-nav-empty role="status" hidden>No matching pages. Try another search.</p>
+        </nav>
+
+        <ul class="sidebar-menu console-utility-menu">
+            <li class="sidebar-item">
+                <a th:href="@{/}" target="_blank" rel="noopener">
+                    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6v6M20 4 10 14"/></svg>
+                    <span>View website</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user-card">
+                <div class="user-avatar" aria-hidden="true">AD</div>
+                <div class="user-info">
+                    <div class="user-name">Administrator</div>
+                    <div class="user-role-tag" th:text="${#authentication.name}">Signed-in account</div>
+                </div>
+            </div>
+            <form th:action="@{/auth/logout}" method="post">
+                <button type="submit" class="btn btn-outline btn-sm">
+                    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4-4-4M21 12H7M10 6V4H3v16h7v-2"/></svg>
+                    Sign out
+                </button>
+            </form>
+        </div>
+    </aside>
+</body>
+</html>

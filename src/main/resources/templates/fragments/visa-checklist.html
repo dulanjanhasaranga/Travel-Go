@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"><body>
+<section th:fragment="requirements(requirements)" class="visa-requirements" aria-label="Visa document requirements">
+    <h4>Document requirements</h4>
+    <p th:if="${requirements.id == null}">Contact your visa officer to confirm the documents and application deadline for this trip.</p>
+    <th:block th:if="${requirements.id != null}">
+        <p th:text="'Checklist version ' + ${requirements.revision}">Checklist version</p>
+        <ul>
+            <li th:each="item : ${requirements.items}">
+                <span th:text="${item.label}">Document</span>
+                <span class="visa-requirement-status" th:text="${item.required ? 'Required' : 'Optional'}"></span>
+                <span class="visa-requirement-status" th:text="${item.uploaded ? '· Uploaded' : '· Not uploaded'}"></span>
+            </li>
+        </ul>
+        <p th:if="${requirements.minimumLeadDays != null}" th:text="'Apply at least ' + ${requirements.minimumLeadDays} + ' calendar days before travel.'"></p>
+        <p th:if="${requirements.minimumLeadDays == null}">Ask your visa officer when to apply before confirming travel arrangements.</p>
+        <p th:if="${requirements.processingMinDays != null}" th:text="'Estimated processing time: ' + ${requirements.processingMinDays} + '–' + ${requirements.processingMaxDays} + ' calendar days. Times may vary; approval is decided by the embassy.'"></p>
+        <p th:if="${requirements.processingMinDays == null}">Ask your visa officer about processing times.</p>
+        <p th:if="${requirements.guidance != null}" th:text="${requirements.guidance}"></p>
+        <p>Provide documents for every traveler. Your visa officer will check them before processing.</p>
+        <p><a th:href="${requirements.sourceUrl}" target="_blank" rel="noopener noreferrer">Visa requirements source</a> · Reviewed <span th:text="${#temporals.format(requirements.sourceReviewedOn,'dd MMM yyyy')}"></span></p>
+    </th:block>
+</section>
+</body></html>

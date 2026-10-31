@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+ <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+ <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <title>Verify staff access | TravelGO</title>
+ <link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/staff-mfa.css}">
+ <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="mfa-site">
+ <main class="mfa-shell">
+  <a class="mfa-brand" th:href="@{/}"><img th:src="@{/images/brand/travelgo-airborne.png}" width="96" height="80" alt="TravelGO home"></a>
+  <p class="mfa-eyebrow">Staff account security</p>
+  <h1 th:text="${!mfaEnrolled ? 'Set up your authenticator' : stepUp ? 'Confirm your identity' : 'Verify your sign-in'}">Verify your sign-in</h1>
+  <p th:if="${!mfaEnrolled}">Use an authenticator app to protect access to customer records and agency operations.</p>
+  <p th:if="${mfaEnrolled and !stepUp}">Enter the current six-digit code from your authenticator app.</p>
+  <p th:if="${mfaEnrolled and stepUp}">For account, settings and payment changes, confirm your password and a new authenticator code. Your previous action has not been applied; return to it after verification.</p>
+  <div class="mfa-notice" th:if="${mfaError}" role="alert" th:text="${mfaError}"></div>
+  <form th:if="${!mfaEnrolled and mfaSetup == null}" th:action="@{/auth/mfa/enroll}" method="post" class="mfa-form">
+   <label for="setup-password">Current password</label><input id="setup-password" name="password" type="password" autocomplete="current-password" maxlength="200" required>
+   <button type="submit" class="btn btn-primary">Prepare authenticator setup</button>
+  </form>
+  <section th:if="${!mfaEnrolled and mfaSetup != null}" class="mfa-setup" aria-labelledby="setup-title">
+   <h2 id="setup-title">Add this account to your app</h2>
+   <ol><li>Choose to enter a setup key manually.</li><li>Use <strong th:text="${mfaSetup.account}">your account email</strong> as the account name and TravelGO as the issuer.</li><li>Select a time-based token (SHA-1, six digits, every 30 seconds), then enter this key:</li></ol>
+   <code class="mfa-key" th:text="${mfaSetup.secret}"></code>
+   <p class="mfa-help">This key is private. Do not send it to anyone. Setup expires soon; preparing a new setup requires your password. Finish in this browser and keep this session open.</p>
+   <form th:action="@{/auth/mfa/confirm}" method="post" class="mfa-form">
+    <label for="confirm-password">Current password</label><input id="confirm-password" name="password" type="password" autocomplete="current-password" maxlength="200" required>
+    <label for="setup-code">Authenticator code</label><input id="setup-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" required>
+    <button type="submit" class="btn btn-primary">Activate and show recovery codes</button>
+   </form>
+  </section>
+  <form th:if="${mfaEnrolled}" th:action="${stepUp ? '/auth/mfa/reauthenticate' : '/auth/mfa/verify'}" method="post" class="mfa-form">
+   <th:block th:if="${stepUp}"><label for="verify-password">Current password</label><input id="verify-password" name="password" type="password" autocomplete="current-password" maxlength="200" required></th:block>
+   <label for="verify-code">Authenticator or recovery code</label><input id="verify-code" name="code" type="text" autocomplete="one-time-code" maxlength="40" spellcheck="false" autocapitalize="characters" required>
+   <label class="mfa-checkbox"><input type="checkbox" name="recoveryCode" value="true"> I am using a recovery code</label>
+   <p class="mfa-help">A code can be used once. If you just used an authenticator code, wait for the next one. A recovery code is permanently spent when accepted.</p>
+   <button type="submit" class="btn btn-primary">Verify and continue</button>
+  </form>
+  <details th:if="${mfaEnrolled and mfaVerified}" class="mfa-recovery-options">
+   <summary>Replace recovery codes</summary>
+   <p>Generate ten new codes. All previous recovery codes and other verified staff sessions will stop working.</p>
+   <form th:action="@{/auth/mfa/recovery-codes/regenerate}" method="post" class="mfa-form">
+    <label for="rotate-password">Current password</label><input id="rotate-password" name="password" type="password" autocomplete="current-password" maxlength="200" required>
+    <label for="rotate-code">New authenticator or unused recovery code</label><input id="rotate-code" name="code" type="text" autocomplete="one-time-code" maxlength="40" required>
+    <label class="mfa-checkbox"><input type="checkbox" name="recoveryCode" value="true"> I am using a recovery code</label>
+    <button type="submit" class="btn btn-outline">Replace my recovery codes</button>
+   </form>
+  </details>
+  <details th:if="${mfaEnrolled and mfaVerified}" class="mfa-recovery-options">
+   <summary>Replace my authenticator</summary>
+   <p>Use this when changing phones, or after signing in with a recovery code. Your old authenticator, old recovery codes and other verified sessions will stop working immediately. Finish setting up the new authenticator in this browser to regain workspace access. Signing out or losing this session before completion requires agency-owner recovery.</p>
+   <form th:action="@{/auth/mfa/authenticator/replace}" method="post" class="mfa-form">
+    <label for="replace-password">Current password</label><input id="replace-password" name="password" type="password" autocomplete="current-password" maxlength="200" required>
+    <label for="replace-code">New authenticator or unused recovery code</label><input id="replace-code" name="code" type="text" autocomplete="one-time-code" maxlength="40" required>
+    <label class="mfa-checkbox"><input type="checkbox" name="recoveryCode" value="true"> I am using a recovery code</label>
+    <button type="submit" class="btn btn-outline">Verify and replace authenticator</button>
+   </form>
+  </details>
+  <a th:if="${mfaVerified}" th:href="${workspacePath}" class="mfa-workspace">Return to workspace</a>
+  <form th:action="@{/auth/logout}" method="post" class="mfa-signout"><button type="submit" class="btn btn-outline">Sign out</button></form>
+  <p class="mfa-help">Lost your authenticator? Use one of your saved recovery codes. If both are unavailable, contact the agency owner for an identity-checked recovery.</p>
+ </main>
+ <footer class="mfa-footer">TravelGO · Secure staff access</footer>
+</body>
+</html>

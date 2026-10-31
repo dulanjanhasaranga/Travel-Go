@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head></head><body>
+<header th:fragment="navbar" class="navbar">
+ <div class="container nav-container">
+  <a th:href="@{/}" class="brand-logo" th:attr="aria-label=${(systemSettings != null and !#strings.isEmpty(systemSettings.companyName) ? systemSettings.companyName : 'TravelGO') + ' home'}"><span class="official-mark"><img th:with="agencyLogo=${@travelImages.logo(systemSettings != null ? systemSettings.logoUrl : null)}" th:src="${agencyLogo == '/images/travelgo-logo.png' ? '/images/brand/travelgo-airborne.png' : agencyLogo}" th:classappend="${agencyLogo != '/images/travelgo-logo.png' ? 'agency-logo-custom' : null}" data-image-fallback="brand" alt="" width="100" height="100"></span><span class="brand-wordmark" th:text="${systemSettings != null and !#strings.isEmpty(systemSettings.companyName) ? systemSettings.companyName : 'TravelGO'}">TravelGO</span></a>
+  <button type="button" class="nav-toggle nav-control" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-navigation"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg><span>Menu</span></button>
+  <nav id="primary-navigation" class="nav-links" aria-label="Main navigation">
+   <a th:href="@{/}" class="nav-link">Home</a><a th:href="@{/destinations}" class="nav-link">Destinations</a><a th:href="@{/packages}" class="nav-link">Tour Packages</a><a th:href="@{/visa-info}" class="nav-link">Visa Guide</a><a th:href="@{/about}" class="nav-link">About</a><a th:href="@{/contact}" class="nav-link">Contact</a><a th:href="@{/faq}" class="nav-link">FAQ</a>
+  </nav>
+  <div class="nav-actions" aria-label="Account controls">
+   
+   <div th:replace="~{fragments/notification-bell :: bell}"></div>
+   <div sec:authorize="!isAuthenticated()" class="nav-auth-actions"><a th:href="@{/auth/login}" class="nav-control">Sign in</a><a th:href="@{/auth/register}" class="nav-control nav-control-primary">Create account</a></div>
+   <details sec:authorize="isAuthenticated()" class="account-menu">
+    <summary class="nav-control account-toggle" aria-label="My account"><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path stroke-linecap="round" d="M5 21v-2a7 7 0 0114 0v2"/></svg><span>My account</span><svg class="account-chevron" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg></summary>
+    <div class="account-popover" aria-label="Account navigation">
+     <p class="account-menu-heading">Your account</p>
+     <div sec:authorize="hasRole('CUSTOMER')" class="account-menu-links"><a th:href="@{/customer/dashboard}">Dashboard</a><a th:href="@{/customer/bookings}">My bookings</a><a th:href="@{/customer/visas}">Visa applications</a><a th:href="@{/customer/inquiries}">My inquiries</a><a th:href="@{/customer/notifications}">Notifications</a><a th:href="@{/customer/profile}">Profile</a></div>
+     <div sec:authorize="hasRole('ADMIN')" class="account-menu-links"><a th:href="@{/admin/dashboard}">Admin dashboard</a></div>
+     <div sec:authorize="hasAnyRole('TRAVEL_CONSULTANT','VISA_OFFICER')" class="account-menu-links"><a th:href="@{/staff/dashboard}">Staff dashboard</a></div>
+     <form th:action="@{/auth/logout}" method="post" class="account-signout"><button type="submit">Sign out</button></form>
+    </div>
+   </details>
+  </div>
+ </div>
+</header>
+</body></html>

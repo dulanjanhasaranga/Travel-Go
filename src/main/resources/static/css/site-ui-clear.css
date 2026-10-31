@@ -1,0 +1,483 @@
+/* Public and customer UI refinement. Existing status text, links and actions stay
+   in the document; colour is supplementary to the server-provided labels. */
+:root body:not(.agency-workspace) {
+    --success:#276648;
+    --success-bg:#f2f8f4;
+    --success-border:#cddfd3;
+    --warning:#80591c;
+    --warning-bg:#faf7f0;
+    --warning-border:#e5d9c1;
+    --danger:#a13b46;
+    --danger-bg:#fcf3f4;
+    --danger-border:#ead0d4;
+    --info:#365d91;
+    --info-bg:#f0f5fc;
+    --info-border:#cfddf0;
+    --clear-panel-radius:14px;
+}
+
+:root[data-theme="dark"] body:not(.agency-workspace) {
+    --success:#a2d6b7;
+    --success-bg:#1a332c;
+    --success-border:#385749;
+    --warning:#e5c58b;
+    --warning-bg:#352f25;
+    --warning-border:#5c503c;
+    --danger:#f1b1b8;
+    --danger-bg:#3a2732;
+    --danger-border:#63424f;
+    --info:#b1cdff;
+    --info-bg:#203654;
+    --info-border:#405b7d;
+}
+
+/* Small, readable labels replace the oversized coloured pills. Explicit
+   dimensions override legacy inline sizing, never the label or its meaning. */
+:root body:not(.agency-workspace) :is(.badge,.ticket-status) {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    max-width:100%;
+    padding:5px 9px !important;
+    border:1px solid var(--border-subtle);
+    border-radius:6px;
+    background:var(--bg-subtle);
+    color:var(--text-body);
+    font-family:inherit;
+    font-size:.75rem !important;
+    font-weight:650;
+    line-height:1.4;
+    letter-spacing:0;
+    text-transform:none;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    vertical-align:middle;
+    box-shadow:none;
+}
+
+:root body:not(.agency-workspace) :is(.badge-success,.ticket-status.badge-success) {
+    background:var(--success-bg);
+    border-color:var(--success-border);
+    color:var(--success);
+}
+
+:root body:not(.agency-workspace) :is(.badge-warning,.ticket-status.badge-warning) {
+    background:var(--warning-bg);
+    border-color:var(--warning-border);
+    color:var(--warning);
+}
+
+:root body:not(.agency-workspace) :is(.badge-danger,.ticket-status.badge-danger) {
+    background:var(--danger-bg);
+    border-color:var(--danger-border);
+    color:var(--danger);
+}
+
+:root body:not(.agency-workspace) :is(.badge-info,.badge-primary,.ticket-status.badge-info) {
+    background:var(--info-bg);
+    border-color:var(--info-border);
+    color:var(--info);
+}
+
+:root body:not(.agency-workspace) .badge-dark {
+    background:var(--bg-subtle);
+    color:var(--text-heading);
+    border-color:var(--border-strong);
+}
+
+/* Message panels share a quiet surface and a single semantic edge. Existing
+   icons, deadlines, links, validation lists and live-region roles are retained. */
+:root body:not(.agency-workspace) :is(.alert,.auth-alert,.signin-alert,.context-banner,.auth-registration-status) {
+    --message-tone:var(--info);
+    background:var(--bg-surface);
+    color:var(--text-body);
+    border:1px solid var(--border-subtle);
+    border-inline-start:3px solid var(--message-tone);
+    border-radius:9px;
+    padding:15px 17px;
+    font-size:.875rem;
+    line-height:1.65;
+    box-shadow:none;
+    animation:none;
+    overflow-wrap:anywhere;
+}
+
+:root body:not(.agency-workspace) :is(.alert-success,.auth-alert-success,.signin-alert.success,.context-banner.banner-green) {
+    --message-tone:var(--success);
+}
+
+:root body:not(.agency-workspace) :is(.alert-warning,.auth-alert-warning,.context-banner.banner-amber,.auth-registration-status) {
+    --message-tone:var(--warning);
+}
+
+:root body:not(.agency-workspace) :is(.alert-danger,.auth-alert-danger,.signin-alert:not(.success)) {
+    --message-tone:var(--danger);
+}
+
+:root body:not(.agency-workspace) :is(.alert,.auth-alert,.context-banner) > svg {
+    color:var(--message-tone) !important;
+    width:20px;
+    height:20px;
+    flex:0 0 20px;
+    margin-top:3px;
+}
+
+:root body:not(.agency-workspace) .context-banner-icon {
+    color:var(--message-tone);
+    background:var(--bg-subtle);
+    border:1px solid var(--border-subtle);
+    border-radius:8px;
+    flex-shrink:0;
+    box-shadow:none;
+}
+
+:root body:not(.agency-workspace) :is(.alert,.auth-alert,.context-banner) :is(h3,h4,strong) {
+    color:var(--text-heading);
+}
+
+:root body:not(.agency-workspace) :is(.alert,.auth-alert,.context-banner) :is(p,ul):last-child {
+    margin-bottom:0;
+}
+
+:root body:not(.agency-workspace) :is(.alert,.auth-alert) > ul {
+    min-width:0;
+    padding-inline-start:20px;
+}
+
+:root body:not(.agency-workspace) :is(.alert,.auth-alert):has(> ul) {
+    display:block;
+}
+
+:root body:not(.agency-workspace) :is(.field-error,.auth-field-error) {
+    color:var(--danger);
+    font-size:.82rem;
+    line-height:1.5;
+}
+
+/* Account navigation uses real anchors and preserves the current-page marker. */
+:root body.customer-workspace:not(.agency-workspace) .nav-pills {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    align-items:stretch;
+    gap:12px;
+    width:100%;
+    margin:0 0 30px;
+    padding:0;
+    border:0;
+    background:transparent;
+    box-shadow:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .nav-pills > a {
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    min-width:0;
+    min-height:60px;
+    padding:14px 16px;
+    border:1px solid var(--border-subtle);
+    border-radius:10px;
+    background:var(--bg-surface);
+    color:var(--text-body);
+    font-size:.84rem;
+    font-weight:600;
+    line-height:1.45;
+    text-decoration:none;
+    overflow-wrap:anywhere;
+    box-shadow:none;
+    transition:background-color .15s ease,border-color .15s ease;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .nav-pills > a::before {
+    content:"";
+    display:block;
+    width:21px;
+    height:21px;
+    flex:0 0 21px;
+    background:var(--link-color);
+    -webkit-mask:var(--customer-nav-icon) center / contain no-repeat;
+    mask:var(--customer-nav-icon) center / contain no-repeat;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .nav-pills > a[href$="/customer/dashboard"] {
+    --customer-nav-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linejoin='round'%3E%3Cpath d='M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z'/%3E%3C/svg%3E");
+}
+
+:root body.customer-workspace:not(.agency-workspace) .nav-pills > a[href$="/customer/bookings"] {
+    --customer-nav-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='18' height='14' rx='2'/%3E%3Cpath d='M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M8 11v6M16 11v6'/%3E%3C/svg%3E");
+}
+
+:root body.customer-workspace:not(.agency-workspace) .nav-pills > a[href$="/customer/visas"] {
+    --customer-nav-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6M8 14l2 2 5-5'/%3E%3C/svg%3E");
+}
+
+:root body.customer-workspace:not(.agency-workspace) .nav-pills > a[href$="/customer/inquiries"] {
+    --customer-nav-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 11a8 8 0 0 1-8 8H6l-4 3V11a8 8 0 0 1 8-8h3a8 8 0 0 1 8 8zM7 9h9M7 13h6'/%3E%3C/svg%3E");
+}
+
+:root body.customer-workspace:not(.agency-workspace) .nav-pills > a[href$="/customer/notifications"] {
+    --customer-nav-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4'/%3E%3C/svg%3E");
+}
+
+:root body.customer-workspace:not(.agency-workspace) .nav-pills > a[href$="/customer/profile"] {
+    --customer-nav-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2'/%3E%3C/svg%3E");
+}
+
+:root body.customer-workspace:not(.agency-workspace) .nav-pills > a:hover {
+    color:var(--link-color);
+    background:var(--bg-subtle);
+    border-color:var(--border-strong);
+}
+
+:root body.customer-workspace:not(.agency-workspace) .nav-pills > a:is(.active,[aria-current="page"]) {
+    background:var(--info-bg);
+    border-color:var(--info);
+    color:var(--text-heading);
+    box-shadow:inset 0 0 0 1px var(--info-border);
+}
+
+:root body.customer-workspace:not(.agency-workspace) .nav-pills > a:focus-visible {
+    outline:3px solid var(--focus-ring);
+    outline-offset:3px;
+}
+
+/* A consistent dashboard hierarchy without coloured card rails or glass. */
+:root body.customer-workspace:not(.agency-workspace) .dash-hero {
+    border:1px solid var(--border-subtle);
+    border-radius:var(--clear-panel-radius);
+    background:var(--bg-subtle);
+    padding:clamp(24px,3.5vw,36px);
+    box-shadow:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .dash-hero::before,
+:root body.customer-workspace:not(.agency-workspace) .dash-hero::after {
+    content:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .dash-hero h1 {
+    margin:0 0 8px;
+    font-size:clamp(1.7rem,3vw,2.15rem);
+    letter-spacing:-.03em;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .metrics-grid {
+    gap:16px;
+    margin-bottom:30px;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .metric-card {
+    align-items:flex-start;
+    padding:22px;
+    border-radius:var(--clear-panel-radius);
+    border:1px solid var(--border-subtle);
+    background:var(--bg-surface);
+    box-shadow:none;
+    transform:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .metric-icon {
+    background:var(--bg-subtle);
+    color:var(--link-color);
+    border:1px solid var(--border-subtle);
+    border-radius:10px;
+    width:38px;
+    height:38px;
+    flex-basis:38px;
+    box-shadow:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .metric-icon svg {
+    width:20px;
+    height:20px;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .metric-value {
+    color:var(--text-heading);
+    font-size:1.85rem;
+    font-variant-numeric:tabular-nums;
+}
+
+:root body.customer-workspace:not(.agency-workspace) :is(.ticket-card,.status-card,.ticket-container,.timeline-container,.customer-panel,.customer-booking-card,.glass-stepper,.inquiry-card) {
+    border:1px solid var(--border-subtle);
+    border-radius:var(--clear-panel-radius);
+    background:var(--bg-surface);
+    box-shadow:none;
+    backdrop-filter:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) :is(.ticket-card,.status-card,.metric-card)::before {
+    content:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .ticket-card:hover {
+    border-color:var(--border-strong);
+    background:var(--bg-subtle);
+    transform:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .ticket-header-bar {
+    background:var(--bg-subtle);
+    color:var(--text-heading);
+    border-bottom:1px solid var(--border-subtle);
+}
+
+:root body.customer-workspace:not(.agency-workspace) .ticket-right {
+    flex-wrap:wrap;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .ticket-sidebar {
+    border-inline-start:1px solid var(--border-subtle);
+}
+
+:root body.customer-workspace:not(.agency-workspace) .timeline-status {
+    color:var(--text-body);
+    background:var(--bg-subtle);
+    border:1px solid var(--border-subtle);
+    border-radius:6px;
+    font-size:.8rem;
+    line-height:1.5;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .timeline-detail {
+    background:var(--bg-subtle);
+    border-radius:9px;
+    border:1px solid var(--border-subtle);
+}
+
+:root body.customer-workspace:not(.agency-workspace) .customer-booking-review {
+    color:var(--text-body);
+    background:var(--bg-surface);
+    border:1px solid var(--border-subtle);
+    border-inline-start:3px solid var(--warning);
+    border-radius:8px;
+}
+
+/* Inline reply colours belong to an older template; the original message and
+   reply headings distinguish the participants without a large green panel. */
+:root body.customer-workspace:not(.agency-workspace) .inquiry-message-card {
+    background:var(--bg-surface) !important;
+    border:1px solid var(--border-subtle) !important;
+    border-radius:var(--clear-panel-radius);
+    box-shadow:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .inquiry-message-card h3 {
+    color:var(--text-heading) !important;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .inquiry-message-card > div:last-child {
+    opacity:1 !important;
+}
+
+/* Notification text stays prominent; unread styling supplements its labels. */
+:root body:not(.agency-workspace) .notification-popover {
+    box-shadow:0 12px 36px #17315c1c;
+    border-radius:12px;
+}
+
+:root body:not(.agency-workspace) .notification-dot {
+    background:var(--link-color);
+    box-shadow:none;
+}
+
+:root body:not(.agency-workspace) :is(.notification-list,.notification-filters a) {
+    border-color:var(--border-subtle);
+}
+
+:root body:not(.agency-workspace) .notification-filters a {
+    border-radius:8px;
+    min-height:40px;
+    display:inline-flex;
+    align-items:center;
+}
+
+:root body:not(.agency-workspace) .notification-filters a[aria-current="page"] {
+    background:var(--info-bg);
+    color:var(--info);
+    border-color:var(--info-border);
+}
+
+:root body:not(.agency-workspace) .notification-card.is-unread {
+    background:var(--info-bg);
+    border-inline-start-color:var(--info);
+}
+
+:root body:not(.agency-workspace) .notification-card :is(time,.notification-card-meta),
+:root body:not(.agency-workspace) .notification-list-empty p {
+    color:var(--text-muted);
+}
+
+@media (max-width:1000px) {
+    :root body.customer-workspace:not(.agency-workspace) .nav-pills {
+        grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+
+    :root body.customer-workspace:not(.agency-workspace) .nav-pills > a {
+        flex-direction:row;
+        align-items:center;
+        justify-content:flex-start;
+        min-height:60px;
+    }
+}
+
+@media (max-width:600px) {
+    :root body.customer-workspace:not(.agency-workspace) .nav-pills {
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:9px;
+        margin-bottom:24px;
+    }
+
+    :root body.customer-workspace:not(.agency-workspace) .nav-pills > a {
+        min-height:84px;
+        padding:12px;
+        gap:8px;
+        flex-direction:column;
+        align-items:center;
+        text-align:center;
+        font-size:.79rem;
+    }
+
+    :root body.customer-workspace:not(.agency-workspace) .metrics-grid {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:10px;
+    }
+
+    :root body.customer-workspace:not(.agency-workspace) .metric-card {
+        flex-direction:column;
+        gap:12px;
+        padding:16px;
+    }
+
+    :root body.customer-workspace:not(.agency-workspace) .metric-value {
+        font-size:1.7rem;
+    }
+
+    :root body.customer-workspace:not(.agency-workspace) :is(.ticket-card,.status-card) {
+        padding:20px;
+    }
+
+    :root body.customer-workspace:not(.agency-workspace) .ticket-right {
+        width:100%;
+        justify-content:space-between;
+    }
+
+    :root body:not(.agency-workspace) :is(.alert,.auth-alert,.signin-alert,.context-banner,.auth-registration-status) {
+        padding:13px 14px;
+    }
+}
+
+@media (prefers-reduced-motion:reduce) {
+    :root body.customer-workspace:not(.agency-workspace) :is(.nav-pills > a,.metric-card,.ticket-card,.status-card,.animate-up),
+    :root body:not(.agency-workspace) :is(.alert,.auth-alert,.signin-alert,.context-banner,.notification-popover) {
+        animation:none !important;
+        transition:none !important;
+    }
+}
+/* View permission retains the same details without offering unusable edits. */
+.permission-readonly-fields{margin:0;padding:0;border:0;min-width:0}
+.permission-readonly-fields[disabled]{opacity:1}
+.permission-readonly-fields[disabled] input,.permission-readonly-fields[disabled] textarea,.permission-readonly-fields[disabled] select{color:var(--text-body);-webkit-text-fill-color:var(--text-body);opacity:1;cursor:default}

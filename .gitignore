@@ -1,0 +1,14 @@
+target/
+local.properties
+local-security.properties
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.jks
+*.log
+uploads/
+private-data/
+private-backups/
+github-release/

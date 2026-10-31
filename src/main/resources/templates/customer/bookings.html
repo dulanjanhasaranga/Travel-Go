@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/customer-theme.css}">
+</head>
+<body class="customer-workspace">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container customer-page-shell"><aside th:replace="~{fragments/lkr-estimate :: preference}"></aside>
+            <div class="customer-page-heading">
+                <div>
+                    <h1>My bookings</h1>
+                    <p>View booking details, payments and visa applications.</p>
+                </div>
+                <nav class="customer-page-actions" aria-label="Booking navigation">
+                    <a th:href="@{/packages}" class="btn btn-primary btn-sm">Browse packages</a>
+                    <a th:href="@{/customer/dashboard}" class="btn btn-outline btn-sm">Dashboard</a>
+                </nav>
+            </div>
+
+            <div th:if="${successMessage}" class="alert alert-success" role="status">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <div th:text="${successMessage}">Operation successful</div>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div th:text="${errorMessage}">Error occurred</div>
+            </div>
+
+            <section class="booking-history" aria-labelledby="bookingHistoryTitle">
+                <h2 id="bookingHistoryTitle">Booking history</h2>
+                <div class="customer-booking-list" th:if="${not #lists.isEmpty(bookings)}">
+                    <article class="card customer-booking-card" th:each="booking : ${bookings}"
+                             th:with="paymentSummary=${@bookingSummary.forBooking(booking)}"
+                             th:aria-labelledby="'bookingTitle' + ${booking.id}">
+                        <a class="customer-booking-photo" th:href="@{/packages/{id}(id=${booking.tourPackage.id})}"
+                           th:aria-label="${'View ' + booking.tourPackage.name + ' tour package'}">
+                            <img th:with="photo=${@travelImages.tour(booking.tourPackage.image, booking.tourPackage.destination.city + ', ' + booking.tourPackage.destination.country)},sources=${@travelImages.srcset(photo)}"
+                                 th:src="${photo}" th:attr="srcset=${sources}"
+                                 sizes="(max-width:600px) 100vw, 200px"
+                                 th:alt="${booking.tourPackage.destination.city + ', ' + booking.tourPackage.destination.country}"
+                                 width="400" height="300" loading="lazy" decoding="async" data-catalogue-photo>
+                        </a>
+                        <div class="customer-booking-content">
+                            <div class="customer-booking-heading">
+                                <div>
+                                    <span class="customer-booking-reference" th:text="'Booking #BKG-' + ${booking.id}">Booking #BKG-1</span>
+                                    <h3 th:id="'bookingTitle' + ${booking.id}" th:text="${booking.tourPackage.name}">Tour package</h3>
+                                    <p class="customer-booking-location" th:text="${booking.tourPackage.destination.city + ', ' + booking.tourPackage.destination.country}">Destination</p>
+                                </div>
+                                <div class="customer-booking-state">
+                                    <span class="customer-detail-label">Booking status</span>
+                                    <span class="badge"
+                                          th:attr="data-status=${booking.bookingStatus.name()}"
+                                          th:classappend="${paymentSummary.reviewRequired} ? 'badge-info' : (${booking.bookingStatus.name() == 'CONFIRMED' or booking.bookingStatus.name() == 'COMPLETED'} ? 'badge-success' : (${booking.bookingStatus.name() == 'CANCELLED' or booking.bookingStatus.name() == 'DECLINED' or booking.bookingStatus.name() == 'EXPIRED'} ? 'badge-danger' : (${booking.bookingStatus.name() == 'PENDING'} ? 'badge-warning' : 'badge-info')))"
+                                          th:text="${#strings.capitalize(#strings.toLowerCase(booking.bookingStatus.name()))}">Pending</span>
+                                </div>
+                            </div>
+                            <dl class="customer-booking-facts">
+                                <div>
+                                    <dt>Travel date</dt>
+                                    <dd><time th:datetime="${booking.travelDate}" th:text="${#temporals.format(booking.travelDate, 'dd MMM yyyy')}">15 Oct 2026</time></dd>
+                                </div>
+                                <div>
+                                    <dt>Travelers</dt>
+                                    <dd th:text="${booking.numberOfTravelers + (booking.numberOfTravelers == 1 ? ' person' : ' people')}">2 people</dd>
+                                </div>
+                                <div>
+                                    <dt>Package cost</dt>
+                                    <dd th:text="'$' + ${#numbers.formatDecimal(booking.totalPackageAmount, 1, 'COMMA', 2, 'POINT')}">$2,598.00</dd><dd><span th:replace="~{fragments/lkr-estimate :: estimate(${booking.totalPackageAmount})}"></span></dd>
+                                </div>
+                                <div>
+                                    <dt>Payment status</dt>
+                                    <dd th:text="${paymentSummary.status == 'Fully Paid' ? 'Paid in full' : paymentSummary.status}">Not paid</dd>
+                                </div>
+                            </dl>
+                            <p class="customer-booking-review" th:if="${paymentSummary.reviewRequired}">
+                                <strong>Review needed.</strong>
+                                <span th:text="${paymentSummary.explanation}"></span>
+                            </p>
+                            <div class="customer-booking-actions">
+                                <a th:href="@{/customer/bookings/{id}(id=${booking.id})}" class="btn btn-outline btn-sm">Details</a>
+                                <a th:href="@{/customer/payments/checkout/{id}(id=${booking.id})}" class="btn btn-primary btn-sm"
+                                   th:if="${booking.bookingStatus.name() == 'PENDING'}">Payment details</a>
+                                <form th:action="@{/customer/bookings/{id}/cancel(id=${booking.id})}" method="post"
+                                      th:if="${editableBookingIds.contains(booking.id)}">
+                                    <button type="submit" class="btn btn-outline btn-sm customer-cancel-button action-cancel"
+                                            data-confirm-click="Are you sure you want to cancel this booking?">Cancel</button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <div th:if="${#lists.isEmpty(bookings)}" class="card customer-empty-state">
+                    <h3>No bookings yet</h3>
+                    <p>Your booking requests will appear here after you submit them.</p>
+                    <a th:href="@{/packages}" class="btn btn-primary">Browse Tour Packages</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+    <script th:attr="nonce=${cspNonce}" th:src="@{/js/catalogue-photos.js}"></script>
+</body>
+</html>

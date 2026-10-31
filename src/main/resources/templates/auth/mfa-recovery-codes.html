@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+ <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+ <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <title>Save recovery codes | TravelGO</title>
+ <link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/staff-mfa.css}">
+ <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="mfa-site">
+ <main class="mfa-shell">
+  <a class="mfa-brand" th:href="@{/}"><img th:src="@{/images/brand/travelgo-airborne.png}" width="96" height="80" alt="TravelGO home"></a>
+  <p class="mfa-eyebrow">Staff account security</p><h1>Save your recovery codes</h1>
+  <p>Your second factor is verified. Store these codes in your password manager or another safe place before continuing.</p>
+  <div class="mfa-notice" role="status">These codes are shown once. Each works once with your password sign-in. TravelGO stores only their hashes.</div>
+  <ul class="mfa-codes"><li th:each="code : ${recoveryCodes}"><code th:text="${code}"></code></li></ul>
+  <a th:href="${workspacePath}" class="btn btn-primary">I saved my codes · Continue</a>
+  <p class="mfa-help">Do not share these codes, paste them in support messages or store them with your authenticator setup key.</p>
+ </main><footer class="mfa-footer">TravelGO · Secure staff access</footer>
+</body></html>

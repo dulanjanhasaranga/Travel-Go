@@ -1,0 +1,64 @@
+/* Project-wide colour identity. Layout, workflow labels and action visibility
+   stay in their existing stylesheets. The supplied logo/photos retain their art. */
+:root body.agency-workspace,
+:root body:not(.agency-workspace) {
+    --brand-secondary:#315ea8; --brand-secondary-hover:#264b88; --brand-secondary-light:#eaf2ff;
+    --agency-coral:#315ea8;
+    --success:#173b67; --success-bg:#f3f6fa; --success-border:#b8c9de;
+    --warning:#52647f; --warning-bg:#f4f6f9; --warning-border:#d3dde9;
+    --info:#315b95; --info-bg:#f1f5fb; --info-border:#cbdcf0;
+    --danger:#9b3745; --danger-bg:#fcf3f4; --danger-border:#e4c2c7; --action-danger:#9b3745;
+    --workspace-success:var(--success); --workspace-success-bg:var(--success-bg);
+    --workspace-warning:var(--warning); --workspace-warning-bg:var(--warning-bg);
+    --workspace-info:var(--info); --workspace-info-bg:var(--info-bg);
+    --workspace-danger:var(--danger); --workspace-danger-bg:var(--danger-bg);
+    --auth-primary-glow:#26418026; --shadow-glow:#26418026; --shadow-glow-coral:#26418026;
+    color-scheme:light;
+}
+:root[data-theme="dark"] body.agency-workspace,
+:root[data-theme="dark"] body:not(.agency-workspace) {
+    --brand-secondary:#a9c9ff; --brand-secondary-hover:#c4daff; --brand-secondary-light:#203654;
+    --agency-coral:#a9c9ff;
+    --success:#d7e7ff; --success-bg:#20324d; --success-border:#506889;
+    --warning:#bdcce1; --warning-bg:#1b2c44; --warning-border:#506889;
+    --info:#b6d2ff; --info-bg:#203654; --info-border:#506889;
+    --danger:#f3b9c1; --danger-bg:#352b3c; --danger-border:#81545f; --action-danger:#f3b9c1;
+    --workspace-success:var(--success); --workspace-success-bg:var(--success-bg);
+    --workspace-warning:var(--warning); --workspace-warning-bg:var(--warning-bg);
+    --workspace-info:var(--info); --workspace-info-bg:var(--info-bg);
+    --workspace-danger:var(--danger); --workspace-danger-bg:var(--danger-bg);
+    color-scheme:dark;
+}
+
+/* An action, a selected control and a keyboard focus share one blue accent. */
+:root body :is(input,select,textarea) { accent-color:#264180; }
+:root[data-theme="dark"] body :is(input,select,textarea) { accent-color:#a9c9ff; }
+:root body :is(.form-control,.form-control-custom,.auth-input,.filter-select):focus {
+    border-color:var(--focus-ring); box-shadow:0 0 0 3px color-mix(in srgb,var(--focus-ring) 16%,transparent);
+}
+:root body .btn-secondary { color:var(--link-color); background:var(--brand-secondary-light); border-color:var(--border-strong); }
+:root body .btn-secondary:hover { color:var(--link-color); background:var(--bg-subtle); border-color:var(--focus-ring); }
+:root body .notification-dot { background:var(--link-color); box-shadow:none; }
+
+/* Public and customer components with literal colours in earlier page styles. */
+:root body:not(.agency-workspace).journey-site .journey-page .btn-primary {
+    background:var(--site-action); border-color:var(--site-action); color:#fff;
+}
+:root body:not(.agency-workspace).journey-site .journey-page .btn-primary:hover {
+    background:var(--site-action-hover); border-color:var(--site-action-hover); color:#fff;
+}
+:root body:not(.agency-workspace) .summary-header { background:var(--site-action); }
+:root body:not(.agency-workspace) .summary-tag { color:#e4edff; background:#ffffff12; border-color:#ffffff30; }
+:root body:not(.agency-workspace) .summary-destination { color:#e4edff; }
+:root body:not(.agency-workspace) .summary-destination svg { color:#e4edff; }
+
+/* Operational heading icons inherit the brand instead of teal or violet. */
+:root body.agency-workspace :is(h1,h2,h3,h4,.hub-section-title,.table-header) > svg {
+    color:var(--link-color)!important;
+}
+:root body.agency-workspace .stars-row { color:var(--link-color)!important; }
+:root body.agency-workspace .admin-content td div[style*="background: #F3E8FF" i] {
+    background:var(--brand-accent-light)!important; color:var(--link-color)!important;
+}
+:root body.agency-workspace :is(#slidePanelTitle,.custom-modal-header) svg { color:var(--link-color)!important; }
+:root body.agency-workspace td span[style*="color:#F59E0B" i] { color:var(--link-color)!important; }

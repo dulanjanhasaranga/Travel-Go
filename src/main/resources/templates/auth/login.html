@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head><th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+ <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <title>Sign in | TravelGO</title>
+ <link rel="stylesheet" th:href="@{/css/style.css}">
+ <link rel="stylesheet" th:href="@{/css/login.css}">
+ <link rel="stylesheet" th:href="@{/css/brand.css}">
+ <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+<th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block></head>
+<body class="auth-site">
+ <main class="signin-shell">
+  <section class="signin-story" aria-label="Travel account">
+   <a th:href="@{/}" class="signin-brand"><span class="official-mark"><img th:with="agencyLogo=${@travelImages.logo(systemSettings != null ? systemSettings.logoUrl : null)}" th:src="${agencyLogo == '/images/travelgo-logo.png' ? '/images/brand/travelgo-airborne.png' : agencyLogo}" th:classappend="${agencyLogo != '/images/travelgo-logo.png' ? 'agency-logo-custom' : null}" data-image-fallback="brand" alt="" width="100" height="100"></span><span th:text="${systemSettings != null and !#strings.isEmpty(systemSettings.companyName) ? systemSettings.companyName : 'TravelGO'}">TravelGO</span></a>
+   <div class="story-copy"><h2>Manage your<br>travel plans.</h2><p>View your bookings, visa applications and messages from our travel team.</p></div>
+  </section>
+  <section class="signin-main" aria-labelledby="signin-title">
+   <div class="signin-controls"><a th:href="@{/}" class="back-link">&#8592; Back to website</a>
+    
+   </div>
+   <div class="signin-form-wrap">
+    <h1 id="signin-title">Sign in</h1>
+    <p class="signin-intro">Use your account email and password.</p>
+    <div th:if="${param.roleUnavailable}" class="signin-alert" role="alert">Your account cannot access this area. Contact an administrator for help.</div>
+    <form th:if="${param.roleUnavailable}" th:action="@{/auth/logout}" method="post"><button type="submit" class="signin-submit">Sign out of this account</button></form>
+    <div th:if="${param.sessionChanged}" class="signin-alert" role="alert">Your account access or password changed. Please sign in again.</div>
+    <div th:if="${param.error}" class="signin-alert" role="alert">We couldn’t sign you in. Check your email and password, or contact us if your account is suspended.</div>
+    <div th:if="${param.logout}" class="signin-alert success" role="status">You have been signed out.</div>
+    <div th:if="${param.denied}" class="signin-alert" role="alert">Your account does not have access to that page.</div>
+    <div th:if="${successMessage}" class="signin-alert success" role="status" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="signin-alert" role="alert" th:text="${errorMessage}"></div>
+    <form th:action="@{/auth/login}" method="post" class="signin-form" id="loginForm">
+     <label for="email">Email address</label>
+     <input type="email" id="email" name="email" required autocomplete="username" placeholder="Your email address" autocapitalize="none" spellcheck="false">
+     <label for="password">Password</label>
+     <div class="password-field"><input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password"><button type="button" class="password-toggle" aria-label="Show password" aria-controls="password" aria-pressed="false">Show</button></div>
+     <a th:href="@{/auth/forgot-password}">Forgot your password?</a>
+     <button type="submit" class="signin-submit">Sign in</button>
+    </form>
+    
+    <div th:if="${googleLoginEnabled}" style="display: flex; align-items: center; text-align: center; margin: 1.5rem 0;">
+        <hr style="flex: 1; border: none; border-top: 1px solid #e2e8f0;">
+        <span style="padding: 0 1rem; color: #64748b; font-size: 0.85rem; font-weight: 500;">or</span>
+        <hr style="flex: 1; border: none; border-top: 1px solid #e2e8f0;">
+    </div>
+    
+    <a th:if="${googleLoginEnabled}" th:href="@{/oauth2/authorization/google}" class="btn btn-outline" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="18px" height="18px">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        Sign in with Google
+    </a>
+
+    <section th:if="${!#lists.isEmpty(demoChoices)}" class="demo-access" aria-labelledby="demo-access-title">
+     <div class="demo-heading"><h2 id="demo-access-title">Quick Demo Access</h2><span class="demo-mode-badge">LOCAL PREVIEW</span></div>
+     <p>Open a role workspace for local review. These shortcut accounts are unavailable outside this computer.</p>
+     <div class="demo-access-grid">
+      <form th:each="choice : ${demoChoices}" th:action="@{/auth/demo-login}" method="post">
+       <input type="hidden" name="account" th:value="${choice.key}">
+       <button type="submit" class="demo-access-button"><span class="demo-button-title"><span th:text="${choice.label}">Demo role</span><span aria-hidden="true">→</span></span><span class="demo-button-description" th:text="${choice.description}">Open workspace</span></button>
+      </form>
+     </div>
+     <p class="demo-note">Demo accounts use sample data and should never be enabled for public hosting.</p>
+    </section>
+    
+    <p class="signup-note">Need an account? <a th:href="@{/auth/register}">Create an account</a></p>
+    <p class="signup-note"><a th:href="@{/auth/resend-verification}">Resend verification email</a></p>
+
+    <div class="signin-help">Need help accessing your account?<br><a th:href="@{/contact}">Contact our travel team</a></div>
+   </div>
+  </section>
+ </main>
+ <script th:attr="nonce=${cspNonce}" th:src="@{/js/login.js}" defer></script>
+<script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script></body>
+</html>

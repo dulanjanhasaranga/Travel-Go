@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review visa requirements - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}"><link rel="stylesheet" th:href="@{/css/visa-checklists.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="agency-workspace"><div class="admin-layout">
+    <div th:replace="~{fragments/visa-sidebar :: visa-sidebar('checklists')}"></div>
+    <div class="admin-main">
+        <header class="admin-topbar"><h1 class="topbar-title">Review visa requirements</h1><div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div><a th:href="@{/staff/visas/checklists}" class="btn btn-outline btn-sm">All checklists</a></div></header>
+        <main class="admin-content">
+            <p class="muted" th:if="${checklist != null and checklist.status.name() != 'DRAFT'}">Published requirements cannot be edited. Save a new draft to make changes; existing applications keep their assigned version.</p>
+            <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+            <form class="visa-checklist-form" method="post" th:object="${request}" th:with="editing=${checklist != null and checklist.status.name() == 'DRAFT'}"
+                  th:action="${editing} ? @{/staff/visas/checklists/{id}(id=${checklist.id})} : @{/staff/visas/checklists}">
+                <input th:if="${editing}" type="hidden" name="lockVersion" th:value="${checklist.lockVersion}">
+                <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger" role="alert"><ul><li th:each="error : ${#fields.allErrors()}" th:text="${error}"></li></ul></div>
+                <div class="visa-checklist-fields">
+                    <div><label for="checklistDestination">Destination</label><select id="checklistDestination" th:field="*{destinationId}" required><option value="">Choose destination</option><option th:each="d : ${destinations}" th:value="${d.id}" th:text="${d.city + ', ' + d.country}"></option></select></div>
+                    <div><label for="checklistVisaType">Visa category</label><select id="checklistVisaType" th:field="*{visaType}" required><option th:each="type : ${visaTypes}" th:value="${type}" th:text="${type.name() == 'VISIT' ? 'Tourist / visit' : 'Business / work'}"></option></select></div>
+                    <div class="full-width"><label for="checklistSource">Embassy or visa authority URL</label><input type="url" id="checklistSource" th:field="*{sourceUrl}" maxlength="1000" placeholder="https://"><small>Enter the embassy or visa authority page reviewed before publication.</small></div>
+                    <div><label for="checklistReviewed">Source reviewed on</label><input type="date" id="checklistReviewed" th:field="*{sourceReviewedOn}"></div>
+                    <div><label for="checklistLead">Minimum submission lead time (calendar days)</label><input type="number" id="checklistLead" th:field="*{minimumLeadDays}" min="1" max="365"><small>Leave blank if submission timing requires an individual assessment.</small></div>
+                    <div><label for="checklistEstimateMin">Estimated processing minimum (calendar days)</label><input type="number" id="checklistEstimateMin" th:field="*{estimatedProcessingMinDays}" min="1" max="365"></div>
+                    <div><label for="checklistEstimateMax">Estimated processing maximum (calendar days)</label><input type="number" id="checklistEstimateMax" th:field="*{estimatedProcessingMaxDays}" min="1" max="365"><small>Enter both estimates or leave both blank. Processing times and visa approval are not guaranteed.</small></div>
+                    <div><label for="checklistRequired">Required documents</label><textarea id="checklistRequired" th:field="*{requiredDocuments}" rows="7" maxlength="6000"></textarea><small>Enter one requirement per line and at least one before publication. Include requirements for every traveler.</small></div>
+                    <div><label for="checklistOptional">Optional / supporting documents</label><textarea id="checklistOptional" th:field="*{optionalDocuments}" rows="7" maxlength="6000"></textarea><small>Enter one requirement per line, with up to 30 requirements in total.</small></div>
+                    <div class="full-width"><label for="checklistGuidance">Customer guidance</label><textarea id="checklistGuidance" th:field="*{guidance}" rows="4" maxlength="2000"></textarea><small>Explain nationality, traveler and evidence requirements. Visa approval cannot be guaranteed.</small></div>
+                </div>
+                <div class="visa-checklist-actions"><button sec:authorize="hasAuthority('PERM_VISA_MANAGE')" type="submit" class="btn btn-primary" th:text="${editing ? 'Save draft' : 'Create draft revision'}"></button><a th:href="@{/staff/visas/checklists}" class="btn btn-outline">Back</a></div>
+            </form>
+        </main>
+    </div>
+</div><script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script><script th:attr="nonce=${cspNonce}" th:src="@{/js/admin.js}"></script></body>
+</html>

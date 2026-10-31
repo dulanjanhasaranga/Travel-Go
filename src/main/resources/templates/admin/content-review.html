@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Content review — TravelGO</title>
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}"><link rel="stylesheet" th:href="@{/css/agency-workflow.css}">
+    <link rel="stylesheet" th:href="@{/css/content-review.css}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+<th:block th:replace="~{fragments/admin-console :: console-styles}"></th:block>
+</head>
+<body class="agency-workspace admin-console">
+<div class="admin-layout">
+    <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('content-review')}"></div>
+    <main class="admin-main">
+        <header th:replace="~{fragments/admin-console :: topbar('Website & governance', 'Content review')}"></header>
+        <div class="admin-content">
+            <p>Review the catalogue with the agency before offering these services to a client. Recorded content and prices do not establish supplier availability or photo permission.</p>
+            <div class="alert alert-warning" role="status" th:if="${!review.currencyConsistent}"><span th:text="${'Recorded currency setting: ' + review.recordedCurrency + '. This release uses USD prices and payments. Review catalogue and financial records; no amounts have been converted.'}"></span></div>
+            <section class="workflow-card">
+                <h2>Prepare agency acceptance</h2>
+                <p>Download the current catalogue, add supplier and image evidence, and record the client's workflow decisions. The worksheet includes a content hash for each record so later changes can be reviewed again.</p>
+                <div class="workflow-actions"><a class="btn btn-primary" th:href="@{/admin/content-review/catalogue.csv}">Download catalogue worksheet</a><a class="btn btn-outline" th:href="@{/admin/content-review/workflow.md}">Download workflow worksheet</a><a class="btn btn-outline" th:href="@{/admin/travel-policies}">Review agency policies</a></div>
+                <p class="workflow-meta">Downloads are review documents. They do not approve, publish or change the catalogue. Content hashes cover recorded fields and image references; they do not verify image bytes or permission.</p>
+                <dl class="workflow-facts"><div><dt>Published policy</dt><dd th:if="${review.policyId == null}">None published</dd><dd th:if="${review.policyId != null}" th:text="${review.policyTitle + ' · Version ' + review.policyId}"></dd></div><div><dt>Current booking gates</dt><dd th:text="${'Policy acceptance: ' + (review.policyRequired ? 'required' : 'not required') + ' · Supplier confirmation: ' + (review.supplierRequired ? 'required' : 'not required')}"></dd></div><div><dt>Tours with missing recorded fields</dt><dd th:text="${review.incompleteTours() + ' of ' + #lists.size(review.tours)}"></dd></div><div><dt>Properties with missing recorded fields</dt><dd th:text="${review.incompleteHotels() + ' of ' + #lists.size(review.hotels)}"></dd></div></dl>
+                <p class="workflow-meta">The current catalogue uses USD. Every booking requires visa approval; final payment is due before the deadline three days before departure, and issued upfront charges have a 24-hour deadline. Confirm these project rules with the client.</p>
+                <p class="workflow-meta" th:text="${'Effective booking clock time zone: ' + review.effectiveTimezone}"></p>
+            </section>
+            <section class="workflow-card">
+                <h2>Tour catalogue</h2>
+                <p class="workflow-meta">A travel consultant maintains package content and booking availability in the catalogue workspace.</p>
+                <p th:if="${#lists.isEmpty(review.tours)}">No tour packages have been recorded.</p>
+                <article class="content-review-item" th:each="item : ${review.tours}">
+                    <img class="content-review-photo" th:src="${item.displayedImage}" th:alt="${item.destination}" width="160" height="110" loading="lazy" decoding="async" data-catalogue-photo>
+                    <div><h3><a th:if="${item.available}" th:href="@{/packages/{id}(id=${item.id})}" th:text="${item.name}"></a><span th:if="${!item.available}" th:text="${item.name}"></span></h3><p class="workflow-meta" th:text="${item.destination + ' · Tour #' + item.id + ' · ' + (item.available ? 'Available for requests' : 'Unavailable for requests')}"></p><p th:if="${item.price != null}" th:text="${#numbers.formatDecimal(item.price,1,'COMMA',2,'POINT') + ' USD ' + item.priceBasis}"></p><p th:if="${#lists.isEmpty(item.gaps)}">Recorded fields are complete. Supplier, price and image evidence still require agency review.</p><div th:if="${!#lists.isEmpty(item.gaps)}"><p>Complete these recorded fields:</p><ul><li th:each="gap : ${item.gaps}" th:text="${gap}"></li></ul></div><details><summary>Content reference</summary><p class="workflow-copy" th:text="${'Recorded cover: ' + (item.recordedImage == null ? 'None' : item.recordedImage)}"></p><p class="workflow-meta" th:text="${'SHA-256: ' + item.contentHash}"></p></details></div>
+                </article>
+            </section>
+            <section class="workflow-card">
+                <h2>Accommodation</h2><p class="workflow-meta">Confirm each property's identity, room basis, supplier rate and permitted photograph. A destination preview is not a photograph of a named hotel.</p>
+                <p th:if="${#lists.isEmpty(review.hotels)}">No accommodation has been recorded.</p>
+                <article class="content-review-item" th:each="item : ${review.hotels}"><figure><img class="content-review-photo" th:src="${item.displayedImage}" th:alt="${item.imageDescription}" width="160" height="110" loading="lazy" decoding="async" data-catalogue-photo><figcaption class="workflow-meta" th:text="${item.imageDescription}"></figcaption></figure><div><h3 th:text="${item.name}"></h3><p class="workflow-meta" th:text="${item.destination + ' · Hotel #' + item.id + ' · ' + (item.available ? 'Available for requests' : 'Unavailable for requests')}"></p><p th:text="${item.address}"></p><p th:if="${item.price != null}" th:text="${#numbers.formatDecimal(item.price,1,'COMMA',2,'POINT') + ' USD ' + item.priceBasis}"></p><p th:if="${#lists.isEmpty(item.gaps)}">Recorded fields are complete. Supplier, price and image evidence still require agency review.</p><div th:if="${!#lists.isEmpty(item.gaps)}"><p>Complete these recorded fields:</p><ul><li th:each="gap : ${item.gaps}" th:text="${gap}"></li></ul></div><details><summary>Content reference</summary><p class="workflow-copy" th:text="${'Recorded image: ' + (item.recordedImage == null ? 'None' : item.recordedImage)}"></p><p class="workflow-meta" th:text="${'SHA-256: ' + item.contentHash}"></p></details></div></article>
+            </section>
+            <section class="workflow-card"><h2>Visa requirement versions</h2><p class="workflow-meta">Visa officers publish reviewed destination requirements. A published checklist is not an embassy decision or a guarantee of processing time.</p><p th:if="${#lists.isEmpty(review.requirements)}">No destination checklists have been recorded. A visa officer must review and publish applicable requirements.</p><article class="content-review-requirement" th:each="requirement : ${review.requirements}"><h3 th:text="${requirement.destination + ' · ' + requirement.visaType + ' · Revision ' + requirement.revision}"></h3><p th:text="${requirement.status + ' · ' + requirement.documentCount + ' document requirements · Source reviewed: ' + requirement.reviewedOn}"></p><p class="workflow-copy" th:text="${'Recorded source: ' + (requirement.source == null ? 'None' : requirement.source)}"></p></article></section>
+            <p class="workflow-meta" th:text="${'Snapshot generated: ' + review.generatedAt + ' UTC. Review again after catalogue or policy changes.'}"></p>
+        </div>
+    </main>
+</div>
+<script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script><script th:attr="nonce=${cspNonce}" th:src="@{/js/catalogue-photos.js}"></script>
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Package - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 0.45rem;
+        }
+        .form-control-custom {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: var(--bg-surface);
+            transition: all var(--transition-fast);
+        }
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--text-heading);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.9rem;
+        }
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+        .summary-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .summary-value {
+            color: var(--text-heading);
+            font-weight: 600;
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/customer-theme.css}">
+<link rel="stylesheet" th:href="@{/css/catalogue-photos.css}"></head>
+<body class="customer-workspace">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container section">
+            <!-- Header Section -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <span class="badge badge-primary" style="margin-bottom: 0.5rem;" th:text="${tourPackage.category.name}">CATEGORY</span>
+                    <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;" th:text="${tourPackage.name}">European Classical Journey</h1>
+                    <p style="color: var(--text-muted); font-size: 1rem;">
+                        <span th:text="${tourPackage.destination.city + ', ' + tourPackage.destination.country}">Paris, France</span> &bull;
+                        <span th:text="${tourPackage.durationDays + (tourPackage.durationDays == 1 ? ' day' : ' days')}">7 days</span>
+                    </p>
+                </div>
+                <div>
+                    <a th:href="@{/packages}" class="btn btn-outline btn-sm">
+                        &larr; Back to Packages
+                    </a>
+                </div>
+            </div>
+
+            <ol class="journey-steps" aria-label="Booking stages"><li aria-current="step">1. Date &amp; travelers</li><li>2. Review request</li><li>3. Visa &amp; upfront payment</li><li>4. Approval &amp; final payment</li><li>5. Confirmation</li></ol>
+            <!-- Two Column Layout -->
+            <div class="grid grid-2 booking-request-layout" style="gap: 2.5rem; align-items: flex-start;">
+
+                <!-- Package Summary & Inclusions -->
+                <div>
+                    <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;">
+                        <h3 style="margin-bottom: 1.25rem; font-size: 1.25rem;">Tour Package Overview</h3><figure class="catalogue-photo catalogue-photo--tour" th:with="photo=${@travelImages.tour(tourPackage.image, tourPackage.destination.city + ', ' + tourPackage.destination.country)}, photoSources=${@travelImages.srcset(photo)}"><img data-catalogue-photo th:src="${photo}" th:attr="srcset=${photoSources}" sizes="(max-width: 768px) 100vw, 50vw" th:alt="${tourPackage.name + ' — ' + tourPackage.destination.city}" decoding="async" width="640" height="360"></figure>
+
+                        <p style="color: var(--text-body); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;"
+                           th:text="${tourPackage.description}">
+                            Package description details.
+                        </p>
+
+                        <div class="summary-row">
+                            <span class="summary-label">Destination</span>
+                            <span class="summary-value" th:text="${tourPackage.destination.city + ', ' + tourPackage.destination.country}">Paris, France</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Duration</span>
+                            <span class="summary-value" th:text="${tourPackage.durationDays + (tourPackage.durationDays == 1 ? ' day' : ' days')}">7 days</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Base Rate</span>
+                            <span class="summary-value" style="color: var(--text-heading); font-size: 1.1rem;"
+                                  th:text="'$' + ${#numbers.formatDecimal(tourPackage.basePrice, 1, 'COMMA', 2, 'POINT')} + ' / person'">
+                                $1,299.00 / person
+                            </span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Group Maximum</span>
+                            <span class="summary-value" th:text="${tourPackage.maxCapacity + (tourPackage.maxCapacity == 1 ? ' traveler maximum' : ' travelers maximum')}">20 travelers maximum</span>
+                        </div>
+                    </div>
+
+                    <!-- Inclusions & Policies -->
+                    <div class="card" style="padding: 2rem;">
+                        <h4 style="margin-bottom: 1rem; font-size: 1.1rem;">Package details</h4>
+                        <ul class="inclusions-list" style="margin-bottom: 1.5rem;">
+                            <li>
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                <strong>Flights:</strong>&nbsp;<span th:text="${tourPackage.flightDetails != null and !tourPackage.flightDetails.isEmpty() ? tourPackage.flightDetails : 'Ask your travel consultant for flight details.'}">Flight Details</span>
+                            </li>
+                            <li>
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                <strong>Visa assistance:</strong>&nbsp;<span>Document verification and application processing</span>
+                            </li>
+                            <li>
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                <strong>Included services:</strong>&nbsp;<span th:text="${tourPackage.includedServices != null and !tourPackage.includedServices.isEmpty() ? tourPackage.includedServices : 'Ask your travel consultant to confirm included services.'}">Excursion Details</span>
+                            </li>
+                        </ul>
+
+
+                    </div>
+                </div>
+
+                <!-- Booking Reservation Form -->
+                <div class="card" style="padding: 2.25rem;">
+                    <h3 style="margin-bottom: 0.5rem; font-size: 1.3rem;">Booking request</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.75rem;">
+                        Choose a departure date and enter the details for each traveler.
+                    </p>
+                    <div th:if="${errorMessage}" id="bookingRequestError" class="alert alert-danger" role="alert">
+                        <div><strong>Check your booking details.</strong><p th:text="${errorMessage}"></p><p>Check the details below and submit again.</p></div>
+                    </div>
+
+                    <form th:action="@{/customer/bookings/create}" method="post" id="bookingRequestForm"><input type="hidden" name="requestToken" th:value="${requestToken}">
+                        <input type="hidden" name="packageId" th:value="${tourPackage.id}">
+
+                        <div class="form-group">
+                            <label class="form-label" for="bookingTravelDate">Departure / Travel Date</label>
+                            <select id="bookingTravelDate" name="travelDate" class="form-control-custom" required>
+                                <option value="">Select an available departure</option>
+                                <option th:if="${submittedTravelDate != null and submittedDepartureAvailable == false}"
+                                        th:value="${submittedTravelDate}" selected data-unavailable="true"
+                                        th:text="${#temporals.format(submittedTravelDate, 'MMM dd, yyyy') + ' — unavailable; choose another departure'}"></option>
+                                <option th:each="departure : ${departures}"
+                                        th:value="${departure.departureDate}" th:attr="data-seats=${departure.availableSeats}"
+                                        th:selected="${departure.departureDate == submittedTravelDate}"
+                                        th:text="${#temporals.format(departure.departureDate, 'MMM dd, yyyy')} + ' - ' + ${departure.availableSeats} + ' seats available'">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="travelerInput">
+                                Number of Travelers
+                            </label>
+                            <input type="number" id="travelerInput" name="numberOfTravelers" class="form-control-custom"
+                                   min="1" step="1" inputmode="numeric" th:max="${tourPackage.maxCapacity}" th:value="${submittedTravelerCount ?: 1}" required aria-describedby="travelerCountHelp">
+                            <small id="travelerCountHelp" class="form-help" aria-live="polite" th:text="${'Up to ' + tourPackage.maxCapacity + (tourPackage.maxCapacity == 1 ? ' traveler, subject to departure availability.' : ' travelers, subject to departure availability.')}">Enter the number of travelers.</small>
+                        </div>
+
+                        <!-- Dynamic Traveler Forms Container -->
+                        <div id="travelerFormsContainer" style="margin-bottom: 1.5rem; padding-top: 1rem; border-top: 1px dashed var(--border-subtle);">
+                            <fieldset class="traveler-card" th:each="traveler, row : ${submittedTravelers != null ? submittedTravelers : {null}}">
+                                <legend th:text="${'Traveler ' + (row.index + 1)}">Traveler 1</legend>
+                                <div class="form-group">
+                                    <label class="form-label" th:for="${'traveler-name-' + (row.index + 1)}">Full name as shown on passport</label>
+                                    <input type="text" th:id="${'traveler-name-' + (row.index + 1)}" th:value="${traveler != null ? traveler.name : ''}" name="travelerNames" class="form-control-custom" maxlength="255" autocomplete="off" required>
+                                </div>
+                                <div class="traveler-field-grid">
+                                    <div>
+                                        <label class="form-label" th:for="${'traveler-passport-' + (row.index + 1)}">Passport number</label>
+                                        <input type="text" th:id="${'traveler-passport-' + (row.index + 1)}" th:value="${traveler != null ? traveler.passport : ''}" name="travelerPassports" class="form-control-custom" maxlength="255" autocapitalize="characters" spellcheck="false" autocomplete="off" required>
+                                    </div>
+                                    <div>
+                                        <label class="form-label" th:for="${'traveler-dob-' + (row.index + 1)}">Date of birth</label>
+                                        <input type="date" th:id="${'traveler-dob-' + (row.index + 1)}" th:value="${traveler != null ? traveler.dob : null}" name="travelerDobs" class="form-control-custom" th:max="${#temporals.format(workflowNow.toLocalDate().minusDays(1), 'yyyy-MM-dd')}" required>
+                                    </div>
+                                    <div>
+                                        <label class="form-label" th:for="${'traveler-gender-' + (row.index + 1)}">Gender</label>
+                                        <select th:id="${'traveler-gender-' + (row.index + 1)}" name="travelerGenders" class="form-control-custom" required>
+                                            <option value="">Select gender</option>
+                                            <option value="Male" th:selected="${traveler != null and traveler.gender == 'Male'}">Male</option>
+                                            <option value="Female" th:selected="${traveler != null and traveler.gender == 'Female'}">Female</option>
+                                            <option th:if="${traveler != null and traveler.gender != null and !#strings.isEmpty(traveler.gender) and traveler.gender != 'Male' and traveler.gender != 'Female'}"
+                                                    th:value="${traveler.gender}" th:text="${traveler.gender}" selected></option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="form-label" th:for="${'traveler-nationality-' + (row.index + 1)}">Nationality</label>
+                                        <input type="text" th:id="${'traveler-nationality-' + (row.index + 1)}" th:value="${traveler != null ? traveler.nationality : ''}" name="travelerNationalities" class="form-control-custom" maxlength="255" autocomplete="off" required>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="hotelSelect">Optional Hotel Accommodation</label>
+                            <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                                <select name="hotelId" id="hotelSelect" class="form-control-custom" style="flex: 1;" aria-describedby="hotelPriceHelp">
+                                    <option value="">No accommodation requested</option>
+                                    <option th:if="${submittedHotelId != null and submittedHotelAvailable == false}"
+                                            th:value="${submittedHotelId}" selected data-unavailable="true">Selected hotel is unavailable — choose another or no accommodation</option>
+                                    <option th:each="hotel : ${hotels}" th:with="place=${hotel.destination.city + ', ' + hotel.destination.country}, resolvedImage=${@travelImages.hotel(hotel.image, place)}, imageCaption=${@travelImages.hotelCaption(hotel.image, place)}, imageAlt=${@travelImages.hotelAlt(hotel.image, hotel.name, place)}" th:attr="data-rate=${hotel.pricePerNight}, data-stars=${hotel.starRating}, data-address=${hotel.address}, data-desc=${hotel.description}, data-image=${resolvedImage}, data-name=${hotel.name}, data-caption=${imageCaption}, data-alt=${imageAlt}"
+                                            th:value="${hotel.id}"
+                                            th:selected="${hotel.id == submittedHotelId}"
+                                            th:text="${hotel.name + (hotel.starRating != null ? ' (' + hotel.starRating + ' stars)' : '') + ' - $' + hotel.pricePerNight + '/night'}">
+                                    </option>
+                                </select>
+                                <button type="button" id="btnHotelPreview" class="btn btn-outline" aria-label="Preview selected hotel" style="padding: 0.75rem 1rem;" disabled>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                </button>
+                            </div>
+                            <small id="hotelPriceHelp" class="form-help">
+                                Hotel pricing is per room/night and calculated based on traveler group size.
+                            </small>
+                        </div>
+
+                        <div id="selectedHotelPreview" class="catalogue-hotel-selected" hidden aria-live="polite"><img id="selectedHotelImage" data-catalogue-photo alt="" width="96" height="80" hidden><div><strong id="selectedHotelName"></strong><p id="selectedHotelAddress"></p><p id="selectedHotelCaption" class="catalogue-photo-note"></p></div></div><!-- Real-time Price Estimation Box -->
+                        <aside th:replace="~{fragments/lkr-estimate :: preference}"></aside>
+                        <div class="booking-estimate" style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.75rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                <span style="color: var(--text-muted);">Package Rate:</span>
+                                <span>$<span th:text="${tourPackage.basePrice}">1299</span> / person</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                <span style="color: var(--text-muted);">Travelers:</span>
+                                <span id="displayTravelers">1</span>
+                            </div>
+                            <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; margin-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                                <strong style="font-size: 1.05rem;">Package + hotel estimate:</strong>
+                                <strong style="font-size: 1.35rem; color: var(--text-heading);" id="displayTotal">
+                                    $<span th:text="${tourPackage.basePrice}">1299.00</span>
+                                </strong>
+                            </div>
+                            <span th:if="${@lkrEstimates.available()}" class="lkr-estimate" data-lkr-booking-total
+                                  th:with="estimateRate=${@lkrEstimates.rate},estimateDescription=${@lkrEstimates.description()}"
+                                  th:attr="data-lkr-rate=${estimateRate},title=${estimateDescription}"
+                                  th:text="${@lkrEstimates.format(tourPackage.basePrice)}"></span>
+                        </div>
+
+                        <p class="muted">Visa and documentation charges will be quoted after verification. No payment is collected when you submit this request.</p><p id="hotelEstimate" aria-live="polite"></p>
+                        <div th:if="${currentTravelPolicy != null}" style="margin-block:1rem">
+                            <input type="hidden" name="policyId" th:value="${currentTravelPolicy.id}">
+                            <label style="display:flex;gap:.75rem;align-items:flex-start"><input type="checkbox" name="policyAccepted" value="true" required style="margin-top:.3rem"><span>I accept the <a th:href="@{/policies/{id}/terms(id=${currentTravelPolicy.id})}" target="_blank" rel="noopener">booking terms</a>, <a th:href="@{/policies/{id}/privacy(id=${currentTravelPolicy.id})}" target="_blank" rel="noopener">privacy policy</a> and <a th:href="@{/policies/{id}/cancellation-policy(id=${currentTravelPolicy.id})}" target="_blank" rel="noopener">cancellation policy</a>.</span></label>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.9rem; font-size: 1.05rem; justify-content: center;">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; margin-right: 0.5rem;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Review booking request
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+
+    <script th:attr="nonce=${cspNonce}" th:inline="javascript">
+        /*<![CDATA[*/
+        const basePrice = /*[[${tourPackage.basePrice}]]*/ 0;
+        const travelerInput = document.getElementById('travelerInput');
+        const displayTravelers = document.getElementById('displayTravelers');
+        const displayTotal = document.getElementById('displayTotal');
+        const container = document.getElementById('travelerFormsContainer');
+
+        const travelerTemplate = container.firstElementChild.cloneNode(true);
+        const travelerValues = new Map();
+        const departureSelect = document.getElementById('bookingTravelDate');
+        const packageCapacity = Number(travelerInput.max);
+
+        function validTravelerCount() {
+            const count = Number(travelerInput.value);
+            return travelerInput.validity.valid && Number.isInteger(count) ? count : null;
+        }
+
+        function generateTravelerForms(count) {
+            // Keep existing fields in place while typing and retain details if a traveler is removed and added again.
+            while (container.children.length > count) {
+                const row = container.lastElementChild;
+                travelerValues.set(container.children.length, [...row.querySelectorAll('input,select')].map(input => input.value));
+                row.remove();
+            }
+            while (container.children.length < count) {
+                const index = container.children.length + 1;
+                const row = travelerTemplate.cloneNode(true);
+                row.querySelector('legend').textContent = `Traveler ${index}`;
+                row.querySelectorAll('[id]').forEach(input => input.id = input.id.replace(/-\d+$/, `-${index}`));
+                row.querySelectorAll('label[for]').forEach(label => label.htmlFor = label.htmlFor.replace(/-\d+$/, `-${index}`));
+                row.querySelectorAll('input,select').forEach((input, fieldIndex) => input.value = travelerValues.get(index)?.[fieldIndex] || '');
+                container.append(row);
+            }
+        }
+
+        function updateDepartureCapacity() {
+            departureSelect.setCustomValidity(departureSelect.selectedOptions[0]?.dataset.unavailable === 'true'
+                ? 'Choose an available departure date.' : '');
+            const seats = Number(departureSelect.selectedOptions[0]?.dataset.seats);
+            const maximum = Number.isInteger(seats) && seats > 0 ? Math.min(packageCapacity, seats) : packageCapacity;
+            travelerInput.max = String(maximum);
+            document.getElementById('travelerCountHelp').textContent = departureSelect.value
+                ? `Up to ${maximum} ${maximum === 1 ? 'traveler' : 'travelers'} for this departure.`
+                : `Up to ${packageCapacity} travelers, subject to departure availability.`;
+            updateTravelers();
+        }
+
+        function updateTravelers() {
+            const count = validTravelerCount();
+            if (count !== null) generateTravelerForms(count);
+            displayTravelers.textContent = count === null ? '\u2014' : String(count);
+            updateEstimate();
+        }
+
+        const hotelSelect = document.querySelector('[name="hotelId"]');
+        const duration = /*[[${tourPackage.durationDays}]]*/ 1;
+        function updateEstimate() {
+            const count = validTravelerCount();
+            if (count === null) {
+                displayTotal.textContent = '\u2014';
+                displayTotal.dataset.usdAmount = '';
+                document.dispatchEvent(new CustomEvent('travelgo:estimate-total', {detail:{usd:null}}));
+                document.getElementById('hotelEstimate').textContent = 'Enter a whole number within the traveler limit to view the estimate.';
+                return;
+            }
+            if (hotelSelect.selectedOptions[0]?.dataset.unavailable === 'true') {
+                displayTotal.textContent = '\u2014';
+                displayTotal.dataset.usdAmount = '';
+                document.dispatchEvent(new CustomEvent('travelgo:estimate-total', {detail:{usd:null}}));
+                document.getElementById('hotelEstimate').textContent = 'Choose an available hotel or no accommodation to view the updated estimate.';
+                return;
+            }
+            const nights = Math.max(1, duration - 1), rooms = Math.ceil(count / 2);
+            const rate = Number(hotelSelect.selectedOptions[0]?.dataset.rate || 0);
+            document.getElementById('hotelEstimate').textContent = rate
+                ? `${rooms} ${rooms === 1 ? 'room' : 'rooms'} for ${nights} ${nights === 1 ? 'night' : 'nights'} at $${rate.toFixed(2)} per room/night: $${(rate * rooms * nights).toFixed(2)}.`
+                : '';
+            displayTotal.textContent = '$' + (count * basePrice + rate * rooms * nights).toFixed(2);
+            displayTotal.dataset.usdAmount = (count * basePrice + rate * rooms * nights).toFixed(2);
+            document.dispatchEvent(new CustomEvent('travelgo:estimate-total', {detail:{usd:displayTotal.dataset.usdAmount}}));
+        }
+        travelerInput.addEventListener('input', updateTravelers);
+        departureSelect.addEventListener('change', updateDepartureCapacity);
+        function updateSelectedHotel() {
+            const unavailable = hotelSelect.selectedOptions[0]?.dataset.unavailable === 'true';
+            hotelSelect.setCustomValidity(unavailable ? 'Choose an available hotel or no accommodation.' : '');
+            updateEstimate();
+            const btnPreview = document.getElementById('btnHotelPreview');
+            btnPreview.disabled = !hotelSelect.value || unavailable;
+            const option = hotelSelect.selectedOptions[0];
+            document.getElementById('selectedHotelPreview').hidden = !hotelSelect.value || unavailable;
+            const image = document.getElementById('selectedHotelImage');
+            image.hidden = !hotelSelect.value || unavailable;
+            if (hotelSelect.value && !unavailable) {
+                image.src = option.dataset.image;
+                image.alt = option.dataset.alt;
+                document.getElementById('selectedHotelName').textContent = option.dataset.name;
+                document.getElementById('selectedHotelAddress').textContent = option.dataset.address || '';
+                document.getElementById('selectedHotelCaption').textContent = option.dataset.caption;
+            }
+        }
+        hotelSelect.addEventListener('change', updateSelectedHotel);
+        updateDepartureCapacity();
+        updateSelectedHotel();
+
+        // Hotel Preview Modal Logic
+        const hotelDialog = document.createElement('dialog');
+        hotelDialog.className = 'review-dialog';
+        hotelDialog.setAttribute('aria-labelledby', 'hotelModalName');
+        hotelDialog.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 id="hotelModalName" style="margin: 0;">Hotel Details</h2>
+                <button type="button" class="btn btn-outline" aria-label="Close hotel details" style="padding: 0.25rem 0.5rem;" data-ui-click="close-dialog">&times;</button>
+            </div>
+            <figure class="catalogue-photo catalogue-photo--hotel"><img id="hotelModalImage" data-catalogue-photo alt=""><figcaption id="hotelModalCaption"></figcaption></figure>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <span id="hotelModalStars" class="badge badge-primary"></span>
+                <span id="hotelModalPrice" class="badge badge-info"></span>
+            </div>
+            <p id="hotelModalAddress" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;"></p>
+            <p id="hotelModalDesc" style="line-height: 1.5;"></p>
+        `;
+        document.body.append(hotelDialog);
+
+        document.getElementById('btnHotelPreview').addEventListener('click', () => {
+            const opt = hotelSelect.selectedOptions[0];
+            if (!opt || !opt.value) return;
+            document.getElementById('hotelModalName').textContent = opt.dataset.name;
+            document.getElementById('hotelModalImage').src = opt.dataset.image;
+            document.getElementById('hotelModalImage').alt = opt.dataset.alt;
+            document.getElementById('hotelModalCaption').textContent = opt.dataset.caption;
+            const stars = Number(opt.dataset.stars);
+            const hotelRating = document.getElementById('hotelModalStars');
+            const hasRating = Number.isInteger(stars) && stars >= 1 && stars <= 5;
+            hotelRating.hidden = !hasRating;
+            hotelRating.textContent = hasRating ? `${stars}-star hotel` : '';
+            document.getElementById('hotelModalPrice').textContent = '$' + opt.dataset.rate + ' / night';
+            document.getElementById('hotelModalAddress').textContent = opt.dataset.address || '';
+            document.getElementById('hotelModalDesc').textContent = opt.dataset.desc || '';
+            hotelDialog.showModal();
+        });
+
+        const bookingForm = travelerInput.closest('form');
+        bookingForm.dataset.reviewBooking = 'true';
+        const dialog = document.createElement('dialog');
+        dialog.className = 'review-dialog';
+        dialog.setAttribute('aria-labelledby', 'bookingReviewTitle');
+        dialog.innerHTML = '<h2 id="bookingReviewTitle">Review your booking request</h2><p class="review-copy"></p><p>Your request will be pending. Upload documents next; visa approval and successful final payment are required for confirmation.</p><div class="dialog-actions"><button type="button" class="btn btn-outline action-icon action-edit" title="Back to edit booking" aria-label="Back to edit booking" data-edit>Back to edit</button><button type="button" class="btn btn-primary" data-confirm>Submit booking request</button></div>';
+        document.body.append(dialog);
+        let reviewed = false;
+        bookingForm.addEventListener('submit', event => {
+            const count = validTravelerCount();
+            if (count === null) {
+                event.preventDefault();
+                travelerInput.reportValidity();
+                return;
+            }
+            travelerInput.value = String(count);
+            if (reviewed) return;
+            event.preventDefault();
+            dialog.querySelector('.review-copy').textContent = `${count} ${count === 1 ? 'traveler' : 'travelers'}, departing ${bookingForm.querySelector('[name="travelDate"]').value}. Package and hotel estimate: ${displayTotal.textContent}. Visa charges are additional.`;
+            dialog.showModal();
+        });
+        dialog.querySelector('[data-edit]').addEventListener('click', () => dialog.close());
+        dialog.querySelector('[data-confirm]').addEventListener('click', (e) => {
+            if (!bookingForm.checkValidity()) {
+                dialog.close();
+                bookingForm.reportValidity();
+                return;
+            }
+            reviewed = true;
+            const btn = e.currentTarget;
+            btn.textContent = 'Processing...';
+            btn.disabled = true;
+            dialog.querySelector('[data-edit]').disabled = true;
+            bookingForm.requestSubmit(bookingForm.querySelector('button[type="submit"]'));
+        });
+        /*]]>*/
+    </script>
+<script th:attr="nonce=${cspNonce}" th:src="@{/js/catalogue-photos.js}"></script></body>
+</html>

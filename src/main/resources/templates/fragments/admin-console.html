@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:fragment="console-styles">
+        <link rel="stylesheet" th:href="@{/css/admin-console.css?v=20261031}">
+        <script th:attr="nonce=${cspNonce}" defer th:src="@{/js/admin-console.js?v=20261031}"></script>
+    </th:block>
+</head>
+<body>
+    <header th:fragment="topbar(section,title)" class="admin-topbar console-topbar">
+        <div class="topbar-left">
+            <div>
+                <div class="topbar-breadcrumb">
+                    <a th:href="@{/admin/dashboard}">Administration</a>
+                    <span aria-hidden="true">/</span>
+                    <span th:text="${section}">Overview</span>
+                </div>
+                <h1 class="topbar-title" th:text="${title}">Dashboard</h1>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div th:replace="~{fragments/notification-bell :: bell}"></div>
+            <a th:href="@{/}" class="btn btn-outline btn-sm console-public-link" target="_blank" rel="noopener">
+                <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6v6M20 4 10 14"/></svg>
+                View website
+            </a>
+        </div>
+    </header>
+</body>
+</html>

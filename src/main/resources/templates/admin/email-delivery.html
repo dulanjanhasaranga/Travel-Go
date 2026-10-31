@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email delivery - TravelGO Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/admin.css}"><link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+<th:block th:replace="~{fragments/admin-console :: console-styles}"></th:block>
+</head>
+<body class="agency-workspace admin-console"><div class="admin-layout">
+    <div th:replace="~{fragments/admin-sidebar :: admin-sidebar('email-delivery')}"></div>
+    <main class="admin-main">
+        <header class="admin-topbar"><div class="topbar-left"><div><div class="topbar-breadcrumb"><a th:href="@{/admin/dashboard}">Admin</a><span>/</span><span>Email delivery</span></div><h1 class="topbar-title">Email delivery</h1></div></div><div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div><a class="btn btn-outline" th:href="@{/admin/operations}">Service checks</a></div></header>
+        <div class="admin-content">
+            <div class="alert alert-success" th:if="${successMessage}" role="status" th:text="${successMessage}"></div>
+            <div class="alert alert-danger" th:if="${errorMessage}" role="alert" th:text="${errorMessage}"></div>
+            <p class="text-muted">Review the provider record before recording an outcome or retrying an uncertain send. Transport acceptance does not confirm inbox delivery. Message contents, account links and attachments are hidden.</p>
+            <section class="card"><div class="card-body">
+                <form method="get" th:action="@{/admin/email-delivery}" class="flex gap-2" style="flex-wrap:wrap;align-items:end">
+                    <div class="form-group"><label class="form-label" for="delivery-status">Transport status</label><select class="form-control" id="delivery-status" name="status"><option value="" th:selected="${selectedStatus == ''}">All statuses</option><option th:each="item : ${deliveryStatuses}" th:value="${item}" th:selected="${selectedStatus == item}" th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(item, '_', ' ')))}"></option></select></div>
+                    <button type="submit" class="btn btn-outline">Show messages</button>
+                </form>
+            </div></section>
+            <p th:if="${messages.empty}" class="text-muted" style="margin-top:1.5rem">No messages match this delivery status.</p>
+            <section th:each="message : ${messages.content}" class="card" style="margin-top:1.5rem">
+                <div class="table-header"><h2 th:text="${message.category}">Customer message</h2><span class="badge" th:text="${message.statusLabel()}">Queued</span></div>
+                <div class="card-body">
+                    <dl><dt>Recipient</dt><dd th:text="${message.recipient}" style="overflow-wrap:anywhere"></dd><dt>Subject</dt><dd th:text="${message.subject}" style="overflow-wrap:anywhere"></dd><dt>TravelGO reference</dt><dd th:text="${message.travelGoReference()}" style="overflow-wrap:anywhere"></dd><dt>Provider message ID</dt><dd th:text="${message.messageId()}" style="overflow-wrap:anywhere"></dd><dt>Created</dt><dd th:text="${message.createdAt == null ? 'Not recorded' : #temporals.format(message.createdAt, 'dd MMM yyyy, HH:mm', agencyTimezone)}"></dd><dt>Delivery attempts</dt><dd th:text="${message.attempts}"></dd><dt th:if="${message.sentAt != null}">Acceptance recorded</dt><dd th:if="${message.sentAt != null}" th:text="${#temporals.format(message.sentAt, 'dd MMM yyyy, HH:mm', agencyTimezone)}"></dd><dt>Recipient delivery</dt><dd th:text="${message.recipientDeliveryLabel()}"></dd><dt th:if="${message.recipientDeliveryUpdatedAt != null}">Provider event time</dt><dd th:if="${message.recipientDeliveryUpdatedAt != null}" th:text="${#temporals.format(message.recipientDeliveryUpdatedAt, 'dd MMM yyyy, HH:mm', agencyTimezone)}"></dd></dl>
+                    <p th:if="${message.status == 'SENDING'}" class="text-muted">A delivery claim is active or awaiting investigation. Contact the application operator; this page cannot alter or retry a claimed message.</p>
+                    <form th:if="${message.reviewable()}" sec:authorize="hasAuthority('PERM_SYSTEM_SETTINGS_MANAGE')" method="post" th:action="@{/admin/email-delivery/{id}/review(id=${message.id})}">
+                        <div class="form-group"><label class="form-label" th:for="${'action-' + message.id}">Action</label><select class="form-control" th:id="${'action-' + message.id}" name="action" required><option value="SUPPRESS">Suppress further delivery</option><option th:if="${message.uncertain()}" value="PROVIDER_ACCEPTED">Record provider acceptance</option><option th:if="${message.retryable()}" value="REQUEUE_NOT_ACCEPTED">Retry after confirmed non-acceptance</option></select></div>
+                        <div class="form-group" th:if="${message.uncertain()}"><label class="form-label" th:for="${'reference-' + message.id}">Provider record reference</label><input class="form-control" th:id="${'reference-' + message.id}" name="evidenceReference" maxlength="150" autocomplete="off"><p class="text-muted">Required when recording acceptance or retrying. Use the provider log or support-case reference.</p></div>
+                        <label th:if="${message.uncertain()}" class="form-label"><input type="checkbox" name="providerChecked" value="true"> I checked the provider record and it supports the selected outcome.</label>
+                        <div class="form-group"><label class="form-label" th:for="${'note-' + message.id}">Review outcome</label><textarea class="form-control" th:id="${'note-' + message.id}" name="note" minlength="10" maxlength="1000" rows="3" required></textarea><p class="text-muted">State the reason or investigation result. Do not include passwords, account links, API keys or message contents.</p></div>
+                        <button class="btn btn-primary" type="submit">Save review</button>
+                    </form>
+                </div>
+            </section>
+            <nav th:if="${messages.totalPages > 1}" aria-label="Message pages" class="flex gap-2" style="margin-top:1.5rem;flex-wrap:wrap"><a th:if="${messages.hasPrevious()}" class="btn btn-outline" th:href="@{/admin/email-delivery(status=${selectedStatus},page=${messages.number - 1})}">Previous</a><span th:text="${'Page ' + (messages.number + 1) + ' of ' + messages.totalPages}"></span><a th:if="${messages.hasNext()}" class="btn btn-outline" th:href="@{/admin/email-delivery(status=${selectedStatus},page=${messages.number + 1})}">Next</a></nav>
+        </div>
+    </main>
+</div><script th:attr="nonce=${cspNonce}" th:src="@{/js/admin.js}"></script><script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script></body></html>

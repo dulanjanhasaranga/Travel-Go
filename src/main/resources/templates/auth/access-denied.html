@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Access unavailable | TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="journey-site">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="container section" id="page-content">
+    <section class="surface profile-surface" aria-labelledby="access-title">
+        <p class="eyebrow">403 · Access unavailable</p>
+        <h1 id="access-title">Your account cannot open this page.</h1>
+        <p sec:authorize="hasAnyRole('TRAVEL_CONSULTANT','VISA_OFFICER','ADMIN')">If you need this page for your work, ask an administrator to check your role permissions.</p>
+        <p sec:authorize="!hasAnyRole('TRAVEL_CONSULTANT','VISA_OFFICER','ADMIN')">Choose a page available in your account, or contact our team for assistance.</p>
+        <div class="actions">
+            <a class="btn btn-primary" sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}">Back to admin dashboard</a>
+            <a class="btn btn-primary" sec:authorize="hasAnyRole('TRAVEL_CONSULTANT','VISA_OFFICER')" th:href="@{/staff/dashboard}">Back to staff dashboard</a>
+            <a class="btn btn-primary" sec:authorize="hasRole('CUSTOMER')" th:href="@{/customer/bookings}">My bookings</a>
+            <a class="btn btn-outline" th:href="@{/}">Home</a>
+        </div>
+    </section>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+</body>
+</html>

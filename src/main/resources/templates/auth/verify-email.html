@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <title>Verify your email | TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="auth-site journey-site">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="container section">
+    <section class="surface profile-surface">
+        <h1>Verify your email address</h1>
+        <p th:if="${token != null}">Confirm your email address to activate your account. Verification links expire after 24 hours and work once.</p>
+        <form th:if="${token != null}" th:action="@{/auth/verify-email}" method="post" class="stack">
+            <input type="hidden" name="token" th:value="${token}">
+            <button type="submit" class="btn btn-primary">Verify email address</button>
+        </form>
+        <p th:if="${token == null}">Open the link from your verification email to continue.</p>
+        <p><a th:href="@{/auth/resend-verification}">Request a new verification email</a> · <a th:href="@{/auth/login}">Sign in</a></p>
+    </section>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Destinations - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+<th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block></head>
+<body class="public-site journey-site journey-catalogue">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container section">
+            <header class="catalogue-masthead catalogue-masthead--coast reveal">
+                <div class="catalogue-masthead-copy"><span class="journey-kicker">Destinations</span><h1>A world of<br><em>possibilities.</em></h1><p>Find a place that calls to you. Explore our destinations, compare trips and start planning your time away.</p><a class="catalogue-text-link" href="#destination-search">Find your destination <span aria-hidden="true">↗</span></a></div>
+                <figure class="catalogue-masthead-photo"><th:block th:replace="~{fragments/responsive-image :: image('/images/maldives-photo.jpg', 'Palm trees casting shadows across a turquoise island lagoon', '(max-width: 760px) 100vw, 50vw', false)}"></th:block><figcaption>A change of scenery.</figcaption></figure>
+            </header>
+
+<section class="surface catalogue-filters" id="destination-search" aria-labelledby="destination-search-title">
+                <div class="catalogue-search-heading"><h2 id="destination-search-title">Where would you like to be?</h2><p>Explore by city or country.</p></div>
+                <form th:action="@{/destinations}" method="get" class="filter-grid catalogue-destination-fields">
+                    <label for="destinationSearch">City or country<input id="destinationSearch" name="search" class="form-control" th:value="${search}" maxlength="255" list="destination-suggestions" placeholder="Start typing a destination" autocomplete="off"></label>
+                    <datalist id="destination-suggestions"><option th:each="d : ${destinationOptions}" th:value="${d.city + ', ' + d.country}"></option></datalist>
+                    <label for="destinationCountry">Country<select id="destinationCountry" class="form-control" name="country"><option value="">All countries</option><option th:each="c : ${countries}" th:value="${c}" th:text="${c}" th:selected="${c == country}"></option></select></label>
+                    <label for="destinationSort">Sort destinations<select id="destinationSort" class="form-control" name="sort"><option value="name" th:selected="${sort == 'name'}">City: A–Z</option><option value="name-desc" th:selected="${sort == 'name-desc'}">City: Z–A</option><option value="newest" th:selected="${sort == 'newest'}">Newest first</option><option value="oldest" th:selected="${sort == 'oldest'}">Oldest first</option></select></label>
+                    <div class="filter-actions"><button type="submit" class="btn btn-primary">Find destinations</button><a th:href="@{/destinations}" class="btn btn-outline">Clear filters</a></div>
+                </form>
+            </section>
+            <div class="catalogue-results"><div><span class="journey-kicker">Places to go</span><h2 role="status" th:text="${resultCount + (resultCount == 1 ? ' destination found' : ' destinations found')}"></h2></div><p class="muted catalogue-price-note">Explore each destination for tours, accommodation and planning information.</p></div>
+                        <!-- Dynamic Destinations Grid -->
+            <div class="grid grid-3 journey-destination-grid" th:if="${not #lists.isEmpty(destinations)}">
+                <article class="card journey-destination-card" th:each="dest : ${destinations}">
+                    <div class="card-image-wrap" th:with="displayImage=${@travelImages.resolve(dest.image)}"><th:block th:replace="~{fragments/responsive-image :: image(${displayImage}, ${dest.city + ', ' + dest.country}, '(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw', true)}"></th:block><span class="catalogue-duration" th:text="${destinationSummaries[dest.id].packageCount + (destinationSummaries[dest.id].packageCount == 1 ? ' package' : ' packages')}"></span></div>
+                    <div class="card-body"><span class="journey-kicker" th:text="${dest.country}"></span><h3><a th:href="@{/destinations/{id}(id=${dest.id})}" th:text="${dest.city}"></a></h3><p class="catalogue-card-description" th:text="${dest.description}"></p>
+                        <div class="catalogue-card-price destination-facts" th:with="summary=${destinationSummaries[dest.id]}"><div><p th:if="${summary.startingPrice != null}"><span class="catalogue-price-label">Packages from</span><strong th:text="${'$' + #numbers.formatDecimal(summary.startingPrice,1,'COMMA',2,'POINT')}"></strong><span class="muted">per person</span></p><p th:if="${summary.packageCount == 0}" class="muted">Contact our team to discuss this destination.</p></div><a th:href="@{/destinations/{id}(id=${dest.id})}" class="catalogue-round-link" th:aria-label="${'Explore ' + dest.city}"><span aria-hidden="true">↗</span></a></div>
+                        <a th:href="@{/destinations/{id}(id=${dest.id})}" class="btn btn-outline">Explore destination <span aria-hidden="true">→</span></a>
+                    </div>
+                </article>
+            </div>
+
+<nav th:if="${pageCount > 1}" class="catalogue-pagination" aria-label="Destination results pages"><a class="btn btn-outline" th:if="${currentPage > 1}" th:href="@{/destinations(search=${search},country=${country},sort=${sort},page=${currentPage - 1})}">Previous</a><span th:text="${'Page ' + currentPage + ' of ' + pageCount}"></span><a class="btn btn-outline" th:if="${currentPage < pageCount}" th:href="@{/destinations(search=${search},country=${country},sort=${sort},page=${currentPage + 1})}">Next</a></nav>
+            <div th:if="${#lists.isEmpty(destinations)}" class="surface catalogue-empty"><span class="journey-kicker">Keep exploring</span><h2>No destinations found</h2><p>Try a different city or country, or browse the full collection.</p><a th:href="@{/destinations}" class="btn btn-primary">View all destinations</a></div>
+            <aside class="catalogue-consultation"><div><span class="journey-kicker">From inspiration to itinerary</span><h2>Let’s plan your time away.</h2><p>Our team can help you choose a destination and discuss the travel arrangements.</p></div><a th:href="@{/contact}" class="btn btn-primary">Talk to a consultant <span aria-hidden="true">↗</span></a></aside>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top-btn" aria-label="Scroll to top">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+    </button>
+
+    <script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+</body>
+</html>

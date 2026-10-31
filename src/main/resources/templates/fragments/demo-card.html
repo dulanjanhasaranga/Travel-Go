@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"><body>
+<fieldset th:fragment="fields(prefix)" class="demo-card-entry" data-demo-card>
+    <legend>Demo card details <span class="demo-mode-label">Test data only</span></legend>
+    <p class="demo-card-help" th:id="${prefix + '-help'}">Use <strong>4242 4242 4242 4242</strong>, a future expiry date and demo code <strong>123</strong>. Never enter a real card.</p>
+    <button type="button" class="btn btn-outline btn-sm" data-demo-fill>Fill demo details</button>
+    <div class="demo-card-grid" th:attr="aria-describedby=${prefix + '-help'}">
+        <div class="demo-card-wide">
+            <label th:for="${prefix + '-holder'}">Demo cardholder name</label>
+            <input th:id="${prefix + '-holder'}" type="text" data-demo-holder autocomplete="off" placeholder="Showcase Customer" minlength="2" maxlength="80" required>
+        </div>
+        <div class="demo-card-wide">
+            <label th:for="${prefix + '-number'}">Demo card number</label>
+            <input th:id="${prefix + '-number'}" type="text" data-demo-number inputmode="numeric" autocomplete="off" placeholder="4242 4242 4242 4242" maxlength="19" required>
+        </div>
+        <div>
+            <label th:for="${prefix + '-expiry'}">Expiry (MM/YY)</label>
+            <input th:id="${prefix + '-expiry'}" type="text" data-demo-expiry inputmode="numeric" autocomplete="off" placeholder="MM/YY" maxlength="5" required>
+        </div>
+        <div>
+            <label th:for="${prefix + '-code'}">Demo security code</label>
+            <input th:id="${prefix + '-code'}" type="password" data-demo-code inputmode="numeric" autocomplete="off" placeholder="123" maxlength="3" required>
+        </div>
+        <div class="demo-card-wide">
+            <label th:for="${prefix + '-outcome'}">Simulated result</label>
+            <select th:id="${prefix + '-outcome'}" data-demo-outcome><option value="APPROVED">Approved — continue the booking</option><option value="DECLINED">Declined — demonstrate a failed attempt</option></select>
+        </div>
+    </div>
+    <p class="demo-card-error" data-demo-error role="alert" tabindex="-1" hidden></p>
+    <input type="hidden" name="demoCardResult" value="" data-demo-result>
+    <noscript><p>JavaScript is required for this local demo card form. No payment will be recorded without validating the demo fields.</p></noscript>
+</fieldset>
+</body></html>

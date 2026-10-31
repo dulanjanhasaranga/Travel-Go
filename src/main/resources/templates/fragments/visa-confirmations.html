@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<th:block th:fragment="actions(visa, dashboard)" sec:authorize="hasRole('VISA_OFFICER') and hasAuthority('PERM_VISA_MANAGE')"
+          th:with="bookingOpen=${visa.booking.bookingStatus.name() == 'PENDING' or visa.booking.bookingStatus.name() == 'PROCESSING' or visa.booking.bookingStatus.name() == 'INFO_REQUIRED'}">
+    <div class="custom-modal-backdrop" th:id="'verifyVisaModal' + ${visa.id}"
+         th:if="${bookingOpen and visa.status.name() == 'DOCUMENTS_SUBMITTED'}">
+        <div class="custom-modal-box" role="dialog" aria-modal="true" tabindex="-1"
+             th:attr="aria-labelledby='verifyVisaTitle' + ${visa.id},aria-describedby='verifyVisaDescription' + ${visa.id}">
+            <form th:action="@{/staff/visas/{id}/verify-all(id=${visa.id})}" method="post">
+                <input th:if="${dashboard}" type="hidden" name="redirect" value="dashboard">
+                <div class="custom-modal-header">
+                    <div>
+                        <h4 th:id="'verifyVisaTitle' + ${visa.id}">Verify application documents?</h4>
+                        <p class="modal-ref-text" th:text="'Visa #' + ${visa.id} + ' · ' + ${visa.booking.user.name}"></p>
+                    </div>
+                    <button type="button" class="custom-modal-close close-modal-btn" aria-label="Close dialog">&times;</button>
+                </div>
+                <div class="custom-modal-body">
+                    <p th:id="'verifyVisaDescription' + ${visa.id}">Confirm that every required document has been reviewed and meets the application requirements. Charges can be issued after verification.</p>
+                </div>
+                <div class="custom-modal-footer">
+                    <button type="button" class="btn btn-outline btn-sm close-modal-btn action-cancel" autofocus>Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Verify documents</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="custom-modal-backdrop" th:id="'approveVisaModal' + ${visa.id}"
+         th:if="${bookingOpen and visa.status.name() == 'PROCESSING'}">
+        <div class="custom-modal-box" role="dialog" aria-modal="true" tabindex="-1"
+             th:attr="aria-labelledby='approveVisaTitle' + ${visa.id},aria-describedby='approveVisaDescription' + ${visa.id}">
+            <form th:action="@{/staff/visas/{id}/approve(id=${visa.id})}" method="post">
+                <input th:if="${dashboard}" type="hidden" name="redirect" value="dashboard">
+                <div class="custom-modal-header">
+                    <div>
+                        <h4 th:id="'approveVisaTitle' + ${visa.id}">Approve visa application?</h4>
+                        <p class="modal-ref-text" th:text="'Visa #' + ${visa.id} + ' · ' + ${visa.booking.user.name}"></p>
+                    </div>
+                    <button type="button" class="custom-modal-close close-modal-btn" aria-label="Close dialog">&times;</button>
+                </div>
+                <div class="custom-modal-body">
+                    <p th:id="'approveVisaDescription' + ${visa.id}">Record the approved visa decision for this application. The customer will be notified and can continue to final payment when the booking requirements are met.</p>
+                </div>
+                <div class="custom-modal-footer">
+                    <button type="button" class="btn btn-outline btn-sm close-modal-btn action-cancel" autofocus>Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Approve visa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

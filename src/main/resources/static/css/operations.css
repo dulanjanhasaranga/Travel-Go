@@ -1,0 +1,8 @@
+.admin-content .card-body { padding: 1.25rem 1.5rem; overflow-wrap: anywhere; }
+.admin-content .card-body p { margin-bottom: .85rem; }
+.admin-content .card-body p:last-child { margin-bottom: 0; }
+.admin-content .table-header h2 { font-size: 1.1rem; line-height: 1.4; margin: 0; }
+@media (max-width: 480px) {
+    .admin-content .card-body { padding: 1rem; }
+    .admin-content .card-body .btn { width: 100%; justify-content: center; white-space: normal; }
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pending refunds — TravelGO</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/admin.css}">
+  <link rel="stylesheet" th:href="@{/css/brand.css}"><link rel="stylesheet" th:href="@{/css/agency-workflow.css}">
+  <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="agency-workspace"><div class="admin-layout">
+  <div th:replace="~{fragments/visa-sidebar :: visa-sidebar('refunds')}"></div>
+  <main class="admin-main">
+    <header class="admin-topbar"><h1 class="topbar-title">Pending refunds</h1><div th:replace="~{fragments/notification-bell :: bell}"></div></header>
+    <div class="admin-content">
+      <a th:href="@{/staff/payments}">Back to payments</a>
+      <div th:if="${successMessage}" class="alert alert-success" role="status" th:text="${successMessage}"></div>
+      <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+      <p>Refunds remain pending until settlement is verified. For cash and bank transfers, record evidence only after the customer has been reimbursed. PayHere requests are sent once; check the merchant account before reconciling an uncertain result. Simulated settlement does not transfer money.</p>
+      <section class="workflow-card" th:each="refund : ${refunds}">
+        <h2 th:text="${'Booking #' + refund.payment.booking.id + ' · Refund $' + refund.amount}"></h2>
+        <p th:text="${refund.reason}"></p>
+        <p class="workflow-meta" th:text="${'Original payment $' + refund.payment.amount + ' · ' + refund.payment.paymentMethod}"></p>
+        <form th:if="${@offlineRefunds.canRecord(refund)}" class="workflow-stack" method="post" th:action="@{/staff/payments/refund-settlements/{id}/offline(id=${refund.id})}" sec:authorize="hasAnyAuthority('PERM_VISA_MANAGE','PERM_PAYMENT_MANAGE')">
+          <h3>Record completed offline reimbursement</h3>
+          <p class="workflow-meta">This refund remains pending. Verify the completed cash payout or bank transfer before recording it. This form sends no money.</p>
+          <input type="hidden" name="channel" th:value="${@offlineRefunds.channel(refund)}"><input type="hidden" name="currency" value="USD">
+          <label>Completed refund amount (USD)<input name="verifiedAmount" type="number" min="0.01" step="0.01" th:value="${refund.amount}" required></label>
+          <label>Unique cash receipt or bank transfer reference<input name="reference" required minlength="3" maxlength="120" pattern="[A-Za-z0-9][A-Za-z0-9.\/:_\-]{2,119}" placeholder="Include the complete receipt or bank reference"></label>
+          <label>Reimbursement completed at (site local time)<input name="reimbursedAt" type="datetime-local" step="1" required></label>
+          <label>Reviewed payout evidence source<textarea name="evidence" required minlength="20" maxlength="1000" placeholder="Identify the signed cash receipt or completed bank payout record and where the agency retains it. Do not include full account or card details."></textarea></label>
+          <label><input type="checkbox" name="verified" value="true" required> I verified that the customer has already received this exact USD amount through the original cash or bank-transfer channel.</label>
+          <button class="btn btn-primary" type="submit">Record verified reimbursement</button>
+        </form>
+        <form th:if="${@cancellations.canSettleSimulatedRefund(refund)}" class="workflow-stack" method="post" th:action="@{/staff/payments/refund-settlements/{id}(id=${refund.id})}" sec:authorize="hasAnyAuthority('PERM_VISA_MANAGE','PERM_PAYMENT_MANAGE')">
+          <label>Simulation reference<input name="reference" required maxlength="200"></label>
+          <button class="btn btn-outline">Record simulated settlement</button>
+        </form>
+        <div th:if="${@payHereRefunds.canUse(refund)}" th:with="attempt=${@payHereRefunds.attempt(refund.id).orElse(null)}">
+          <form th:if="${attempt == null}" method="post" th:action="@{/staff/payments/refund-settlements/{id}/payhere(id=${refund.id})}" sec:authorize="hasAnyAuthority('PERM_VISA_MANAGE','PERM_PAYMENT_MANAGE')">
+            <p>This sends the stored refund amount to PayHere using the original payment. It cannot be undone here.</p><button class="btn btn-outline" type="submit">Request PayHere refund</button>
+          </form>
+          <div th:if="${attempt != null}">
+            <p th:text="${'Provider request: ' + #strings.replace(attempt.status, '_', ' ')}"></p><p th:text="${attempt.reviewNote}"></p>
+            <p th:if="${attempt.providerRefundReference}" th:text="${'PayHere refund reference: ' + attempt.providerRefundReference}"></p>
+            <form class="workflow-stack" method="post" th:action="@{/staff/payments/refund-settlements/{id}/payhere/reconcile(id=${refund.id})}" sec:authorize="hasAnyAuthority('PERM_VISA_MANAGE','PERM_PAYMENT_MANAGE')">
+              <label>PayHere refund reference<input name="reference" th:value="${attempt.providerRefundReference}" required pattern="[0-9]{1,30}" maxlength="30"></label>
+              <label>Settled refund amount (USD)<input name="verifiedAmount" type="number" step="0.01" min="0.01" th:value="${refund.amount}" required></label>
+              <label>Settlement evidence source<textarea name="evidence" required minlength="20" maxlength="1000" placeholder="Record the PayHere receipt or merchant settlement record used to verify this refund."></textarea></label>
+              <label><input type="checkbox" name="verified" value="true" required> I verified the refund reference and exact amount against completed PayHere settlement evidence.</label>
+              <button class="btn btn-outline" type="submit">Verify and record settlement</button>
+            </form>
+          </div>
+        </div>
+        <p th:if="${!@cancellations.canSettleSimulatedRefund(refund) and !@payHereRefunds.canUse(refund) and !@offlineRefunds.canRecord(refund)}" class="workflow-meta">Verify settlement through the original payment channel. This refund remains pending.</p>
+      </section>
+      <p th:if="${#lists.isEmpty(refunds)}">No pending refunds.</p>
+      <section th:if="${!#lists.isEmpty(offlineSettlements)}" aria-labelledby="offline-history-title">
+        <h2 id="offline-history-title">Recently recorded offline refunds</h2><p class="workflow-meta">The latest 50 completed reimbursements. Saved evidence is preserved; repeating a request does not issue another refund.</p>
+        <article class="workflow-card" th:each="settlement : ${offlineSettlements}">
+          <h3 th:text="${'Booking #' + settlement.refund.payment.booking.id + ' · ' + settlement.currency + ' ' + settlement.amount}"></h3>
+          <p th:text="${#strings.replace(settlement.channel, '_', ' ') + ' · ' + settlement.reference}"></p>
+          <p class="workflow-meta" th:text="${'Reimbursed: ' + #temporals.format(settlement.reimbursedAt, 'dd MMM yyyy, HH:mm') + ' · Recorded by ' + settlement.recordedBy.name}"></p>
+          <details><summary>Reviewed evidence source</summary><p class="workflow-copy" th:text="${settlement.evidenceSource}"></p></details>
+        </article>
+      </section>
+    </div>
+  </main>
+</div><script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script></body></html>

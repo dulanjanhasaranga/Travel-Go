@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details - TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+<link rel="stylesheet" th:href="@{/css/agency-workflow.css}">
+    <link rel="stylesheet" th:href="@{/css/visa-checklists.css}">
+    <style>
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+        .detail-table th {
+            width: 35%;
+            padding: 0.85rem 0.5rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-subtle);
+            text-align: left;
+        }
+        .detail-table td {
+            padding: 0.85rem 0.5rem;
+            color: var(--text-heading);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .detail-table tr:last-child th,
+        .detail-table tr:last-child td {
+            border-bottom: none;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 0.35rem;
+        }
+        .form-control-custom {
+            width: 100%;
+            padding: 0.65rem 0.85rem;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--text-heading);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+
+        /* Timeline Design */
+        .timeline-container {
+            background: var(--bg-surface);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-subtle);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        .timeline-header h2 { margin: 0; font-size: 1.5rem; color: var(--text-heading); }
+        .timeline-status { font-weight: 600; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; background: var(--bg-subtle); color: var(--text-muted); }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            list-style: none;
+            margin: 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.4rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-subtle);
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.95rem;
+            top: 0.25rem;
+            width: 0.8rem;
+            height: 0.8rem;
+            background: var(--bg-surface);
+            border: 2px solid var(--brand-primary);
+            border-radius: 50%;
+            z-index: 1;
+            box-shadow: 0 0 0 4px #ffffff;
+        }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 0.25rem;
+        }
+        .timeline-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .timeline-detail {
+            font-size: 0.95rem;
+            color: var(--text-body);
+            background: var(--bg-subtle);
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/customer-theme.css}">
+<link rel="stylesheet" th:href="@{/css/catalogue-photos.css}"></head>
+<body class="customer-workspace" th:with="bookingPaymentSummary=${@bookingSummary.forBooking(booking)}, closedBooking=${booking.bookingStatus.name() == 'CANCELLED' or booking.bookingStatus.name() == 'DECLINED' or booking.bookingStatus.name() == 'EXPIRED' or booking.bookingStatus.name() == 'COMPLETED'}">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container section"><aside th:replace="~{fragments/lkr-estimate :: preference}"></aside>
+            <!-- Header Section -->
+            <div class="booking-detail-heading">
+                <div>
+                    <h1>
+                        Booking <span th:text="'#BKG-' + ${booking.id}">#BKG-1</span>
+                    </h1>
+                    <p th:text="${booking.tourPackage.name}">European Classical Journey</p>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <a th:href="@{/customer/bookings}" class="btn btn-outline btn-sm">
+                        &larr; Back to My Bookings
+                    </a>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            <div th:if="${successMessage}" class="alert alert-success">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <div th:text="${successMessage}">Operation successful</div>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div th:text="${errorMessage}">Error occurred</div>
+            </div>
+
+            <!-- Main Layout Grid -->
+            <div class="detail-layout">
+
+                <!-- Left Column: Booking Details -->
+                <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+
+                    <!-- Agency booking summary: airline tickets are issued separately. -->
+                    <div class="ticket-container">
+                        <div class="ticket-header-bar">
+                            <div class="ticket-logo">Booking summary</div>
+                            <div class="ticket-status" th:attr="data-status=${booking.bookingStatus.name()}" th:classappend="${bookingPaymentSummary.reviewRequired} ? 'badge-warning' : (${booking.bookingStatus.name() == 'CONFIRMED' or booking.bookingStatus.name() == 'COMPLETED'} ? 'badge-success' : (${booking.bookingStatus.name() == 'CANCELLED' or booking.bookingStatus.name() == 'DECLINED' or booking.bookingStatus.name() == 'EXPIRED'} ? 'badge-danger' : (${booking.bookingStatus.name() == 'PENDING' or booking.bookingStatus.name() == 'INFO_REQUIRED'} ? 'badge-warning' : 'badge-info')))" th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(booking.bookingStatus, '_', ' '))) + (bookingPaymentSummary.reviewRequired ? ' · Review needed' : '')}">Confirmed</div>
+                        </div>
+
+                        <div class="ticket-body">
+                            <div class="ticket-main">
+                                <div class="ticket-route">
+                                    <div class="route-point" style="text-align: left;">
+                                        <div class="route-country" th:text="${booking.tourPackage.destination.country}">Country</div>
+                                        <div class="route-city" th:text="${booking.tourPackage.destination.city}">City</div>
+                                    </div>
+                                </div>
+
+                                <div class="ticket-details">
+                                    <div class="td-item">
+                                        <span class="td-label">Booking contact</span>
+                                        <span class="td-value" th:text="${booking.user.name}">John Doe</span>
+                                    </div>
+                                    <div class="td-item" style="grid-column: span 2;">
+                                        <span class="td-label">Package name</span>
+                                        <span class="td-value" th:text="${booking.tourPackage.name}">Package</span>
+                                    </div>
+                                    <div class="td-item">
+                                        <span class="td-label">Travel date</span>
+                                        <span class="td-value" th:text="${booking.travelDate}">2026-10-15</span>
+                                    </div>
+                                    <div class="td-item" style="grid-column: span 2;">
+                                        <span class="td-label">Flight information</span>
+                                        <span class="td-value" th:text="${booking.tourPackage.flightDetails != null and !#strings.isEmpty(booking.tourPackage.flightDetails) ? booking.tourPackage.flightDetails : 'To be confirmed by your travel consultant'}">Details</span>
+                                    </div>
+                                    <div class="td-item">
+                                        <span class="td-label">Travelers</span>
+                                        <span class="td-value" th:text="${booking.numberOfTravelers + (booking.numberOfTravelers == 1 ? ' person' : ' people')}">2 people</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ticket-sidebar">
+                                <div><span class="td-label">Booking reference</span><div class="ticket-id" th:text="'BKG-' + ${booking.id}">BKG-1</div></div>
+                                <div class="td-item">
+                                    <span class="td-label">Package total</span>
+                                    <div class="ticket-price" th:text="'$' + ${#numbers.formatDecimal(booking.totalPackageAmount, 1, 'COMMA', 2, 'POINT')}">$2,598.00</div><span th:replace="~{fragments/lkr-estimate :: estimate(${booking.totalPackageAmount})}"></span>
+                                </div>
+                                <div th:if="${booking.packagePaymentDeadline != null and !closedBooking and booking.bookingStatus.name() != 'COMPLETED'}" class="ticket-payment-deadline">
+                                    Final payment due: <span th:text="${#temporals.format(booking.packagePaymentDeadline, 'yyyy-MM-dd')}">Date</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <figure class="catalogue-photo catalogue-photo--tour" th:with="photo=${@travelImages.tour(booking.tourPackage.image, booking.tourPackage.destination.city + ', ' + booking.tourPackage.destination.country)}, photoSources=${@travelImages.srcset(photo)}"><img data-catalogue-photo th:src="${photo}" th:attr="srcset=${photoSources}" sizes="(max-width: 768px) 100vw, 65vw" th:alt="${booking.tourPackage.name + ' — ' + booking.tourPackage.destination.city}" loading="lazy" decoding="async"></figure><!-- Hotel Accommodation Card (If Selected) -->
+                    <div class="card" th:if="${bookingHotel != null}" style="padding: 2rem; border-left: 4px solid var(--brand-primary);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="margin: 0; font-size: 1.15rem;">Accommodation</h3>
+                        </div>
+                        <figure class="catalogue-photo catalogue-photo--hotel" th:with="place=${bookingHotel.hotel.destination.city + ', ' + bookingHotel.hotel.destination.country}, photo=${@travelImages.hotel(bookingHotel.hotel.image, place)}, photoSources=${@travelImages.srcset(photo)}, photoAlt=${@travelImages.hotelAlt(bookingHotel.hotel.image, bookingHotel.hotel.name, place)}">
+                            <img data-catalogue-photo th:src="${photo}" th:attr="srcset=${photoSources}" sizes="(max-width: 768px) 100vw, 65vw" th:alt="${photoAlt}" loading="lazy" decoding="async">
+                            <figcaption th:text="${@travelImages.hotelCaption(bookingHotel.hotel.image, place)}"></figcaption>
+                        </figure>
+                        <table class="detail-table">
+                            <tr>
+                                <th>Hotel Property</th>
+                                <td>
+                                    <strong th:text="${bookingHotel.hotel.name}">Grand Hotel de Paris</strong>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);" th:text="${bookingHotel.hotel.address}">12 Rue de Rivoli, Paris</div>
+                                </td>
+                            </tr>
+                            <tr th:if="${bookingHotel.hotel.starRating != null}">
+                                <th>Star Rating</th>
+                                <td>
+                                    <span th:text="${bookingHotel.hotel.starRating} + ' ★'">4 ★</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Stay Duration</th>
+                                <td th:text="${bookingHotel.numberOfNights + (bookingHotel.numberOfNights == 1 ? ' night (' : ' nights (') + bookingHotel.checkInDate + ' to ' + bookingHotel.checkOutDate + ')'}">7 nights</td>
+                            </tr>
+                            <tr>
+                                <th>Rooms selected</th>
+                                <td th:text="${bookingHotel.numberOfRooms + (bookingHotel.numberOfRooms == 1 ? ' room' : ' rooms')}">1 room</td>
+                            </tr>
+                            <tr>
+                                <th>Hotel Total Cost</th>
+                                <td>
+                                    <strong style="color: var(--text-heading);" th:text="'$' + ${#numbers.formatDecimal(bookingHotel.hotelCost, 1, 'COMMA', 2, 'POINT')}">$1,260.00</strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Traveler Manifest Card -->
+                    <div class="card" th:if="${travelers != null and not #lists.isEmpty(travelers)}" style="padding: 2rem;">
+                        <h3 style="margin-bottom: 1.5rem; font-size: 1.15rem;">Travelers</h3>
+
+                        <div th:each="traveler, stat : ${travelers}" style="background: var(--bg-subtle); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem; border: 1px solid var(--border-subtle);">
+                            <div style="font-weight: 600; color: var(--text-heading); margin-bottom: 0.5rem; font-size: 0.95rem;">
+                                <span th:text="'Traveler ' + ${stat.count}">Traveler 1</span>
+                            </div>
+                            <div class="traveler-summary-grid">
+                                <div><span style="color: var(--text-muted);">Name:</span> <strong th:text="${traveler.fullName}">John Doe</strong></div>
+                                <div><span style="color: var(--text-muted);">Passport:</span> <strong th:text="${traveler.passportNumber}">A1234567</strong></div>
+                                <div><span style="color: var(--text-muted);">DOB:</span> <strong th:text="${traveler.dateOfBirth}">1990-01-01</strong></div>
+                                <div><span style="color: var(--text-muted);">Gender:</span> <strong th:text="${traveler.gender}">Male</strong></div>
+                                <div><span style="color: var(--text-muted);">Nationality:</span> <strong th:text="${traveler.nationality}">US</strong></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Decline Reason Notice -->
+                    <div th:if="${booking.bookingStatus.name() == 'DECLINED'}" class="card" style="padding: 1.75rem; border-left: 4px solid #EF4444; background: var(--danger-bg);">
+                        <h3 style="margin: 0 0 0.75rem; font-size: 1.1rem; color: var(--danger); display: flex; align-items: center; gap: 0.5rem;">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                            Booking Declined
+                        </h3>
+                        <p style="color: var(--danger); font-size: 0.92rem; margin: 0 0 0.75rem; line-height: 1.6;" th:text="${booking.declineReason}">Reason</p>
+                        <div style="font-size: 0.8rem; color: var(--danger); opacity: 0.7;">
+                            <span th:if="${booking.declinedBy != null}" th:text="'Declined by ' + ${booking.declinedBy.name}">Declined by Staff</span>
+                            <span th:if="${booking.declinedAt != null}" th:text="' on ' + ${#temporals.format(booking.declinedAt, 'MMM dd, yyyy HH:mm')}"> on Date</span>
+                        </div>
+                    </div>
+
+                    <!-- Booking Conversation / Info Requests -->
+                    <div th:if="${bookingNotes != null and not #lists.isEmpty(bookingNotes)}" class="card" style="padding: 1.75rem;">
+                        <h3 style="margin: 0 0 1.25rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: var(--text-heading);"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                            Booking Conversation
+                        </h3>
+                        <div th:each="note : ${bookingNotes}" style="margin-bottom: 1rem;">
+                            <div th:classappend="${note.noteType == 'INFO_REQUEST'} ? '' : ''" style="padding: 1rem; border-radius: 10px; border: 1px solid var(--border-subtle);"
+                                 th:style="${note.noteType == 'INFO_REQUEST'} ? 'background: var(--warning-bg); border-color: var(--warning-border);' : 'background: var(--success-bg); border-color: var(--success-border);'">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 700; font-size: 0.82rem;"
+                                          th:style="${note.noteType == 'INFO_REQUEST'} ? 'color: var(--warning);' : 'color: var(--success);'"
+                                          th:text="${note.noteType == 'INFO_REQUEST'} ? ('Staff: ' + ${note.author.name}) : 'Your Reply'">Author</span>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);" th:text="${#temporals.format(note.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                                </div>
+                                <p style="margin: 0; font-size: 0.9rem; color: var(--text-body); line-height: 1.6;" th:text="${note.message}">Message</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Booking Event Timeline -->
+                    <div th:if="${bookingStatusHistory != null and not #lists.isEmpty(bookingStatusHistory)}" class="card" style="padding: 1.75rem;">
+                        <h3 style="margin: 0 0 1.25rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: var(--brand-accent);"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Booking history
+                        </h3>
+                        <div style="position: relative; padding-left: 1rem; border-left: 2px solid var(--border-subtle); margin-left: 0.5rem;">
+                            <div th:each="hist : ${bookingStatusHistory}" style="margin-bottom: 1.5rem; position: relative;">
+                                <!-- Timeline Dot -->
+                                <div style="position: absolute; left: -1.35rem; top: 0.2rem; width: 12px; height: 12px; border-radius: 50%; background: var(--brand-primary); border: 2px solid white; box-shadow: 0 0 0 1px var(--border-subtle);"></div>
+
+                                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.25rem;">
+                                    <span class="badge" th:attr="data-status=${hist.status.name()}" th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(hist.status, '_', ' ')))}" style="font-size: 0.75rem;">Status</span>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);" th:text="${#temporals.format(hist.changedAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                                </div>
+                                <p style="margin: 0; font-size: 0.9rem; color: var(--text-body); line-height: 1.5;" th:if="${hist.remarks != null}" th:text="${hist.remarks}"></p>
+                                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;" th:if="${hist.changedBy != null}">
+                                    By: <span th:text="${hist.changedBy.name}">User</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reply Form for INFO_REQUIRED -->
+                    <div th:if="${booking.bookingStatus.name() == 'INFO_REQUIRED'}" class="card" style="padding: 1.75rem; border-left: 4px solid #D97706; background: var(--warning-bg);">
+                        <h3 style="margin: 0 0 0.75rem; font-size: 1.05rem; color: var(--warning); display: flex; align-items: center; gap: 0.5rem;">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Additional information needed
+                        </h3>
+                        <p style="color: var(--warning); font-size: 0.88rem; margin-bottom: 1rem;">Your travel consultant needs more information. Reply below to continue.</p>
+                        <form th:action="@{/customer/bookings/{id}/respond(id=${booking.id})}" method="post">
+                            <label class="form-label" for="bookingResponse">Your response</label>
+                            <textarea id="bookingResponse" name="message" class="form-control-custom" rows="4" required maxlength="2000" placeholder="Type your response here..."></textarea>
+                            <div style="margin-top: 0.75rem; display: flex; justify-content: flex-end;">
+                                <button type="submit" class="btn btn-primary btn-sm" style="background: #D97706; border-color: var(--warning); padding: 0.5rem 1.25rem;">Send Response</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Visa Services & Actions -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+                    <!-- Visa Services Module -->
+                    <div class="card" style="padding: 1.75rem;">
+                        <h4 style="margin-bottom: 0.4rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: var(--brand-accent);">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            Visa Application
+                        </h4>
+
+                        <!-- State 1: Visa Application Exists -->
+                        <div th:if="${visaApplication != null}" style="margin-top: 1rem;">
+                            <div style="background: var(--bg-subtle); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.25rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                    <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);" th:text="'REF: #VISA-' + ${visaApplication.id}">#VISA-1</span>
+                                    <span class="badge"
+                                          th:classappend="${visaApplication.status.name() == 'APPROVED'} ? 'badge-success' : (${visaApplication.status.name() == 'REJECTED'} ? 'badge-danger' : (${visaApplication.status.name() == 'PROCESSING' or visaApplication.status.name() == 'DOCUMENTS_VERIFIED'} ? 'badge-info' : 'badge-warning'))"
+                                          th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(visaApplication.status, '_', ' ')))}">
+                                        STATUS
+                                    </span>
+                                </div>
+                                <div style="font-size: 0.88rem; margin-bottom: 0.35rem;">
+                                    <strong>Category:</strong> <span th:text="${visaApplication.visaType}">VISIT</span>
+                                </div>
+                                <div style="font-size: 0.88rem; margin-bottom: 0.35rem;" th:if="${visaApplication.visaCharge != null}">
+                                    <strong>Visa charge:</strong> <span th:text="'$' + ${visaApplication.visaCharge}">$85.00</span>
+                                </div>
+                                <div style="font-size: 0.88rem;" th:if="${visaApplication.documentationCharge != null}">
+                                    <strong>Documentation charge:</strong> <span th:text="'$' + ${visaApplication.documentationCharge}">$40.00</span>
+                                </div>
+                            </div>
+
+                            <a th:href="@{/customer/visas}" class="btn btn-primary" style="width: 100%; text-align: center; justify-content: center;">
+                                View visa application &rarr;
+                            </a>
+                        </div>
+
+                        <!-- State 2: No Visa Application Yet -->
+                        <div th:if="${visaApplication == null}" style="margin-top: 0.75rem;">
+                            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.5;">
+                                Visa approval is required before final payment. Start an application for this booking to submit your documents.
+                            </p>
+                            <p th:unless="${canStartVisa}" class="workflow-meta">This booking requires staff review before a visa application can start. Contact your visa officer.</p>
+                            <form th:if="${canStartVisa}" th:action="@{/customer/visas/apply}" method="post">
+                                <input id="visaBookingId" type="hidden" name="bookingId" th:value="${booking.id}">
+                                <div class="form-group">
+                                <label class="form-label" for="visaApplicationType">Visa type</label>
+                                    <select id="visaApplicationType" name="visaType" class="form-control-custom" required>
+                                        <option value="VISIT">Tourist / Visit Visa</option>
+                                        <option value="WORK">Business / Work Visa</option>
+                                    </select>
+                                    <section id="visaBookingRequirements" class="visa-requirements" aria-live="polite" aria-label="Selected booking visa requirements">
+                                        <h3>Documents for this booking</h3>
+                                        <p>Your visa officer will confirm destination-specific documents and processing lead time.</p>
+                                    </section>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                                    Apply for Visa Assistance
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Payment Action Card (if PENDING) -->
+                    <div class="card" style="padding: 1.75rem; background: linear-gradient(135deg, var(--success-bg) 0%, var(--success-bg) 100%); border: 1px solid var(--success-border);"
+                         th:if="${booking.bookingStatus.name() == 'PENDING' or booking.bookingStatus.name() == 'PROCESSING'}">
+                        <h4 style="margin-bottom: 0.5rem; color: var(--success); font-size: 1.1rem;">Payment status</h4>
+                        <p style="font-size: 0.85rem; color: var(--success); margin-bottom: 1.25rem;">
+                            View fees and payment deadlines. Final payment opens after visa approval.
+                        </p>
+                        <a th:href="@{/customer/payments/checkout/{id}(id=${booking.id})}" class="btn btn-primary" style="width: 100%; justify-content: center; background: #059669; border-color: var(--success);">
+                            View payment details &rarr;
+                        </a>
+                    </div>
+
+                    <!-- Modify Booking Card (if PENDING) -->
+                    <div class="card" style="padding: 1.75rem;" th:if="${canEditBooking}">
+                        <h4 style="margin-bottom: 1rem; font-size: 1.1rem;">Modify Reservation</h4>
+                        <form id="modifyBookingForm" th:action="@{/customer/bookings/{id}/modify(id=${booking.id})}" method="post"
+                              th:with="currentDeparture=${booking.departure}, currentAllocationValid=${currentDeparture != null and currentDeparture.availableSeats != null and currentDeparture.totalCapacity != null and currentDeparture.availableSeats >= 0 and currentDeparture.availableSeats + booking.numberOfTravelers <= currentDeparture.totalCapacity and currentDeparture.departureDate != null and currentDeparture.departureDate.equals(booking.travelDate) and currentDeparture.tourPackage != null and currentDeparture.tourPackage.id != null and currentDeparture.tourPackage.id.equals(booking.tourPackage.id)}">
+                            <input type="hidden" name="expectedUpdatedAt" th:value="${booking.updatedAt}">
+                            <div class="form-group">
+                                <label class="form-label" for="modifyTravelDate">New Travel Date</label>
+                                <select id="modifyTravelDate" name="travelDate" class="form-control-custom" required>
+                                    <option th:value="${booking.travelDate}" th:text="${#temporals.format(booking.travelDate, 'MMM dd, yyyy')} + ' (Current)'"
+                                            th:attr="data-seats=${currentAllocationValid ? currentDeparture.availableSeats + booking.numberOfTravelers : booking.numberOfTravelers}"></option>
+                                    <option th:each="departure : ${departures}"
+                                            th:if="${!departure.departureDate.equals(booking.travelDate)}"
+                                            th:value="${departure.departureDate}" th:attr="data-seats=${departure.availableSeats}"
+                                            th:text="${#temporals.format(departure.departureDate, 'MMM dd, yyyy')} + ' - ' + ${departure.availableSeats} + ' seats available'">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="modifyTravelerCount">Number of travelers</label>
+                                <input type="number" id="modifyTravelerCount" name="numberOfTravelers" class="form-control-custom" min="1" step="1" inputmode="numeric" th:max="${booking.tourPackage.maxCapacity}" th:value="${booking.numberOfTravelers}" required aria-describedby="modifyTravelerCountHelp"
+                                       th:attr="data-birthdate-max=${#temporals.format(workflowNow.toLocalDate().minusDays(1), 'yyyy-MM-dd')}">
+                                <small id="modifyTravelerCountHelp" class="form-help" aria-live="polite">Availability will be checked when you save.</small>
+                            </div>
+                            <p>When changing traveler count, provide complete details for every traveler.</p>
+                            <div id="replacementTravelers">
+                              <fieldset class="traveler-card replacement-traveler" th:each="traveler, travelerIndex : ${travelers}">
+                                <legend th:text="'Traveler ' + ${travelerIndex.count}">Traveler 1</legend>
+                                <div class="traveler-field-grid">
+                                    <div>
+                                        <label class="form-label" th:for="'modify-traveler-name-' + ${travelerIndex.count}">Full name as shown on passport</label>
+                                        <input class="form-control-custom" th:id="'modify-traveler-name-' + ${travelerIndex.count}" name="travelerNames" th:value="${traveler.fullName}" maxlength="255" autocomplete="off" required>
+                                    </div>
+                                    <div>
+                                        <label class="form-label" th:for="'modify-traveler-passport-' + ${travelerIndex.count}">Passport number</label>
+                                        <input class="form-control-custom" th:id="'modify-traveler-passport-' + ${travelerIndex.count}" name="travelerPassports" th:value="${traveler.passportNumber}" maxlength="255" autocapitalize="characters" spellcheck="false" autocomplete="off" required>
+                                    </div>
+                                    <div>
+                                        <label class="form-label" th:for="'modify-traveler-dob-' + ${travelerIndex.count}">Date of birth</label>
+                                        <input class="form-control-custom" th:id="'modify-traveler-dob-' + ${travelerIndex.count}" type="date" name="travelerDobs" th:value="${traveler.dateOfBirth}" th:max="${#temporals.format(workflowNow.toLocalDate().minusDays(1), 'yyyy-MM-dd')}" required>
+                                    </div>
+                                    <div>
+                                        <label class="form-label" th:for="'modify-traveler-gender-' + ${travelerIndex.count}">Gender</label>
+                                        <input class="form-control-custom" th:id="'modify-traveler-gender-' + ${travelerIndex.count}" name="travelerGenders" th:value="${traveler.gender}" maxlength="255" autocomplete="off" required>
+                                    </div>
+                                    <div>
+                                        <label class="form-label" th:for="'modify-traveler-nationality-' + ${travelerIndex.count}">Nationality</label>
+                                        <input class="form-control-custom" th:id="'modify-traveler-nationality-' + ${travelerIndex.count}" name="travelerNationalities" th:value="${traveler.nationality}" maxlength="255" autocomplete="off" required>
+                                    </div>
+                                </div>
+                              </fieldset>
+                            </div>
+                            <script th:attr="nonce=${cspNonce}" th:inline="none">
+                            (() => {
+                                const form = document.getElementById('modifyBookingForm');
+                                const countInput = document.getElementById('modifyTravelerCount');
+                                const dateSelect = document.getElementById('modifyTravelDate');
+                                const container = document.getElementById('replacementTravelers');
+                                const packageCapacity = Number(countInput.max);
+                                const removedTravelers = new Map();
+                                const travelerFields = [
+                                    ['travelerNames', 'name', 'Full name as shown on passport', 'text'],
+                                    ['travelerPassports', 'passport', 'Passport number', 'text'],
+                                    ['travelerDobs', 'dob', 'Date of birth', 'date'],
+                                    ['travelerGenders', 'gender', 'Gender', 'text'],
+                                    ['travelerNationalities', 'nationality', 'Nationality', 'text']
+                                ];
+
+                                function validCount() {
+                                    const count = Number(countInput.value);
+                                    return countInput.validity.valid && Number.isInteger(count) ? count : null;
+                                }
+
+                                function updateTravelers() {
+                                    const count = validCount();
+                                    if (count === null) return;
+                                    while (container.children.length > count) {
+                                        const row = container.lastElementChild;
+                                        removedTravelers.set(container.children.length, [...row.querySelectorAll('input')].map(input => input.value));
+                                        row.remove();
+                                    }
+                                    while (container.children.length < count) {
+                                        const index = container.children.length + 1;
+                                        const fieldset = document.createElement('fieldset');
+                                        fieldset.className = 'traveler-card replacement-traveler';
+                                        const legend = document.createElement('legend');
+                                        legend.textContent = `Traveler ${index}`;
+                                        fieldset.append(legend);
+                                        const grid = document.createElement('div');
+                                        grid.className = 'traveler-field-grid';
+                                        travelerFields.forEach(([name, key, text, type], fieldIndex) => {
+                                            const group = document.createElement('div');
+                                            const label = document.createElement('label');
+                                            const input = document.createElement('input');
+                                            input.id = `modify-traveler-${key}-${index}`;
+                                            input.name = name;
+                                            input.type = type;
+                                            input.required = true;
+                                            input.className = 'form-control-custom';
+                                            input.value = removedTravelers.get(index)?.[fieldIndex] || '';
+                                            if (type === 'date') input.max = countInput.dataset.birthdateMax;
+                                            else { input.maxLength = 255; input.autocomplete = 'off'; }
+                                            if (key === 'passport') { input.autocapitalize = 'characters'; input.spellcheck = false; }
+                                            label.htmlFor = input.id;
+                                            label.className = 'form-label';
+                                            label.textContent = text;
+                                            group.append(label, input);
+                                            grid.append(group);
+                                        });
+                                        fieldset.append(grid);
+                                        container.append(fieldset);
+                                    }
+                                }
+
+                                function updateCapacity(synchronizeTravelers = true) {
+                                    const seats = Number(dateSelect.selectedOptions[0]?.dataset.seats);
+                                    const maximum = Number.isInteger(seats) && seats > 0 ? Math.min(packageCapacity, seats) : packageCapacity;
+                                    countInput.max = String(maximum);
+                                    document.getElementById('modifyTravelerCountHelp').textContent = `Up to ${maximum} ${maximum === 1 ? 'traveler' : 'travelers'} for this departure. Availability is checked again when you save.`;
+                                    if (synchronizeTravelers) updateTravelers();
+                                }
+
+                                countInput.addEventListener('input', updateTravelers);
+                                dateSelect.addEventListener('change', () => updateCapacity());
+                                form.addEventListener('submit', event => {
+                                    const count = validCount();
+                                    if (count === null) { event.preventDefault(); countInput.reportValidity(); return; }
+                                    countInput.value = String(count);
+                                });
+                                updateCapacity(false);
+                            })();
+                            </script>
+                            <button type="submit" class="btn btn-outline btn-sm" style="width: 100%; justify-content: center;">
+                                Update Reservation
+                            </button>
+                        </form>
+                    </div>
+
+                    <section class="surface" th:if="${!#lists.isEmpty(bookingReviews)}"><h3>Your trip review</h3><article th:each="review : ${bookingReviews}"><p th:text="${review.rating + ' / 5'}"></p><p th:text="${review.comment}"></p></article></section>
+                    <!-- Review Card (after the confirmed trip ends) -->
+                    <div class="card" style="padding: 1.75rem;" th:if="${canReview}">
+                        <h4 style="margin-bottom: 1rem; font-size: 1.1rem;">Submit Trip Review</h4>
+                        <form th:action="@{/customer/reviews}" method="post">
+                            <input type="hidden" name="bookingId" th:value="${booking.id}">
+                            <div class="form-group">
+                                <label class="form-label" for="bookingReviewRating">Star Rating (1-5)</label>
+                                <select id="bookingReviewRating" name="rating" class="form-control-custom" required>
+                                    <option value="5">5 ★★★★★ (Exceptional Experience)</option>
+                                    <option value="4">4 ★★★★☆ (Very Good)</option>
+                                    <option value="3">3 ★★★☆☆ (Satisfactory)</option>
+                                    <option value="2">2 ★★☆☆☆ (Below Expectations)</option>
+                                    <option value="1">1 ★☆☆☆☆ (Unsatisfactory)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="bookingReviewComment">Feedback / Comments</label>
+                                <textarea id="bookingReviewComment" name="comment" class="form-control-custom" rows="3" placeholder="Share your experience..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm" style="width: 100%; justify-content: center;">
+                                Post Review
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    <section class="container booking-payment-summary" th:with="summary=${bookingPaymentSummary}" style="margin-block: 2rem; background: var(--bg-surface); border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border-subtle); padding: 2.5rem 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1.25rem; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+            <h2 style="margin: 0; font-size: 1.5rem; color: var(--text-heading); font-weight: 800; letter-spacing: -0.5px;">Payment Overview</h2>
+            <span class="badge" th:classappend="${summary.status == 'Fully Paid'} ? 'badge-success' : 'badge-warning'" th:text="${summary.status == 'Fully Paid' ? 'Paid in full' : summary.status}" style="font-size: 0.75rem; padding: 0.5rem 1rem;">PARTIALLY PAID</span>
+        </div>
+        <p th:if="${summary.reviewRequired}" class="alert alert-warning" th:text="${summary.explanation}"></p>
+        <p th:if="${closedBooking}" class="workflow-meta">This booking is closed. Payment records remain available; any existing cancellation and refund details can still be reviewed.</p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+            <div style="background: var(--bg-subtle); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-subtle); display: flex; flex-direction: column;">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Package & Hotel Total</div>
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--text-heading); margin-top: auto;" th:text="${'$' + summary.packageAndHotel}">$1650.00</div>
+            </div>
+            <div style="background: var(--bg-subtle); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-subtle); display: flex; flex-direction: column;">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Net Payments Received</div>
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--success); margin-top: auto;" th:text="${'$' + summary.paid}">$1840.00</div>
+            </div>
+            <div style="background: var(--bg-subtle); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-subtle); display: flex; flex-direction: column;">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 0.5rem;" th:text="${closedBooking ? 'Checkout' : 'Package Balance'}">Package Balance</div>
+                <div style="font-size: 1.75rem; font-weight: 800; margin-top: auto;" th:styleappend="${!closedBooking and summary.packageBalance > 0} ? 'color: var(--danger);' : 'color: var(--text-heading);'" th:text="${closedBooking ? 'Closed' : '$' + summary.packageBalance}">$0.00</div>
+            </div>
+        </div>
+
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; background: var(--bg-subtle); padding: 0.75rem 1rem; border-radius: 8px;">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; flex-shrink: 0;"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Visa and documentation charges are tracked separately. Payment records below show each transaction attempt.</span>
+        </div>
+
+        <div class="table-responsive" style="border-radius: 12px; border: 1px solid var(--border-subtle); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; margin: 0;">
+                <thead style="background: var(--bg-subtle); border-bottom: 2px solid var(--border-subtle);">
+                    <tr>
+                        <th style="padding: 1.25rem 1rem; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">Reference</th>
+                        <th style="padding: 1.25rem 1rem; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">Type</th>
+                        <th style="padding: 1.25rem 1rem; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">Amount</th>
+                        <th style="padding: 1.25rem 1rem; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">Status</th>
+                        <th style="padding: 1.25rem 1rem; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">Paid at</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${@bookingSummary.records(booking.id)}" style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" >
+                        <td style="padding: 1rem; font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; color: var(--text-body); font-weight: 600;" th:text="${p.transactionReference}">TXN-123</td>
+                        <td style="padding: 1rem; font-size: 0.85rem; font-weight: 700; color: var(--text-body); text-transform: capitalize;" th:text="${#strings.replace(#strings.toLowerCase(p.paymentType), '_', ' ')}">Type</td>
+                        <td style="padding: 1rem; font-size: 1rem; font-weight: 800; color: var(--text-heading);" th:text="${'$' + p.amount}">$0.00</td>
+                        <td style="padding: 1rem;">
+                            <span style="padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.5px; display: inline-block;"
+                                  th:styleappend="${p.paymentStatus == 'PAID'} ? 'background: var(--success-bg); color: var(--success);' : 'background: var(--bg-subtle); color: var(--text-body);'"
+                                  th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(p.paymentStatus, '_', ' ')))}">PAID</span>
+                        </td>
+                        <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" th:text="${p.paidAt != null ? #temporals.format(p.paidAt, 'dd MMM yyyy, hh:mm a') : '—'}">Date</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+            <a th:if="${canDownloadReceipt}" th:href="@{/customer/bookings/{id}/receipt(id=${booking.id})}" class="btn btn-outline" style="display: flex; align-items: center; gap: 0.5rem;" target="_blank" rel="noopener">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                Download PDF Receipt
+            </a>
+        </div>
+    </section>
+</main>
+
+    <section class="container timeline-container" aria-labelledby="journey-heading" style="margin-block:2rem">
+        <div class="timeline-header">
+            <h2 id="journey-heading">Booking progress</h2>
+            <span class="timeline-status" th:text="'Booking status: ' + ${#strings.capitalize(#strings.toLowerCase(#strings.replace(booking.bookingStatus, '_', ' ')))}">Status</span>
+        </div>
+
+        <div th:if="${booking.bookingStatus.name() == 'CONFIRMED' and !bookingPaymentSummary.reviewRequired}" class="alert alert-success" role="status" style="margin-bottom: 2rem;">
+            <h3><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; display: inline; vertical-align: text-bottom; margin-right: 0.25rem;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Your trip is confirmed</h3>
+            <p style="margin-top: 0.5rem; color: var(--success);" th:text="${booking.tourPackage.name + ' · ' + booking.travelDate + ' · ' + booking.numberOfTravelers + (booking.numberOfTravelers == 1 ? ' traveler' : ' travelers')}"></p>
+            <p style="color: var(--success);">Your visa is approved and final payment is complete. Check the supplier confirmation below.</p>
+        </div>
+        <div th:if="${booking.bookingStatus.name() == 'COMPLETED' and !bookingPaymentSummary.reviewRequired}" class="alert alert-success" role="status" style="margin-bottom: 2rem;">
+            <h3>Your trip is complete</h3>
+            <p>Thank you for travelling with us. Your booking details and payment receipt remain available below. You can share your feedback in the trip review section.</p>
+        </div>
+
+        <ol class="timeline">
+            <li class="timeline-item" th:each="event : ${@bookingJourney.events(booking)}">
+                <div class="timeline-title" th:text="${event.title}"></div>
+                <div class="timeline-time" th:if="${event.at != null}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <time th:text="${#temporals.format(event.at, 'dd MMM yyyy, hh:mm a')}"></time>
+                </div>
+                <div class="timeline-detail" th:text="${event.detail}"></div>
+            </li>
+        </ol>
+        <p th:if="${@supplierReservations.confirmed(booking)}" class="workflow-meta">Your consultant has added supplier confirmation for the included services.</p>
+        <p th:unless="${@supplierReservations.confirmed(booking)}" class="workflow-meta" th:text="${closedBooking ? 'This closed booking has no supplier confirmation.' : 'Contact your consultant to confirm your supplier reservations.'}">Contact your consultant to confirm your supplier reservations.</p>
+        <div class="workflow-actions"><a th:href="@{/customer/bookings/{id}/cancellation(id=${booking.id})}" class="btn btn-outline">Cancellation requests</a><a th:if="${booking.acceptedPolicy != null}" th:href="@{/policies/{id}/terms(id=${booking.acceptedPolicy.id})}" class="btn btn-outline">Accepted booking terms</a></div>
+    </section>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+    <script th:attr="nonce=${cspNonce}" th:src="@{/js/visa-requirements.js}"></script>
+<script th:attr="nonce=${cspNonce}" th:src="@{/js/catalogue-photos.js}"></script></body>
+</html>

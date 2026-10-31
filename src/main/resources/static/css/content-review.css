@@ -1,0 +1,5 @@
+.content-review-item{display:grid;grid-template-columns:160px minmax(0,1fr);gap:1.25rem;padding:1.5rem 0;border-top:1px solid var(--border-subtle)}
+.content-review-item h3{margin:0 0 .5rem;overflow-wrap:anywhere}.content-review-item p{margin:.5rem 0}.content-review-item figure{margin:0}.content-review-item figcaption{font-size:.8rem;line-height:1.5;margin-top:.5rem}
+.content-review-photo{display:block;width:160px;height:110px;object-fit:cover;border-radius:.5rem;background:var(--bg-subtle)}
+.content-review-requirement{padding:1rem 0;border-top:1px solid var(--border-subtle)}.content-review-requirement h3{margin:0 0 .5rem}
+@media(max-width:600px){.content-review-item{grid-template-columns:minmax(0,1fr)}.content-review-photo{width:100%;height:180px}.content-review-item figcaption{max-width:100%}}

@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><th:block th:replace="~{fragments/site-head :: theme-init}"></th:block><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><title>Continue to PayHere — TravelGO</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/brand.css}"><link rel="stylesheet" th:href="@{/css/agency-workflow.css}"><th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block></head>
+<body><div th:replace="~{fragments/navbar :: navbar}"></div><main class="container" style="padding-block:3rem;max-width:760px"><section class="workflow-card"><h1>Continue to PayHere</h1>
+<p th:text="${'Booking #' + booking.id + ' · USD ' + checkout.fields['amount']}"></p><p>PayHere will collect your payment details. Your booking updates only after TravelGO verifies the payment with PayHere.</p>
+<p th:if="${payHereTestMode}" class="alert alert-info">This checkout uses the PayHere sandbox.</p>
+<!-- th:attr avoids exporting TravelGO's CSRF token to the external provider. -->
+<form method="post" th:attr="action=${checkout.action}"><input th:each="field:${checkout.fields}" type="hidden" th:name="${field.key}" th:value="${field.value}"><button class="btn btn-primary" type="submit">Continue to PayHere</button></form>
+<a th:href="@{/customer/payments/checkout/{id}(id=${booking.id})}">Return to payment details</a></section></main><div th:replace="~{fragments/footer :: footer}"></div><script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script></body></html>

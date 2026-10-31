@@ -1,0 +1,22 @@
+FROM eclipse-temurin:17-jdk-jammy AS build
+WORKDIR /build
+COPY .mvn/wrapper/maven-wrapper.properties .mvn/wrapper/maven-wrapper.properties
+COPY mvnw pom.xml ./
+COPY src ./src
+# A clean hosted release is built from source; it never starts the application or imports SQL.
+RUN bash ./mvnw --batch-mode -Dmaven.test.skip=true package
+
+# The JDK runtime includes keytool. The entrypoint creates a driver-only Aiven truststore
+# in /tmp and does not replace the JVM's normal HTTPS trust configuration.
+FROM eclipse-temurin:17-jdk-jammy AS runtime
+RUN groupadd --gid 10001 travelgo \
+    && useradd --uid 10001 --gid travelgo --no-create-home --shell /usr/sbin/nologin travelgo \
+    && mkdir -p /app \
+    && chown -R travelgo:travelgo /app
+WORKDIR /app
+COPY --from=build --chown=10001:10001 /build/target/travelgo-0.0.1-SNAPSHOT.jar /app/travelgo.jar
+COPY --chown=10001:10001 scripts/render-entrypoint.sh /app/render-entrypoint.sh
+RUN chmod 0555 /app/render-entrypoint.sh
+USER 10001:10001
+EXPOSE 8081
+ENTRYPOINT ["/app/render-entrypoint.sh"]

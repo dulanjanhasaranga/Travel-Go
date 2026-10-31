@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"><body>
+<div th:fragment="aliases" hidden aria-hidden="true">
+    <span th:each="alias : ${@travelImages.aliases()}" th:attr="data-photo-alias=${alias.key}, data-photo-src=${alias.value}"></span>
+</div>
+</body></html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Frequently asked questions | TravelGO</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
+</head>
+<body class="public-site journey-site">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="main-content journey-page">
+    <div class="journey-content">
+        <section class="journey-page-hero journey-page-hero-split journey-page-hero-compact" aria-labelledby="faq-title">
+            <div class="journey-page-intro"><p class="journey-page-kicker">A little clarity before you go</p><h1 id="faq-title">Frequently Asked Questions</h1><p class="journey-page-lead">Travel plans,<br>without the guesswork.</p><p>Package prices, accommodation, visa applications and account access.</p></div>
+            <figure class="journey-page-photo"><th:block th:replace="~{fragments/responsive-image :: image('/images/swiss-alps-photo.jpg', 'A mountain lake in the Swiss Alps', '(max-width: 760px) 100vw, 42vw', false)}"></th:block><figcaption>Seealpsee, Switzerland</figcaption></figure>
+        </section>
+        <section class="journey-faq-layout" aria-labelledby="questions-title">
+            <div class="journey-faq-aside"><p class="journey-page-kicker">Before you book</p><h2 id="questions-title">The details<br>that matter.</h2><p>Start here, or contact our team for advice about your own travel plans.</p><a th:href="@{/contact}">Ask our team <span aria-hidden="true">↗</span></a></div>
+            <div class="journey-faq-list">
+                <details open><summary>Do tour package prices include hotel accommodation?</summary><div class="journey-faq-answer"><p>Hotel accommodation is selected separately during booking. If you choose a hotel, its cost is added to the package price and shown in your booking summary before you submit.</p></div></details>
+                <details><summary>What is included in the base tour package price?</summary><div class="journey-faq-answer"><p>Inclusions vary by package. Check the package details for flights, transport, activities and excluded services. Visa and documentation charges are quoted separately after document review.</p></div></details>
+                <details><summary>Can visitors browse destination and tour information without logging in?</summary><div class="journey-faq-answer"><p>Yes. You can browse destinations, packages, the visa guide and contact details without signing in. An account is required to manage a booking or visa application.</p></div></details>
+                <details><summary>How is visa document verification handled?</summary><div class="journey-faq-answer"><p>A visa officer reviews the documents uploaded to your application, requests further documents when needed and issues the visa and documentation charges after verification. You can follow the application status in your account. This website does not submit applications directly to embassies.</p></div></details>
+            </div>
+        </section>
+        <aside class="journey-page-callout"><div><p class="journey-page-kicker">Your next step</p><h2>A journey that suits you.</h2><p>Compare the itinerary, inclusions and prices before choosing your trip.</p></div><a class="btn btn-primary" th:href="@{/packages}">Explore tour packages <span aria-hidden="true">↗</span></a></aside>
+    </div>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+</body>
+</html>

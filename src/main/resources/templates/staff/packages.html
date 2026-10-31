@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><th:block th:replace="~{fragments/site-head :: theme-init}"></th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Package Management - TravelGO Staff</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css(v=2)}">
+    
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+<th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block><link rel="stylesheet" th:href="@{/css/catalogue-photos.css}"></head>
+<body class="agency-workspace" th:attr="data-package-manage=${#authorization.expression('hasAuthority(''PERM_PACKAGE_MANAGE'')')},data-destination-manage=${#authorization.expression('hasAuthority(''PERM_DESTINATION_MANAGE'')')}">
+    <div class="admin-layout">
+        <!-- Dedicated Consultant Sidebar -->
+        <div th:replace="~{fragments/consultant-sidebar :: consultant-sidebar('packages')}"></div>
+
+        <!-- Main Workspace Area -->
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-breadcrumb">
+                            <span>Travel consultant workspace</span>
+                            <span>/</span>
+                            <span style="color: var(--text-heading); font-weight: 600;">Tour packages</span>
+                        </div>
+                        <h2 class="topbar-title">Packages and hotel listings</h2>
+                    </div>
+                </div>
+
+                <div class="topbar-right"><div th:replace="~{fragments/notification-bell :: bell}"></div>
+                    <a th:href="@{/packages}" target="_blank" class="btn btn-outline btn-sm">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        Preview catalog
+                    </a>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="button" class="btn btn-primary btn-sm" data-ui-click="openSlidePanel" data-ui-kind="DESTINATION" aria-controls="slidePanel" aria-haspopup="dialog" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;" sec:authorize="hasAuthority('PERM_PACKAGE_MANAGE')">
+                            + Add Tour
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" data-ui-click="openSlidePanel" data-ui-kind="HOTEL" aria-controls="slidePanel" aria-haspopup="dialog" style="background: linear-gradient(135deg, #7E22CE 0%, #6B21A8 100%); border: none;" sec:authorize="hasAuthority('PERM_PACKAGE_MANAGE')">
+                            + Add Hotel
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Flash Alerts -->
+                <div th:if="${successMessage}" class="alert alert-success" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span th:text="${successMessage}">Saved</span>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger" style="margin-bottom: 1.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <span th:text="${errorMessage}">Unable to save</span>
+                </div>
+
+                <!-- KPI Overview Cards -->
+                <div class="stats-grid" style="margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Catalogue listings</span>
+                            <div class="stat-icon stat-icon-blue">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="inventoryTotal" th:text="${#lists.size(packages)}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: var(--text-heading); font-weight: 600;">Listings on file</span>
+                            <span>Tour packages and hotels</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Active listings</span>
+                            <div class="stat-icon stat-icon-green">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="inventoryActive" style="color: #059669;" th:text="${#lists.size(packages.?[active == true])}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: #059669; font-weight: 600;">Shown to customers</span>
+                            <span>Open for booking requests</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Destinations</span>
+                            <div class="stat-icon stat-icon-amber">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: #D97706;" th:text="${#lists.size(destinations)}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: #D97706; font-weight: 600;">Destination listings</span>
+                            <span>Cities on file</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-label">Package categories</span>
+                            <div class="stat-icon stat-icon-purple">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: #7E22CE;" th:text="${#lists.size(categories)}">0</div>
+                        <div class="stat-footer">
+                            <span style="color: #7E22CE; font-weight: 600;">Categories</span>
+                            <span>Travel types</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search and Filter Bar -->
+                <div class="filter-toolbar">
+                    <div class="search-box">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" id="packageSearchInput" aria-label="Search packages and hotels" placeholder="Search packages by name, city, country..." data-ui-keyup="filterPackages" />
+                    </div>
+
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                        <select id="categoryFilter" class="filter-select" aria-label="Filter by category" data-ui-change="filterPackages">
+                            <option value="">All categories</option>
+                            <option th:each="c : ${categories}" th:value="${c.name}" th:text="${c.name}"></option>
+                        </select>
+
+                        <select id="statusFilter" class="filter-select" aria-label="Filter by status" data-ui-change="filterPackages">
+                            <option value="">All statuses</option>
+                            <option value="ACTIVE">Active</option>
+                            <option value="INACTIVE">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Package Inventory Table Container -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-heading); display: flex; align-items: center; gap: 0.5rem;">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; color: #0D9488;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                                Catalogue listings (<span id="visiblePackageCount" th:text="${#lists.size(packages)}">0</span>)
+                            </h3>
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">Update package prices, itineraries and visibility.</span>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button type="button" class="btn btn-primary btn-sm" data-ui-click="openSlidePanel" data-ui-kind="DESTINATION" aria-controls="slidePanel" aria-haspopup="dialog" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;" sec:authorize="hasAuthority('PERM_PACKAGE_MANAGE')">
+                                + Add Tour
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm" data-ui-click="openSlidePanel" data-ui-kind="HOTEL" aria-controls="slidePanel" aria-haspopup="dialog" style="background: linear-gradient(135deg, #7E22CE 0%, #6B21A8 100%); border: none;" sec:authorize="hasAuthority('PERM_PACKAGE_MANAGE')">
+                                + Add Hotel
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="data-table" id="packagesTable">
+                            <thead>
+                                <tr>
+                                    <th style="min-width: 80px; white-space: nowrap;">ID</th>
+                                    <th style="min-width: 300px; white-space: nowrap;">Tour package</th>
+                                    <th style="min-width: 180px; white-space: nowrap;">Category</th>
+                                    <th style="min-width: 150px; white-space: nowrap;">Destination</th>
+                                    <th style="min-width: 120px; white-space: nowrap;">Base price</th>
+                                    <th style="min-width: 100px; white-space: nowrap;">Duration</th>
+                                    <th style="min-width: 100px; white-space: nowrap;">Capacity</th>
+                                    <th style="min-width: 120px; white-space: nowrap;">Status</th>
+                                    <th style="min-width: 150px; text-align: right; white-space: nowrap;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="packagesTableBody">
+                                <tr th:each="pkg : ${packages}"
+                                    th:attr="data-idprefix=${pkg.idPrefix},
+                                             data-name=${#strings.toLowerCase(pkg.name)},
+                                             data-category=${pkg.categoryName},
+                                             data-destination=${#strings.toLowerCase(pkg.destination)},
+                                             data-status=${pkg.active ? 'ACTIVE' : 'INACTIVE'},
+                                             data-type=${pkg.type}">
+                                    <td style="font-family: monospace; font-weight: 700; color: var(--text-muted);" th:text="${pkg.idPrefix}">TOUR-1</td>
+                                    <td>
+                                        <div class="package-name-cell">
+                                            <figure class="catalogue-photo catalogue-photo--compact" th:with="photo=${pkg.type == 'HOTEL' ? @travelImages.hotel(pkg.image, pkg.destination) : @travelImages.tour(pkg.image, pkg.destination)}, photoSources=${@travelImages.srcset(photo)}, photoAlt=${pkg.type == 'HOTEL' ? @travelImages.hotelAlt(pkg.image, pkg.name, pkg.destination) : pkg.name + ' — ' + pkg.destination}"><img data-catalogue-photo th:src="${photo}" th:attr="srcset=${photoSources}" sizes="80px" th:alt="${photoAlt}" loading="lazy" decoding="async" width="80" height="64"><figcaption th:if="${pkg.type == 'HOTEL' and !@travelImages.hotelPropertyPhoto(pkg.image)}">Destination preview</figcaption></figure>
+                                            <div>
+                                                <strong style="color: var(--text-heading); font-size: 0.92rem;" th:text="${pkg.name}">Name</strong>
+                                                <div style="margin-top: 0.25rem;">
+                                                    <span th:if="${pkg.type == 'DESTINATION'}" class="badge-destination">Tour</span>
+                                                    <span th:if="${pkg.type == 'HOTEL'}" class="badge-hotel">Hotel</span>
+                                                    <span th:if="${pkg.type == 'HOTEL' and pkg.starRating != null}" style="font-size:0.75rem; color:#F59E0B; margin-left:0.25rem;">
+                                                        <span th:text="${pkg.starRating}"></span>★
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-outline" th:text="${pkg.categoryName != null ? pkg.categoryName : '—'}">Category</span>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 600; color: var(--text-heading);" th:text="${pkg.destination != null ? pkg.destination : '—'}">Destination</div>
+                                    </td>
+                                    <td>
+                                        <span class="price-badge" th:text="'$' + ${#numbers.formatDecimal(pkg.basePrice, 1, 2)}">$1,299.00</span>
+                                        <span th:if="${pkg.type == 'HOTEL'}" style="font-size:0.7rem; color:var(--text-muted);">/night</span>
+                                    </td>
+                                    <td th:text="${pkg.durationDays != null ? pkg.durationDays + ' days' : '—'}">7 Days</td>
+                                    <td th:text="${pkg.maxCapacity != null ? pkg.maxCapacity + ' maximum' : '—'}">25 Max</td>
+                                    <td>
+                                        <span class="badge" th:classappend="${pkg.active} ? 'badge-success' : 'badge-danger'"
+                                              th:text="${pkg.active ? 'Active' : 'Inactive'}">Active</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <div style="display: inline-flex; gap: 0.4rem; justify-content: flex-end;">
+                                            <button th:if="${pkg.type == 'DESTINATION'}" type="button" class="btn btn-outline btn-sm action-icon action-edit" th:attr="data-package-id=${pkg.id}" aria-controls="editSlidePanel" aria-haspopup="dialog" data-ui-click="loadPackageEditor" sec:authorize="hasAuthority('PERM_PACKAGE_MANAGE')" aria-label="Edit package" title="Edit package">Edit</button>
+                                            <a sec:authorize="hasAnyAuthority('PERM_DESTINATION_VIEW','PERM_DESTINATION_MANAGE')" th:if="${pkg.type == 'HOTEL'}" class="btn btn-outline btn-sm" th:href="@{/staff/hotels}">View hotel</a>
+                                            <a th:if="${pkg.type == 'DESTINATION'}" class="btn btn-outline btn-sm" th:href="@{/staff/packages/{id}/content(id=${pkg.id})}">Itinerary</a>
+                                              <button th:if="${pkg.type == 'DESTINATION'}" type="button" class="btn btn-outline btn-sm" aria-controls="manageDeparturesModal" aria-haspopup="dialog" data-ui-click="openManageDeparturesModal" th:attr="data-ui-id=${pkg.id}">Departures</button>
+                                            <form th:if="${pkg.type == 'DESTINATION'}" th:action="@{/staff/packages/{id}/delete(id=${pkg.id})}" method="post" style="display: inline;"
+                                                  data-confirm-submit="Deactivate this package?" sec:authorize="hasAuthority('PERM_PACKAGE_MANAGE')">
+                                                <button type="submit" class="btn btn-sm btn-danger action-danger action-icon action-delete" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;" aria-label="Deactivate package" title="Deactivate package">Deactivate</button>
+                                            </form>
+                                            <form th:if="${pkg.type == 'HOTEL'}" th:action="@{/staff/hotels/{id}/delete(id=${pkg.id})}" method="post" style="display: inline;"
+                                                  data-confirm-submit="Deactivate this hotel?" sec:authorize="hasAuthority('PERM_DESTINATION_MANAGE')">
+                                                <button type="submit" class="btn btn-sm btn-danger action-danger action-icon action-delete" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;" aria-label="Deactivate package" title="Deactivate package">Deactivate</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div th:if="${#lists.isEmpty(packages)}" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+                            <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-heading);">No tour packages found</div>
+                            <p>Select <strong>+ Add New Package</strong> to add a package.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide-in Panel: Add Package / Hotel -->
+        <div id="slidePanelBackdrop" class="slide-backdrop" data-ui-click="closeSlidePanel"></div>
+        <div id="slidePanel" class="slide-panel">
+            <div class="slide-panel-header">
+                <h3 id="slidePanelTitle" style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text-heading); display: flex; align-items: center; gap: 0.5rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0D9488;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Add new</span>
+                </h3>
+                <button type="button" class="btn btn-outline btn-sm action-cancel" data-ui-click="closeSlidePanel" aria-label="Close add package panel" style="padding: 0.4rem; border: none; background: transparent;" title="Close add package panel">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            
+            <div class="slide-panel-body">
+                <form id="addPackageForm" method="post" data-ui-submit="submitSlidePanel" sec:authorize="hasAuthority('PERM_PACKAGE_MANAGE')">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" id="packageType" name="packageType" value="DESTINATION" />
+                    
+                    <div class="form-group">
+                        <label class="form-label" id="nameLabel">Package Name *</label>
+                        <input type="text" name="name" class="form-control" required />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" id="categoryGroup">
+                            <label class="form-label">Category *</label>
+                            <select name="categoryId" id="categoryId" class="form-control">
+                                <option value="">Select category...</option>
+                                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Destination *</label>
+                            <select name="destinationId" class="form-control" required>
+                                <option value="">Select destination...</option>
+                                <option th:each="d : ${destinations}" th:value="${d.id}" th:text="${d.city + ', ' + d.country}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="addressGroup" style="display:none;">
+                        <label class="form-label">Hotel address *</label>
+                        <input type="text" name="address" id="address" class="form-control" placeholder="123 Main St, City" />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" id="priceLabel">Base Price ($) *</label>
+                            <input type="number" step="0.01" name="basePrice" id="basePrice" min="0.01" max="99999999.99" class="form-control" required />
+                        </div>
+                        <div class="form-group" id="durationGroup">
+                            <label class="form-label">Duration (days) *</label>
+                            <input type="number" name="durationDays" id="durationDays" min="1" max="365" class="form-control" />
+                        </div>
+                        <div class="form-group" id="starRatingGroup" style="display:none;">
+                            <label class="form-label" for="starRating">Star rating</label>
+                            <select name="starRating" id="starRating" class="form-control">
+                                <option value="">Unrated</option><option value="1">1 star</option><option value="2">2 stars</option><option value="3">3 stars</option><option value="4">4 stars</option><option value="5">5 stars</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row" id="capacityFlightGroup">
+                        <div class="form-group">
+                            <label class="form-label">Max group capacity *</label>
+                            <input type="number" name="maxCapacity" id="maxCapacity" min="1" max="1000" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Flight details</label>
+                            <input type="text" name="flightDetails" id="flightDetails" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="addCatalogueImage">Cover image</label>
+                        <input type="text" id="addCatalogueImage" name="image" class="form-control" data-catalogue-image-input aria-describedby="addCatalogueImageHelp" maxlength="255" placeholder="https://... or /images/..." />
+                        <small id="addCatalogueImageHelp" class="catalogue-photo-note">Use a licensed photo that matches this listing: an HTTPS URL or an /images/ path.</small>
+                    </div>
+                    <div class="form-group" id="galleryGroup">
+                        <label class="form-label">Gallery Images (One URL per line)</label>
+                        <textarea name="galleryUrls" id="galleryUrls" class="form-control" rows="3" placeholder="https://..."></textarea>
+                    </div>
+
+                    <div class="form-group" id="includedServicesGroup">
+                        <label class="form-label">Included services</label>
+                        <textarea name="includedServices" id="includedServices" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Itinerary</label>
+                        <textarea name="itinerary" id="itinerary" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Excluded services</label>
+                        <textarea name="excludedServices" id="excludedServices" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Traveler information</label>
+                        <textarea name="travelerInformation" id="travelerInformation" class="form-control" rows="3"></textarea>
+                    </div>
+
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Detailed description</label>
+                        <textarea name="description" class="form-control" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="slide-panel-footer">
+                <button type="button" class="btn btn-outline action-cancel" data-ui-click="closeSlidePanel">Cancel</button>
+                <button type="submit" form="addPackageForm" class="btn btn-primary" id="submitBtn" style="background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); border: none;" sec:authorize="hasAuthority('PERM_PACKAGE_MANAGE')">
+                    Publish package
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide Panel 2: Edit Existing Tour Package -->
+        <div id="editSlidePanelBackdrop" class="slide-backdrop" data-ui-click="closeEditPackageModal"></div>
+        <div id="editSlidePanel" class="slide-panel">
+            <div class="slide-panel-header">
+                <h3 id="editSlidePanelTitle" style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #1E293B; display: flex; align-items: center; gap: 0.65rem;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0284C7;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit tour package
+                </h3>
+                <button type="button" class="btn btn-outline btn-sm action-cancel" data-ui-click="closeEditPackageModal" aria-label="Close edit package panel" style="padding: 0.4rem; border-color: transparent;" title="Close edit package panel">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <form id="editPackageForm" method="post" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;" sec:authorize="hasAuthority('PERM_PACKAGE_MANAGE')">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div class="slide-panel-body">
+                        <div class="form-group">
+                            <label class="form-label">Package Name *</label>
+                            <input type="text" id="editName" name="name" class="form-control" required />
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Category *</label>
+                                <select id="editCategoryId" name="categoryId" class="form-control" required>
+                                    <option value="">Select category...</option>
+                                    <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Destination *</label>
+                                <select id="editDestinationId" name="destinationId" class="form-control" required>
+                                    <option value="">Select destination...</option>
+                                    <option th:each="d : ${destinations}" th:value="${d.id}" th:text="${d.city + ', ' + d.country}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Base Price ($) *</label>
+                                <input type="number" step="0.01" id="editBasePrice" name="basePrice" min="0.01" max="99999999.99" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Duration (days) *</label>
+                                <input type="number" id="editDurationDays" name="durationDays" min="1" max="365" class="form-control" required />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Max group capacity *</label>
+                                <input type="number" id="editMaxCapacity" name="maxCapacity" min="1" max="1000" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Flight details</label>
+                                <input type="text" id="editFlightDetails" name="flightDetails" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="editImage">Cover image</label>
+                            <input type="text" id="editImage" name="image" class="form-control" data-catalogue-image-input aria-describedby="editImageHelp" maxlength="255" />
+                            <small id="editImageHelp" class="catalogue-photo-note">Use a licensed destination photo that matches this tour.</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Gallery Images (One URL per line)</label>
+                            <textarea id="editGalleryUrls" name="galleryUrls" class="form-control" rows="3" placeholder="https://..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Included services</label>
+                            <textarea id="editIncludedServices" name="includedServices" class="form-control" rows="2"></textarea>
+                        </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Itinerary</label>
+                                <textarea name="itinerary" id="editItinerary" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Excluded services</label>
+                                <textarea name="excludedServices" id="editExcludedServices" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Traveler information</label>
+                                <textarea name="travelerInformation" id="editTravelerInformation" class="form-control" rows="3"></textarea>
+                            </div>
+
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Detailed description</label>
+                            <textarea id="editDescription" name="description" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="slide-panel-footer" style="display:flex; justify-content:space-between; width:100%;">
+                        <div>
+                            <button type="button" class="btn btn-outline action-danger action-icon action-delete" style="color:var(--danger); border-color:var(--danger);" data-ui-click="deletePackage" aria-label="Deactivate package" title="Deactivate package">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:4px;vertical-align:text-bottom;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg> Deactivate
+                            </button>
+                        </div>
+                        <div style="display:flex; gap:0.5rem;">
+                            <button type="button" class="btn btn-outline action-cancel" data-ui-click="closeEditPackageModal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%); border: none;">Save changes</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script th:attr="nonce=${cspNonce}">
+        function openSlidePanel(type) {
+            document.getElementById('slidePanelBackdrop').classList.add('open');
+            document.getElementById('slidePanel').classList.add('open');
+            
+            const form = document.getElementById('addPackageForm');
+            form.reset();
+            window.TravelGoCataloguePhotos?.updatePreview(document.getElementById('addCatalogueImage'));
+            document.getElementById('packageType').value = type;
+            
+            if(type === 'DESTINATION') {
+                document.getElementById('slidePanelTitle').innerHTML = '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #0D9488;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg><span>Add New Tour Package</span>';
+                document.getElementById('nameLabel').innerText = 'Package Name *';
+                document.getElementById('categoryGroup').style.display = 'block';
+                document.getElementById('addressGroup').style.display = 'none';
+                document.getElementById('durationGroup').style.display = 'block';
+                document.getElementById('starRatingGroup').style.display = 'none';
+                document.getElementById('capacityFlightGroup').style.display = 'flex';
+                document.getElementById('includedServicesGroup').style.display = 'block';
+                document.getElementById('priceLabel').innerText = 'Base Price ($) *';
+                
+                document.getElementById('categoryId').required = true;
+                document.getElementById('address').required = false;
+                document.getElementById('durationDays').required = true;
+                document.getElementById('maxCapacity').required = true;
+            } else {
+                document.getElementById('slidePanelTitle').innerHTML = '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #7E22CE;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg><span>Add New Hotel</span>';
+                document.getElementById('nameLabel').innerText = 'Hotel Name *';
+                document.getElementById('categoryGroup').style.display = 'none';
+                document.getElementById('addressGroup').style.display = 'block';
+                document.getElementById('durationGroup').style.display = 'none';
+                document.getElementById('starRatingGroup').style.display = 'block';
+                document.getElementById('capacityFlightGroup').style.display = 'none';
+                document.getElementById('includedServicesGroup').style.display = 'none';
+                document.getElementById('priceLabel').innerText = 'Price per Night ($) *';
+                
+                document.getElementById('categoryId').required = false;
+                document.getElementById('address').required = true;
+                document.getElementById('durationDays').required = false;
+                document.getElementById('maxCapacity').required = false;
+            }
+        }
+        
+        function closeSlidePanel() {
+            document.getElementById('slidePanelBackdrop').classList.remove('open');
+            document.getElementById('slidePanel').classList.remove('open');
+        }
+
+        async function submitSlidePanel(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerText;
+            btn.innerText = 'Saving...';
+            btn.disabled = true;
+            
+            const type = formData.get('packageType');
+            const url = type === 'HOTEL' ? '/staff/packages/api/create-hotel' : '/staff/packages/api/create';
+            
+            if (type === 'HOTEL') {
+                formData.append('pricePerNight', formData.get('basePrice'));
+            }
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: new URLSearchParams(formData)
+                });
+                
+                if(response.ok) {
+                    const newPkg = await response.json();
+                    appendPackageRow(newPkg);
+                    closeSlidePanel();
+                    filterPackages();
+                } else {
+                    const errorMsg = await response.text();
+                    alert('Error: ' + errorMsg);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Network error');
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        function positiveInteger(value) {
+            const number = Number(value);
+            return Number.isSafeInteger(number) && number > 0 ? number : null;
+        }
+
+        function displayText(value, fallback = '—') {
+            if (value === null || value === undefined) return fallback;
+            const text = String(value).trim();
+            return text || fallback;
+        }
+
+        function createPackageElement(tagName, className, text, cssText) {
+            const element = document.createElement(tagName);
+            if (className) element.className = className;
+            if (text !== undefined && text !== null) element.textContent = text;
+            if (cssText) element.style.cssText = cssText;
+            return element;
+        }
+
+        function safePackageImageSource(value) {
+            if (typeof value !== 'string') return null;
+            const source = value.trim();
+            if (!source) return null;
+            if (/^\/images\/[A-Za-z0-9_./-]+$/.test(source) && !source.includes('..')) return source;
+            try {
+                const url = new URL(source);
+                return url.protocol === 'https:' && !url.username && !url.password ? url.href : null;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function createPackageThumbnail(image, name, caption) {
+            const fallback = () => createPackageElement(
+                'div',
+                'package-thumb',
+                'Photo unavailable',
+                'display:flex; align-items:center; justify-content:center; background:#E2E8F0; color:#64748B; font-size:0.65rem; font-weight:600;'
+            );
+            const source = safePackageImageSource(image);
+            if (!source) return fallback();
+
+            const imageElement = createPackageElement('img', 'package-thumb');
+            imageElement.dataset.cataloguePhoto = '';
+            imageElement.src = source;
+            imageElement.alt = caption ? caption : name;
+            imageElement.loading = 'lazy';
+            imageElement.decoding = 'async';
+            imageElement.addEventListener('error', () => imageElement.replaceWith(fallback()), { once: true });
+            const figure = createPackageElement('figure', 'catalogue-photo catalogue-photo--compact');
+            figure.appendChild(imageElement);
+            if (caption) figure.appendChild(createPackageElement('figcaption', null, caption));
+            return figure;
+        }
+
+        function appendCsrfField(form) {
+            const csrfInput = document.querySelector('input[name="_csrf"]');
+            if (!csrfInput) return;
+            const csrfClone = document.createElement('input');
+            csrfClone.type = 'hidden';
+            csrfClone.name = csrfInput.name;
+            csrfClone.value = csrfInput.value;
+            form.appendChild(csrfClone);
+        }
+
+        function createDeactivateForm(id, type) {
+            const isHotel = type === 'HOTEL';
+            const form = document.createElement('form');
+            form.method = 'post';
+            form.action = isHotel ? `/staff/hotels/${id}/delete` : `/staff/packages/${id}/delete`;
+            form.style.display = 'inline';
+            form.addEventListener('submit', event => {
+                if (!window.confirm(`Deactivate this ${isHotel ? 'hotel' : 'package'}?`)) {
+                    event.preventDefault();
+                }
+            });
+            appendCsrfField(form);
+
+            const button = createPackageElement(
+                'button',
+                'btn btn-sm btn-danger',
+                'Deactivate',
+                'padding: 0.25rem 0.6rem; font-size: 0.78rem;'
+            );
+            button.type = 'submit';
+            form.appendChild(button);
+            return form;
+        }
+
+        function appendPackageRow(pkg) {
+            const tbody = document.getElementById('packagesTableBody');
+            const id = positiveInteger(pkg && pkg.id);
+            const type = pkg && (pkg.type === 'DESTINATION' || pkg.type === 'HOTEL') ? pkg.type : null;
+            if (!tbody || !id || !type) {
+                console.warn('Ignoring an invalid package response.');
+                return;
+            }
+
+            const packageName = displayText(pkg.name, 'Untitled package');
+            const categoryName = displayText(pkg.categoryName);
+            const destinationName = displayText(pkg.destination);
+            const active = pkg.active === true;
+            const price = Number(pkg.basePrice);
+            const formattedPrice = Number.isFinite(price) && price >= 0 ? price.toFixed(2) : '0.00';
+            const duration = Number(pkg.durationDays);
+            const capacity = Number(pkg.maxCapacity);
+            const starRating = Number(pkg.starRating);
+
+            const tr = document.createElement('tr');
+            tr.dataset.idprefix = displayText(pkg.idPrefix, '');
+            tr.dataset.name = packageName.toLowerCase();
+            tr.dataset.category = categoryName === '—' ? '' : categoryName;
+            tr.dataset.destination = destinationName === '—' ? '' : destinationName.toLowerCase();
+            tr.dataset.status = active ? 'ACTIVE' : 'INACTIVE';
+            tr.dataset.type = type;
+
+            tr.appendChild(createPackageElement(
+                'td',
+                null,
+                displayText(pkg.idPrefix, `PACKAGE-${id}`),
+                'font-family: monospace; font-weight: 700; color: var(--text-muted);'
+            ));
+
+            const packageCell = document.createElement('td');
+            const packageNameCell = createPackageElement('div', 'package-name-cell');
+            packageNameCell.appendChild(createPackageThumbnail(pkg.displayImage || pkg.image, pkg.name, pkg.imageCaption));
+            const details = document.createElement('div');
+            details.appendChild(createPackageElement(
+                'strong',
+                null,
+                packageName,
+                'color: var(--text-heading); font-size: 0.92rem;'
+            ));
+            const badges = createPackageElement('div', null, null, 'margin-top: 0.25rem;');
+            badges.appendChild(createPackageElement(
+                'span',
+                type === 'DESTINATION' ? 'badge-destination' : 'badge-hotel',
+                type === 'DESTINATION' ? 'Tour' : 'Hotel'
+            ));
+            if (type === 'HOTEL' && Number.isFinite(starRating) && starRating > 0) {
+                badges.appendChild(createPackageElement(
+                    'span',
+                    null,
+                    `${Math.min(5, Math.round(starRating))}★`,
+                    'font-size:0.75rem; color:#F59E0B; margin-left:0.25rem;'
+                ));
+            }
+            details.appendChild(badges);
+            packageNameCell.appendChild(details);
+            packageCell.appendChild(packageNameCell);
+            tr.appendChild(packageCell);
+
+            const categoryCell = document.createElement('td');
+            categoryCell.appendChild(createPackageElement('span', 'badge badge-outline', categoryName));
+            tr.appendChild(categoryCell);
+
+            const destinationCell = document.createElement('td');
+            destinationCell.appendChild(createPackageElement(
+                'div',
+                null,
+                destinationName,
+                'font-weight: 600; color: var(--text-heading);'
+            ));
+            tr.appendChild(destinationCell);
+
+            const priceCell = document.createElement('td');
+            priceCell.appendChild(createPackageElement('span', 'price-badge', `$${formattedPrice}`));
+            if (type === 'HOTEL') {
+                priceCell.appendChild(createPackageElement(
+                    'span',
+                    null,
+                    '/night',
+                    'font-size:0.7rem; color:var(--text-muted); margin-left:0.2rem;'
+                ));
+            }
+            tr.appendChild(priceCell);
+            tr.appendChild(createPackageElement(
+                'td',
+                null,
+                Number.isFinite(duration) && duration > 0 ? `${Math.round(duration)} Days` : '—'
+            ));
+            tr.appendChild(createPackageElement(
+                'td',
+                null,
+                Number.isFinite(capacity) && capacity > 0 ? `${Math.round(capacity)} Max` : '—'
+            ));
+
+            const statusCell = document.createElement('td');
+            statusCell.appendChild(createPackageElement(
+                'span',
+                `badge ${active ? 'badge-success' : 'badge-danger'}`,
+                active ? 'Active' : 'Inactive'
+            ));
+            tr.appendChild(statusCell);
+
+            const actionsCell = createPackageElement('td', null, null, 'text-align: right;');
+            const actions = createPackageElement(
+                'div',
+                null,
+                null,
+                'display: inline-flex; gap: 0.4rem; justify-content: flex-end;'
+            );
+            if (type === 'DESTINATION') {
+                const edit = createPackageElement('button', 'btn btn-outline btn-sm action-icon action-edit', 'Edit');
+                edit.type = 'button';
+                edit.setAttribute('aria-label', 'Edit package');
+                edit.title = 'Edit package';
+                edit.setAttribute('aria-controls', 'editSlidePanel');
+                edit.setAttribute('aria-haspopup', 'dialog');
+                edit.addEventListener('click', () => loadPackageEditor(id, edit));
+                actions.appendChild(edit);
+                const itinerary = createPackageElement('a', 'btn btn-outline btn-sm', 'Itinerary');
+                itinerary.href = `/staff/packages/${id}/content`;
+                actions.appendChild(itinerary);
+
+                const departures = createPackageElement('button', 'btn btn-outline btn-sm', 'Departures');
+                departures.type = 'button';
+                departures.setAttribute('aria-controls', 'manageDeparturesModal');
+                departures.setAttribute('aria-haspopup', 'dialog');
+                departures.addEventListener('click', () => openManageDeparturesModal(id));
+                actions.appendChild(departures);
+            }
+            if (document.body.dataset[type === 'HOTEL' ? 'destinationManage' : 'packageManage'] === 'true') {
+                actions.appendChild(createDeactivateForm(id, type));
+            }
+            actionsCell.appendChild(actions);
+            tr.appendChild(actionsCell);
+            tbody.prepend(tr);
+            document.getElementById('inventoryTotal').textContent = tbody.querySelectorAll('tr[data-type]').length;
+            document.getElementById('inventoryActive').textContent = tbody.querySelectorAll('tr[data-status="ACTIVE"]').length;
+        }
+        async function loadPackageEditor(id, button) {
+            const packageId = positiveInteger(id);
+            if (!packageId || button.disabled) return;
+            const label = button.textContent;
+            button.disabled = true;
+            button.textContent = 'Loading…';
+            try {
+                const response = await fetch(`/staff/packages/${packageId}/details`, { headers: { 'Accept': 'application/json' } });
+                if (!response.ok) throw new Error('Package details could not be loaded. Refresh the page and try again.');
+                const details = await response.json();
+                if (!details || typeof details.name !== 'string') throw new Error('Package details are unavailable. Refresh the page.');
+                openEditPackageModal(packageId, details, button);
+            } catch (error) {
+                alert(error.message || 'Package details could not be loaded. Please try again.');
+            } finally {
+                button.disabled = false;
+                button.textContent = label;
+            }
+        }
+
+        function openEditPackageModal(id, details, opener) {
+            const packageId = positiveInteger(id);
+            if (!packageId) {
+                console.warn('Ignoring an invalid package identifier.');
+                return;
+            }
+            document.getElementById('editPackageForm').action = '/staff/packages/' + packageId + '/edit';
+            const fields = {
+                editName: 'name', editCategoryId: 'categoryId', editDestinationId: 'destinationId',
+                editBasePrice: 'basePrice', editDurationDays: 'durationDays', editMaxCapacity: 'maxCapacity',
+                editFlightDetails: 'flightDetails', editImage: 'image', editIncludedServices: 'includedServices',
+                editDescription: 'description', editItinerary: 'itinerary', editExcludedServices: 'excludedServices',
+                editTravelerInformation: 'travelerInformation', editGalleryUrls: 'galleryUrls'
+            };
+            Object.entries(fields).forEach(([elementId, property]) => {
+                document.getElementById(elementId).value = details[property] ?? '';
+            });
+            window.TravelGoCataloguePhotos?.updatePreview(document.getElementById('editImage'));
+            if (window.TravelGoModals) {
+                window.TravelGoModals.open(document.getElementById('editSlidePanel'), opener);
+            } else {
+                document.getElementById('editSlidePanelBackdrop').classList.add('open');
+                document.getElementById('editSlidePanel').classList.add('open');
+            }
+        }
+
+        function closeEditPackageModal() {
+            document.getElementById('editSlidePanelBackdrop').classList.remove('open');
+            document.getElementById('editSlidePanel').classList.remove('open');
+        }
+
+        function deletePackage() {
+            if (confirm('Deactivate this package? It will be hidden from new bookings and can be reactivated later.')) {
+                var form = document.getElementById('editPackageForm');
+                var deleteForm = document.createElement('form');
+                deleteForm.method = 'post';
+                deleteForm.action = form.action.replace('/edit', '/delete');
+                
+                var csrf = form.querySelector('input[name="_csrf"]');
+                if (csrf) {
+                    var csrfClone = document.createElement('input');
+                    csrfClone.type = 'hidden';
+                    csrfClone.name = csrf.name;
+                    csrfClone.value = csrf.value;
+                    deleteForm.appendChild(csrfClone);
+                }
+                
+                document.body.appendChild(deleteForm);
+                deleteForm.submit();
+            }
+        }
+
+        let debounceTimer;
+        function filterPackages() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                var query = (document.getElementById('packageSearchInput').value || '').toLowerCase().trim();
+                var cat = document.getElementById('categoryFilter').value;
+                var status = document.getElementById('statusFilter').value;
+
+                var rows = document.querySelectorAll('#packagesTableBody tr');
+                var visible = 0;
+
+                rows.forEach(function(r) {
+                    var name = r.getAttribute('data-name') || '';
+                    var category = r.getAttribute('data-category') || '';
+                    var dest = r.getAttribute('data-destination') || '';
+                    var st = r.getAttribute('data-status') || '';
+
+                    var matchQuery = !query || name.includes(query) || dest.includes(query) || category.toLowerCase().includes(query);
+                    var matchCat = !cat || category === cat;
+                    var matchStatus = !status || st === status;
+
+                    if (matchQuery && matchCat && matchStatus) {
+                        r.style.display = '';
+                        visible++;
+                    } else {
+                        r.style.display = 'none';
+                    }
+                });
+
+                var countEl = document.getElementById('visiblePackageCount');
+                if (countEl) countEl.innerText = visible;
+            }, 250);
+        }
+
+        window.addEventListener('click', function(e) {
+            var editModal = document.getElementById('editPackageModal');
+            if (e.target == editModal) closeEditPackageModal();
+        });
+    
+        function openManageDeparturesModal(packageId) {
+            const validPackageId = positiveInteger(packageId);
+            if (!validPackageId) {
+                console.warn('Ignoring an invalid package identifier.');
+                return;
+            }
+            document.getElementById('manageDeparturesBackdrop').classList.add('open');
+            document.getElementById('manageDeparturesModal').classList.add('open');
+            document.getElementById('depPackageId').value = validPackageId;
+            loadDepartures(validPackageId);
+        }
+
+        function closeManageDeparturesModal() {
+            document.getElementById('manageDeparturesBackdrop').classList.remove('open');
+            document.getElementById('manageDeparturesModal').classList.remove('open');
+        }
+
+        function departureMessage(container, message, isError = false) {
+            const paragraph = document.createElement('p');
+            paragraph.textContent = message;
+            paragraph.style.cssText = isError
+                ? 'color: var(--text-danger);'
+                : 'color: var(--text-muted); font-style: italic;';
+            container.replaceChildren(paragraph);
+        }
+
+        function departureCell(text, alignRight = false) {
+            return createPackageElement(
+                'td',
+                null,
+                text,
+                `padding: 8px; border-bottom: 1px solid #eee;${alignRight ? ' text-align: right;' : ''}`
+            );
+        }
+
+        function loadDepartures(packageId) {
+            const validPackageId = positiveInteger(packageId);
+            const listDiv = document.getElementById('departuresList');
+            if (!listDiv || !validPackageId) {
+                if (listDiv) departureMessage(listDiv, 'Choose a valid package before loading departures.', true);
+                return;
+            }
+
+            departureMessage(listDiv, 'Loading departures…');
+            fetch(`/staff/packages/${validPackageId}/departures`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Departure request failed.');
+                    return response.json();
+                })
+                .then(data => {
+                    if (!Array.isArray(data) || data.length === 0) {
+                        departureMessage(listDiv, 'No departures found.');
+                        return;
+                    }
+
+                    const table = createPackageElement(
+                        'table',
+                        'data-table',
+                        null,
+                        'width: 100%; border-collapse: collapse; margin-top: 10px;'
+                    );
+                    const head = document.createElement('thead');
+                    const headerRow = document.createElement('tr');
+                    ['Departure', 'Return', 'Available', 'Actions'].forEach((heading, index) => {
+                        headerRow.appendChild(createPackageElement(
+                            'th',
+                            null,
+                            heading,
+                            `padding: 8px; text-align: ${index === 3 ? 'right' : 'left'}; border-bottom: 1px solid #ddd;`
+                        ));
+                    });
+                    head.appendChild(headerRow);
+                    table.appendChild(head);
+
+                    const body = document.createElement('tbody');
+                    data.forEach(departure => {
+                        const departureId = positiveInteger(departure && departure.id);
+                        if (!departureId) return;
+                        const row = document.createElement('tr');
+                        row.appendChild(departureCell(displayText(departure.departureDate)));
+                        row.appendChild(departureCell(displayText(departure.returnDate)));
+                        const available = Number(departure.availableSeats);
+                        const capacity = Number(departure.totalCapacity);
+                        row.appendChild(departureCell(
+                            `${Number.isFinite(available) && available >= 0 ? Math.round(available) : '—'}/${Number.isFinite(capacity) && capacity >= 0 ? Math.round(capacity) : '—'}`
+                        ));
+                        const actionCell = departureCell('', true);
+                        const removeButton = createPackageElement(
+                            'button',
+                            'btn btn-sm btn-danger action-icon action-delete action-danger',
+                            'Delete',
+                            'padding: 0.2rem 0.5rem; font-size: 0.75rem;'
+                        );
+                        removeButton.type = 'button';
+                        removeButton.setAttribute('aria-label', 'Delete departure');
+                        removeButton.title = 'Delete departure';
+                        removeButton.addEventListener('click', () => deleteDeparture(departureId, validPackageId));
+                        if (document.body.dataset.packageManage === 'true') actionCell.appendChild(removeButton);
+                        row.appendChild(actionCell);
+                        body.appendChild(row);
+                    });
+
+                    if (!body.childElementCount) {
+                        departureMessage(listDiv, 'No valid departures found.');
+                        return;
+                    }
+                    table.appendChild(body);
+                    listDiv.replaceChildren(table);
+                })
+                .catch(error => {
+                    console.error(error);
+                    departureMessage(listDiv, 'Failed to load departures.', true);
+                });
+        }
+        function submitDepartureForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            if (form.getAttribute('aria-busy') === 'true') return;
+            const packageId = positiveInteger(document.getElementById('depPackageId').value);
+            if (!packageId) {
+                alert('Choose a valid package before adding a departure.');
+                return;
+            }
+            const departureDate = document.getElementById('depDepartureDate').value;
+            const returnDate = document.getElementById('depReturnDate').value;
+            const totalCapacity = document.getElementById('depTotalCapacity').value;
+            
+            const formData = new FormData();
+            formData.append('departureDate', departureDate);
+            formData.append('returnDate', returnDate);
+            formData.append('totalCapacity', totalCapacity);
+            
+            // Append CSRF if available
+            const csrfInput = document.querySelector('input[name="_csrf"]');
+            if (csrfInput) {
+                formData.append(csrfInput.name, csrfInput.value);
+            }
+            
+            const submitButton = form.querySelector('button[type="submit"]');
+            form.setAttribute('aria-busy', 'true');
+            submitButton.disabled = true;
+            fetch(`/staff/packages/api/${packageId}/departures`, {
+                method: 'POST',
+                headers: { 'Accept': 'application/json' },
+                body: formData
+            }).then(async res => {
+                const result = await res.json();
+                if(res.ok) {
+                    loadDepartures(packageId);
+                    document.getElementById('addDepartureForm').reset();
+                    document.getElementById('depPackageId').value = packageId;
+                } else {
+                    alert(result.message || 'Failed to add departure.');
+                }
+            }).catch(err => {
+                alert('Error adding departure.');
+                console.error(err);
+            }).finally(() => {
+                form.removeAttribute('aria-busy');
+                submitButton.disabled = false;
+            });
+        }
+
+        function deleteDeparture(depId, packageId) {
+            const departureId = positiveInteger(depId);
+            const validPackageId = positiveInteger(packageId);
+            if (!departureId || !validPackageId) {
+                alert('Choose a valid departure before deleting it.');
+                return;
+            }
+            if(!confirm('Are you sure you want to delete this departure?')) return;
+            
+            const formData = new FormData();
+            const csrfInput = document.querySelector('input[name="_csrf"]');
+            if (csrfInput) {
+                formData.append(csrfInput.name, csrfInput.value);
+            }
+            
+            fetch(`/staff/packages/api/departures/${departureId}/delete`, {
+                method: 'POST',
+                headers: { 'Accept': 'application/json' },
+                body: formData
+            }).then(async res => {
+                const result = await res.json();
+                if(res.ok) {
+                    loadDepartures(validPackageId);
+                } else {
+                    alert(result.message || 'Failed to delete departure.');
+                }
+            }).catch(err => {
+                alert('Error deleting departure.');
+                console.error(err);
+            });
+        }
+
+</script>
+<script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+<!-- Manage Departures Modal -->
+<div id="manageDeparturesBackdrop" class="slide-backdrop" data-ui-click="closeManageDeparturesModal"></div>
+<div id="manageDeparturesModal" class="slide-panel" style="width: 500px; max-width: 90vw;">
+    <div class="panel-header" style="padding: 1.5rem; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-heading);">Manage departures</h3>
+        <button type="button" class="btn-close" data-ui-click="closeManageDeparturesModal" aria-label="Close departures panel" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+    </div>
+    <div class="panel-body" style="padding: 1.5rem; overflow-y: auto; flex: 1;">
+        <div id="departuresList" style="margin-bottom: 1.5rem;">
+            <!-- Departures loaded via AJAX -->
+            <p>Loading departures...</p>
+        </div>
+        <hr style="border: 0; border-top: 1px solid var(--border-light); margin: 1.5rem 0;" />
+        <input type="hidden" id="depPackageId" name="packageId" />
+        <h4 sec:authorize="hasAuthority('PERM_PACKAGE_MANAGE')" style="margin: 0 0 1rem 0; font-size: 1rem; color: var(--text-heading);">Add new departure</h4>
+        <form id="addDepartureForm" data-ui-submit="submitDepartureForm" sec:authorize="hasAuthority('PERM_PACKAGE_MANAGE')">
+            <div class="form-group">
+                <label class="form-label">Departure date *</label>
+                <input type="date" id="depDepartureDate" name="departureDate" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Return date *</label>
+                <input type="date" id="depReturnDate" name="returnDate" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Total capacity *</label>
+                <input type="number" id="depTotalCapacity" name="totalCapacity" min="1" max="1000" class="form-control" required />
+            </div>
+            <div style="margin-top: 1rem; text-align: right;">
+                <button type="submit" class="btn btn-primary">Add departure</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/catalogue-photo-data :: aliases}"></div><script th:attr="nonce=${cspNonce}" th:src="@{/js/catalogue-photos.js}"></script></body>
+</html>

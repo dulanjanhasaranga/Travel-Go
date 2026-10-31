@@ -1,0 +1,309 @@
+/* Public and customer status system, 13 October 2026.
+   The server's words and existing check/cross/number icons carry state meaning.
+   These rules change presentation only and never target staff workspaces. */
+:root body:not(.agency-workspace) {
+    --status-neutral:#52647f;
+    --status-neutral-bg:#f4f6f9;
+    --status-neutral-border:#d3dde9;
+    --status-progress:#315b95;
+    --status-progress-bg:#f1f5fb;
+    --status-progress-border:#cbdcf0;
+    --status-complete:#173b67;
+    --status-complete-bg:#f3f6fa;
+    --status-complete-border:#b8c9de;
+    --status-error:#9b3745;
+    --status-error-bg:#fcf3f4;
+    --status-error-border:#e4c2c7;
+    /* Legacy inline note/payment panels use these exact semantic tokens. */
+    --success:var(--status-complete);
+    --success-bg:var(--status-complete-bg);
+    --success-border:var(--status-complete-border);
+    --warning:var(--status-neutral);
+    --warning-bg:var(--status-neutral-bg);
+    --warning-border:var(--status-neutral-border);
+    --info:var(--status-progress);
+    --info-bg:var(--status-progress-bg);
+    --info-border:var(--status-progress-border);
+    --danger:var(--status-error);
+    --danger-bg:var(--status-error-bg);
+    --danger-border:var(--status-error-border);
+}
+
+:root[data-theme="dark"] body:not(.agency-workspace) {
+    --status-neutral:#bdcce1;
+    --status-neutral-bg:#1b2c44;
+    --status-neutral-border:#3d526e;
+    --status-progress:#b6d2ff;
+    --status-progress-bg:#203654;
+    --status-progress-border:#456486;
+    --status-complete:#d7e7ff;
+    --status-complete-bg:#20324d;
+    --status-complete-border:#597596;
+    --status-error:#f3b9c1;
+    --status-error-bg:#352b3c;
+    --status-error-border:#735060;
+}
+
+/* Text labels, rather than coloured capsules or decorative status dots.
+   The final selector covers the older classless payment-record status span;
+   it is confined to the reviewed Status column, not every table cell. */
+:root body:not(.agency-workspace) :is(.badge,.ticket-status,.timeline-status),
+:root body:not(.agency-workspace) .booking-payment-summary tbody td:nth-child(4) > span {
+    display:inline-flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:5px;
+    max-width:100%;
+    padding:4px 8px !important;
+    border:1px solid var(--status-neutral-border);
+    border-radius:4px !important;
+    background:var(--status-neutral-bg);
+    color:var(--status-neutral);
+    font-family:inherit;
+    font-size:.75rem !important;
+    font-weight:600 !important;
+    line-height:1.45;
+    letter-spacing:0 !important;
+    text-transform:none;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    vertical-align:middle;
+    box-shadow:none;
+    text-shadow:none;
+}
+
+:root body:not(.agency-workspace) :is(.badge-success,.ticket-status.badge-success) {
+    color:var(--status-complete);
+    background:var(--status-complete-bg);
+    border-color:var(--status-complete-border);
+}
+
+:root body:not(.agency-workspace) :is(.badge-info,.badge-primary,.ticket-status.badge-info) {
+    color:var(--status-progress);
+    background:var(--status-progress-bg);
+    border-color:var(--status-progress-border);
+}
+
+:root body:not(.agency-workspace) :is(.badge-warning,.badge-dark,.ticket-status.badge-warning) {
+    color:var(--status-neutral);
+    background:var(--status-neutral-bg);
+    border-color:var(--status-neutral-border);
+}
+
+:root body:not(.agency-workspace) :is(.badge-danger,.ticket-status.badge-danger) {
+    color:var(--status-error);
+    background:var(--status-error-bg);
+    border-color:var(--status-error-border);
+}
+
+:root body:not(.agency-workspace) :is(.badge,.ticket-status) > svg {
+    width:14px !important;
+    height:14px !important;
+    flex:0 0 14px;
+    color:currentColor;
+}
+
+/* Messages share a plain surface. The concise heading/icon and complete
+   message remain visible; only actual errors receive the restrained red edge. */
+:root body:not(.agency-workspace) :is(.alert,.auth-alert,.signin-alert,.context-banner,.auth-registration-status,.customer-booking-review) {
+    --message-tone:var(--status-progress);
+    background:var(--bg-surface);
+    color:var(--text-body);
+    border:1px solid var(--border-subtle);
+    border-inline-start:3px solid var(--message-tone);
+    border-radius:8px;
+    box-shadow:none;
+    text-shadow:none;
+    line-height:1.65;
+    overflow-wrap:anywhere;
+    animation:none;
+}
+
+:root body:not(.agency-workspace) :is(.alert-success,.auth-alert-success,.signin-alert.success,.context-banner.banner-green) {
+    --message-tone:var(--status-complete);
+}
+
+:root body:not(.agency-workspace) :is(.alert-warning,.auth-alert-warning,.context-banner.banner-amber,.auth-registration-status,.customer-booking-review) {
+    --message-tone:var(--status-neutral);
+}
+
+:root body:not(.agency-workspace) :is(.alert-danger,.auth-alert-danger,.signin-alert:not(.success)) {
+    --message-tone:var(--status-error);
+}
+
+:root body:not(.agency-workspace) :is(.alert,.auth-alert,.signin-alert,.context-banner,.auth-registration-status) :is(h2,h3,h4,strong) {
+    color:var(--text-heading);
+}
+
+:root body:not(.agency-workspace) :is(.alert,.auth-alert,.context-banner) > svg {
+    color:var(--message-tone) !important;
+    width:19px;
+    height:19px;
+    flex:0 0 19px;
+}
+
+:root body:not(.agency-workspace) .context-banner .context-banner-icon {
+    background:transparent;
+    color:var(--message-tone);
+    border:0;
+    border-radius:0;
+    box-shadow:none;
+}
+
+:root body:not(.agency-workspace) :is(.field-error,.auth-field-error) {
+    color:var(--status-error);
+}
+
+/* These exact legacy card surfaces occur only in booking detail. Colour
+   attributes are presentational selectors; form actions and labels stay intact. */
+:root body.customer-workspace:not(.agency-workspace) .detail-layout .card[style*="border-left: 4px solid #D97706"] {
+    background:var(--bg-surface) !important;
+    border:1px solid var(--border-subtle);
+    border-inline-start:3px solid var(--status-progress) !important;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .detail-layout .card[style*="border-left: 4px solid #EF4444"] {
+    background:var(--bg-surface) !important;
+    border:1px solid var(--status-error-border);
+    border-inline-start:3px solid var(--status-error) !important;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .detail-layout .card[style*="border-left: 4px solid #EF4444"] > div:last-child {
+    opacity:1 !important;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .detail-layout .card[style*="linear-gradient(135deg, var(--success-bg)"] {
+    background:var(--bg-surface) !important;
+    border-color:var(--border-subtle) !important;
+}
+
+/* Written authors distinguish staff questions from customer replies. Keep
+   their quiet legacy token-based surfaces, without green/amber fills. */
+:root body.customer-workspace:not(.agency-workspace) .inquiry-message-card {
+    background:var(--bg-surface) !important;
+    border-color:var(--border-subtle) !important;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .inquiry-message-card > div:last-child {
+    color:var(--text-muted) !important;
+    opacity:1 !important;
+}
+
+/* Workflow cards retain their actual state classes for scripts. The badge
+   carries that state; a coloured side rail adds no useful information. */
+:root body.customer-workspace:not(.agency-workspace) .status-card::before {
+    content:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .ticket-card:is(.status-confirmed,.status-pending,.status-processing) {
+    border-inline-start-color:var(--border-subtle);
+}
+
+/* Existing check / cross / step numbers stay visible. Completed stages use
+   a quiet navy outline; the current stage retains the site's filled blue. */
+:root body.customer-workspace:not(.agency-workspace) .glass-stepper .step-bubble {
+    border-width:1px;
+    background:var(--bg-surface);
+    color:var(--status-neutral);
+    border-color:var(--status-neutral-border);
+    box-shadow:none;
+    text-shadow:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .glass-stepper .step-item.completed .step-bubble {
+    background:var(--status-complete-bg);
+    color:var(--status-complete);
+    border-color:var(--status-complete-border);
+    box-shadow:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .glass-stepper .step-item.active .step-bubble {
+    background:var(--site-action);
+    color:#fff;
+    border-color:var(--site-action);
+    box-shadow:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .glass-stepper .step-item.failed .step-bubble {
+    background:var(--status-error-bg) !important;
+    color:var(--status-error) !important;
+    border-color:var(--status-error-border) !important;
+    box-shadow:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .glass-stepper .step-item:is(.completed,.active) .step-title {
+    color:var(--text-heading);
+}
+
+:root body.customer-workspace:not(.agency-workspace) .glass-stepper .step-item.failed .step-title {
+    color:var(--status-error);
+}
+
+:root body.customer-workspace:not(.agency-workspace) .glass-stepper .step-divider {
+    background:var(--border-subtle);
+    box-shadow:none;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .glass-stepper .step-divider.filled {
+    background:var(--status-complete-border);
+}
+
+:root body.customer-workspace:not(.agency-workspace) .timeline-item::before {
+    background:var(--status-complete);
+    box-shadow:0 0 0 3px var(--bg-surface);
+}
+
+:root body.customer-workspace:not(.agency-workspace) .timeline-detail {
+    background:var(--bg-subtle);
+    border-color:var(--border-subtle);
+}
+
+/* Document requirements are factual inline text, not approval badges. */
+:root body:not(.agency-workspace) .visa-requirements .visa-requirement-status {
+    color:var(--text-muted);
+    font-size:.82rem;
+    font-weight:500;
+    line-height:1.5;
+}
+
+:root body.customer-workspace:not(.agency-workspace) .trust-pill {
+    background:var(--bg-surface);
+    color:var(--status-complete);
+    border-color:var(--border-subtle);
+    border-radius:6px;
+    box-shadow:none;
+}
+
+/* Notification counts retain their numeric labels. The unread dot is small,
+   static and supplementary to the existing unread/filter text. */
+:root body:not(.agency-workspace) .notification-dot {
+    width:6px;
+    height:6px;
+    background:var(--status-progress);
+    box-shadow:none;
+    animation:none;
+}
+
+:root body:not(.agency-workspace) .notification-feedback {
+    background:var(--status-neutral-bg);
+    color:var(--status-neutral);
+    border-block-end:1px solid var(--status-neutral-border);
+}
+
+:root body:not(.agency-workspace) :is(.notification-card.is-unread,.notification-item.is-unread) {
+    background:var(--status-progress-bg);
+    border-inline-start-color:var(--status-progress-border);
+}
+
+:root body:not(.agency-workspace) .notification-filters a[aria-current="page"] {
+    background:var(--status-progress-bg);
+    color:var(--status-progress);
+    border-color:var(--status-progress-border);
+}
+
+@media (prefers-reduced-motion:reduce) {
+    :root body:not(.agency-workspace) :is(.alert,.auth-alert,.signin-alert,.context-banner,.glass-stepper,.step-bubble,.notification-dot) {
+        animation:none;
+        transition:none;
+    }
+}
