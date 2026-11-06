@@ -57,6 +57,7 @@ public final class CloudEvaluationReleaseGate implements EnvironmentPostProcesso
         database(environment);
         publicOrigin(required(environment, "travelgo.public-base-url"));
         equal(environment, "spring.jpa.hibernate.ddl-auto", "validate");
+        equal(environment, "spring.jpa.mapping-resources", "META-INF/cloud-evaluation-orm.xml");
         equal(environment, "spring.sql.init.mode", "never");
         equal(environment, "travelgo.data-initializer.enabled", "false");
         equal(environment, "travelgo.demo.enabled", "false");

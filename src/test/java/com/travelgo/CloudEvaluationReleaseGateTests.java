@@ -33,6 +33,7 @@ class CloudEvaluationReleaseGateTests {
                 Map.entry("spring.datasource.hikari.data-source-properties.fallbackToSystemTrustStore", "false"),
                 Map.entry("travelgo.public-base-url", "https://travelgo-demo.onrender.com"),
                 Map.entry("spring.jpa.hibernate.ddl-auto", "validate"), Map.entry("spring.sql.init.mode", "never"),
+                Map.entry("spring.jpa.mapping-resources", "META-INF/cloud-evaluation-orm.xml"),
                 Map.entry("travelgo.data-initializer.enabled", "false"), Map.entry("travelgo.demo.enabled", "false"),
                 Map.entry("server.address", "0.0.0.0"), Map.entry("server.port", "8081"), Map.entry("server.forward-headers-strategy", "native"),
                 Map.entry("server.servlet.session.cookie.secure", "true"), Map.entry("server.servlet.session.cookie.http-only", "true"),
@@ -78,7 +79,7 @@ class CloudEvaluationReleaseGateTests {
     }
 
     @ParameterizedTest @ValueSource(strings = {
-            "travelgo.cloud-evaluation.release-acceptance", "spring.jpa.hibernate.ddl-auto", "travelgo.data-initializer.enabled",
+            "travelgo.cloud-evaluation.release-acceptance", "spring.jpa.hibernate.ddl-auto", "spring.jpa.mapping-resources", "travelgo.data-initializer.enabled",
             "server.address", "server.port", "server.servlet.session.cookie.secure", "travelgo.security.auth-abuse.store",
             "travelgo.mail.transport", "travelgo.payments.simulated", "travelgo.documents.storage-backend", "travelgo.documents.scan.backend"})
     void unsafeReleaseSwitchesAreRejectedBeforeAnyProviderCanRun(String setting) {

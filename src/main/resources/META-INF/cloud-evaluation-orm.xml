@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm" version="3.2">
+    <!-- The existing cloud schema predates this unused association. No current
+         controller, DTO, service, or template reads/writes package transport links.
+         Keep standalone transport management and all other mappings unchanged.
+         This override is loaded only by the cloud-evaluation profile. -->
+    <entity class="com.travelgo.entity.TourPackage" access="FIELD">
+        <attributes>
+            <transient name="transports"/>
+        </attributes>
+    </entity>
+</entity-mappings>
