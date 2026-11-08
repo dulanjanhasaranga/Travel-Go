@@ -6,7 +6,7 @@
  <meta name="description" th:content="${'Tour packages, accommodation options and visa application support from ' + settings.companyName + '.'}" content="Tour packages and travel planning.">
  <title th:text="${settings.companyName + ' | Tour packages and travel planning'}">TravelGO | Travel planning</title>
  <link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/brand.css}">
- <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+ <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-favicon-64.png}">
  <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block>
 </head>
 <body class="public-site landing-page journey-site">
@@ -57,5 +57,5 @@
  </main>
  <div th:replace="~{fragments/footer :: footer}"></div>
  <button class="scroll-top-btn" aria-label="Scroll to top"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 15 7-7 7 7"/></svg></button>
- <script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+ <script defer th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=a32e401bb4dd}"></script>
 </body></html>

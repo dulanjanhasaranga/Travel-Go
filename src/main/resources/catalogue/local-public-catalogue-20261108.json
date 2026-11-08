@@ -1,0 +1,479 @@
+{
+  "version" : "local-public-catalogue-20261108",
+  "tables" : {
+    "destinations" : [ {
+      "id" : 1,
+      "country" : "France",
+      "city" : "Parissss",
+      "description" : "The city of lights, renowned for art, gastronomy, world-class monuments, and historical culture.",
+      "image" : "/images/europe_classical_4k.jpg",
+      "is_active" : false,
+      "featured" : false
+    }, {
+      "id" : 2,
+      "country" : "Japan",
+      "city" : "Tokyo",
+      "description" : "A dynamic blend of ultra-modern neon-lit skyscrapers and historic temples with rich traditions.",
+      "image" : "/images/tokyo_kyoto_4k.jpg",
+      "is_active" : true,
+      "featured" : false
+    }, {
+      "id" : 3,
+      "country" : "UAE",
+      "city" : "Dubai",
+      "description" : "A futuristic metropolis famous for luxury shopping, ultramodern architecture, and lively nightlife.",
+      "image" : "/images/dubai_desert_4k.jpg",
+      "is_active" : true,
+      "featured" : false
+    }, {
+      "id" : 4,
+      "country" : "Italy",
+      "city" : "Rome",
+      "description" : "The Eternal City, home to nearly three millennia of globally influential art, architecture, and culture.",
+      "image" : "/images/rome_renaissance_4k.jpg",
+      "is_active" : true,
+      "featured" : false
+    }, {
+      "id" : 5,
+      "country" : "UK",
+      "city" : "London",
+      "description" : "A vibrant capital blending centuries of history with world-class art, culture, and iconic landmarks.",
+      "image" : "/images/london_royal_highlights_4k.jpg",
+      "is_active" : true,
+      "featured" : false
+    }, {
+      "id" : 6,
+      "country" : "Switzerland",
+      "city" : "Swiss Alps",
+      "description" : "Pristine alpine lakes, snow-capped peaks, and cozy chalets in a breathtaking mountain setting.",
+      "image" : "/images/swiss_alps_retreat_4k.jpg",
+      "is_active" : true,
+      "featured" : false
+    }, {
+      "id" : 7,
+      "country" : "Greece",
+      "city" : "Santorini",
+      "description" : "Famous for stunning sunsets, white-washed buildings, and deep blue Aegean waters.",
+      "image" : "/images/santorini_sunset_getaway_4k.jpg",
+      "is_active" : true,
+      "featured" : false
+    }, {
+      "id" : 8,
+      "country" : "Maldives",
+      "city" : "Maldives",
+      "description" : "A tropical paradise of crystal-clear waters, white sandy beaches, and luxury overwater bungalows.",
+      "image" : "/images/maldives_island_escape_4k.jpg",
+      "is_active" : true,
+      "featured" : false
+    }, {
+      "id" : 9,
+      "country" : "Kenya",
+      "city" : "Nairobi",
+      "description" : "Experience majestic wildlife safaris, stunning savannas, and spectacular golden hour sunsets.",
+      "image" : "/images/kenya_safari_adventure_4k.jpg",
+      "is_active" : true,
+      "featured" : false
+    } ],
+    "package_categories" : [ {
+      "id" : 1,
+      "name" : "Cultural Heritage",
+      "description" : "Historical tours, landmark access, and cultural immersion.",
+      "is_active" : true
+    }, {
+      "id" : 2,
+      "name" : "Luxury & Leisure",
+      "description" : "Exclusive experiences, private transfers, and premier excursions.",
+      "is_active" : true
+    }, {
+      "id" : 3,
+      "name" : "Adventure & Safari",
+      "description" : "Outdoor expeditions, desert safaris, and nature trails.",
+      "is_active" : true
+    } ],
+    "tour_packages" : [ {
+      "id" : 1,
+      "name" : "European Classical Journey",
+      "category_id" : 1,
+      "destination_id" : 1,
+      "description" : "Covers Paris and Rome with guided museum access and high-speed rail transfers between cities.",
+      "base_price" : 1299.00,
+      "duration_days" : 7,
+      "flight_details" : "Return Economy Ticket Included",
+      "included_services" : "Skip-the-line Louvre & Colosseum, rail transfers, bilingual tour guide",
+      "max_capacity" : 20,
+      "image" : "/images/europe_pkg_4k.jpg",
+      "is_active" : true,
+      "featured" : false,
+      "itinerary" : null,
+      "excluded_services" : null,
+      "traveler_information" : null
+    }, {
+      "id" : 2,
+      "name" : "Tokyo & Kyoto Cultural Tour",
+      "category_id" : 1,
+      "destination_id" : 2,
+      "description" : "Discover Shinjuku, Asakusa Sensoji temple, Hakone Mt. Fuji views, and traditional Gion geisha districts.",
+      "base_price" : 1549.00,
+      "duration_days" : 8,
+      "flight_details" : "Tokyo Haneda/Narita Direct Flights Included",
+      "included_services" : "7-Day Shinkansen Bullet Train Pass, tea ceremony, private temple tour",
+      "max_capacity" : 15,
+      "image" : "/images/tokyo_pkg_4k.jpg",
+      "is_active" : true,
+      "featured" : false,
+      "itinerary" : null,
+      "excluded_services" : null,
+      "traveler_information" : null
+    }, {
+      "id" : 3,
+      "name" : "Dubai City & Desert Expedition",
+      "category_id" : 3,
+      "destination_id" : 3,
+      "description" : "Includes red dune safari, evening dhow cruise along Dubai Marina, and Burj Khalifa 124th floor tickets.",
+      "base_price" : 899.00,
+      "duration_days" : 5,
+      "flight_details" : "Direct Dubai Return Flights",
+      "included_services" : "4x4 Safari, BBQ dinner, Marina cruise, Burj Khalifa observation deck",
+      "max_capacity" : 25,
+      "image" : "/images/dubai_pkg_4k.jpg",
+      "is_active" : true,
+      "featured" : false,
+      "itinerary" : null,
+      "excluded_services" : null,
+      "traveler_information" : null
+    }, {
+      "id" : 4,
+      "name" : "Italian Renaissance & Rome",
+      "category_id" : 2,
+      "destination_id" : 4,
+      "description" : "Experience ancient Roman amphitheaters, Vatican private tours, and authentic Tuscan wine tasting.",
+      "base_price" : 1199.00,
+      "duration_days" : 6,
+      "flight_details" : "Rome Fiumicino Return Flights",
+      "included_services" : "Vatican Museums VIP pass, Colosseum underground tour, guided wine tasting",
+      "max_capacity" : 18,
+      "image" : "/images/rome_pkg_4k.jpg",
+      "is_active" : true,
+      "featured" : false,
+      "itinerary" : null,
+      "excluded_services" : null,
+      "traveler_information" : null
+    }, {
+      "id" : 5,
+      "name" : "London Royal Highlights",
+      "category_id" : 1,
+      "destination_id" : 5,
+      "description" : "Explore the Tower of London, Big Ben, and enjoy a Thames River dinner cruise.",
+      "base_price" : 1150.00,
+      "duration_days" : 5,
+      "flight_details" : "Direct Heathrow Return Flights",
+      "included_services" : "Tower of London passes, Thames cruise, Afternoon Tea experience",
+      "max_capacity" : 20,
+      "image" : "/images/london_pkg_4k.jpg",
+      "is_active" : true,
+      "featured" : false,
+      "itinerary" : null,
+      "excluded_services" : null,
+      "traveler_information" : null
+    }, {
+      "id" : 6,
+      "name" : "Swiss Alps Retreat",
+      "category_id" : 2,
+      "destination_id" : 6,
+      "description" : "Relax in a luxury chalet, enjoy scenic train rides, and discover pristine mountain lakes.",
+      "base_price" : 1850.00,
+      "duration_days" : 6,
+      "flight_details" : "Zurich Return Flights Included",
+      "included_services" : "Glacier Express tickets, Chalet accommodation, Spa access",
+      "max_capacity" : 12,
+      "image" : "/images/swiss_pkg_4k.jpg",
+      "is_active" : true,
+      "featured" : false,
+      "itinerary" : null,
+      "excluded_services" : null,
+      "traveler_information" : null
+    }, {
+      "id" : 7,
+      "name" : "Santorini Sunset Getaway",
+      "category_id" : 2,
+      "destination_id" : 7,
+      "description" : "Experience the romance of Oia sunsets with a private catamaran cruise and luxury villa stay.",
+      "base_price" : 1650.00,
+      "duration_days" : 5,
+      "flight_details" : "Athens Transfer & Flights Included",
+      "included_services" : "Private Catamaran cruise, Wine tasting, Villa accommodation",
+      "max_capacity" : 15,
+      "image" : "/images/santorini_pkg_4k.jpg",
+      "is_active" : true,
+      "featured" : false,
+      "itinerary" : null,
+      "excluded_services" : null,
+      "traveler_information" : null
+    }, {
+      "id" : 8,
+      "name" : "Maldives Island Escape",
+      "category_id" : 2,
+      "destination_id" : 8,
+      "description" : "Unwind in a private overwater bungalow surrounded by crystal clear turquoise waters and coral reefs.",
+      "base_price" : 2999.00,
+      "duration_days" : 7,
+      "flight_details" : "Male Return Flights & Seaplane Transfer",
+      "included_services" : "Overwater Bungalow, Snorkeling gear, All-inclusive dining",
+      "max_capacity" : 10,
+      "image" : "/images/maldives_pkg_4k.jpg",
+      "is_active" : true,
+      "featured" : false,
+      "itinerary" : null,
+      "excluded_services" : null,
+      "traveler_information" : null
+    }, {
+      "id" : 9,
+      "name" : "Kenya Safari Adventure",
+      "category_id" : 3,
+      "destination_id" : 9,
+      "description" : "Witness the Great Migration, spot the Big Five, and sleep under the stars in a luxury tented camp.",
+      "base_price" : 2450.00,
+      "duration_days" : 8,
+      "flight_details" : "Nairobi Return Flights Included",
+      "included_services" : "4x4 Game Drives, Maasai Mara park fees, Luxury tented camp",
+      "max_capacity" : 14,
+      "image" : "/images/kenya_pkg_4k.jpg",
+      "is_active" : true,
+      "featured" : false,
+      "itinerary" : null,
+      "excluded_services" : null,
+      "traveler_information" : null
+    } ],
+    "hotels" : [ {
+      "id" : 1,
+      "name" : "Grand Hotel de Paris",
+      "destination_id" : 1,
+      "address" : "12 Rue de Rivoli, Paris",
+      "star_rating" : 4,
+      "price_per_night" : 180.00,
+      "description" : "Charming Parisian boutique hotel near the Louvre.",
+      "image" : null,
+      "is_active" : true
+    }, {
+      "id" : 2,
+      "name" : "Tokyo Skyline Shinjuku",
+      "destination_id" : 2,
+      "address" : "3-1 Shinjuku, Tokyo",
+      "star_rating" : 4,
+      "price_per_night" : 150.00,
+      "description" : "Modern high-rise hotel offering breathtaking city views.",
+      "image" : null,
+      "is_active" : true
+    }, {
+      "id" : 3,
+      "name" : "Burj View Luxury Suites",
+      "destination_id" : 3,
+      "address" : "Downtown Dubai, UAE",
+      "star_rating" : 5,
+      "price_per_night" : 250.00,
+      "description" : "Opulent 5-star hotel adjacent to Dubai Mall.",
+      "image" : null,
+      "is_active" : true
+    }, {
+      "id" : 4,
+      "name" : "Hotel Roma Centro",
+      "destination_id" : 4,
+      "address" : "Via Nazionale 44, Rome",
+      "star_rating" : 3,
+      "price_per_night" : 120.00,
+      "description" : "Comfortable central hotel within walking distance of the Colosseum.",
+      "image" : null,
+      "is_active" : true
+    } ],
+    "departures" : [ {
+      "id" : 1,
+      "tour_package_id" : 5,
+      "departure_date" : "2026-10-20",
+      "return_date" : "2026-10-25",
+      "available_seats" : 20,
+      "total_capacity" : 20
+    }, {
+      "id" : 2,
+      "tour_package_id" : 5,
+      "departure_date" : "2026-11-04",
+      "return_date" : "2026-11-09",
+      "available_seats" : 20,
+      "total_capacity" : 20
+    }, {
+      "id" : 3,
+      "tour_package_id" : 5,
+      "departure_date" : "2026-11-19",
+      "return_date" : "2026-11-24",
+      "available_seats" : 20,
+      "total_capacity" : 20
+    }, {
+      "id" : 4,
+      "tour_package_id" : 6,
+      "departure_date" : "2026-10-20",
+      "return_date" : "2026-10-26",
+      "available_seats" : 12,
+      "total_capacity" : 12
+    }, {
+      "id" : 5,
+      "tour_package_id" : 6,
+      "departure_date" : "2026-11-04",
+      "return_date" : "2026-11-10",
+      "available_seats" : 12,
+      "total_capacity" : 12
+    }, {
+      "id" : 6,
+      "tour_package_id" : 6,
+      "departure_date" : "2026-11-19",
+      "return_date" : "2026-11-25",
+      "available_seats" : 12,
+      "total_capacity" : 12
+    }, {
+      "id" : 7,
+      "tour_package_id" : 7,
+      "departure_date" : "2026-10-20",
+      "return_date" : "2026-10-25",
+      "available_seats" : 15,
+      "total_capacity" : 15
+    }, {
+      "id" : 8,
+      "tour_package_id" : 7,
+      "departure_date" : "2026-11-04",
+      "return_date" : "2026-11-09",
+      "available_seats" : 15,
+      "total_capacity" : 15
+    }, {
+      "id" : 9,
+      "tour_package_id" : 7,
+      "departure_date" : "2026-11-19",
+      "return_date" : "2026-11-24",
+      "available_seats" : 15,
+      "total_capacity" : 15
+    }, {
+      "id" : 10,
+      "tour_package_id" : 8,
+      "departure_date" : "2026-10-20",
+      "return_date" : "2026-10-27",
+      "available_seats" : 10,
+      "total_capacity" : 10
+    }, {
+      "id" : 11,
+      "tour_package_id" : 8,
+      "departure_date" : "2026-11-04",
+      "return_date" : "2026-11-11",
+      "available_seats" : 10,
+      "total_capacity" : 10
+    }, {
+      "id" : 12,
+      "tour_package_id" : 8,
+      "departure_date" : "2026-11-19",
+      "return_date" : "2026-11-26",
+      "available_seats" : 10,
+      "total_capacity" : 10
+    }, {
+      "id" : 13,
+      "tour_package_id" : 9,
+      "departure_date" : "2026-10-20",
+      "return_date" : "2026-10-28",
+      "available_seats" : 14,
+      "total_capacity" : 14
+    }, {
+      "id" : 14,
+      "tour_package_id" : 9,
+      "departure_date" : "2026-11-04",
+      "return_date" : "2026-11-12",
+      "available_seats" : 13,
+      "total_capacity" : 14
+    }, {
+      "id" : 15,
+      "tour_package_id" : 9,
+      "departure_date" : "2026-11-19",
+      "return_date" : "2026-11-27",
+      "available_seats" : 14,
+      "total_capacity" : 14
+    }, {
+      "id" : 16,
+      "tour_package_id" : 1,
+      "departure_date" : "2026-10-20",
+      "return_date" : "2026-10-27",
+      "available_seats" : 20,
+      "total_capacity" : 20
+    }, {
+      "id" : 17,
+      "tour_package_id" : 1,
+      "departure_date" : "2026-11-04",
+      "return_date" : "2026-11-11",
+      "available_seats" : 20,
+      "total_capacity" : 20
+    }, {
+      "id" : 18,
+      "tour_package_id" : 1,
+      "departure_date" : "2026-11-19",
+      "return_date" : "2026-11-26",
+      "available_seats" : 20,
+      "total_capacity" : 20
+    }, {
+      "id" : 19,
+      "tour_package_id" : 2,
+      "departure_date" : "2026-10-20",
+      "return_date" : "2026-10-28",
+      "available_seats" : 15,
+      "total_capacity" : 15
+    }, {
+      "id" : 20,
+      "tour_package_id" : 2,
+      "departure_date" : "2026-11-04",
+      "return_date" : "2026-11-12",
+      "available_seats" : 15,
+      "total_capacity" : 15
+    }, {
+      "id" : 21,
+      "tour_package_id" : 2,
+      "departure_date" : "2026-11-19",
+      "return_date" : "2026-11-27",
+      "available_seats" : 14,
+      "total_capacity" : 15
+    }, {
+      "id" : 22,
+      "tour_package_id" : 3,
+      "departure_date" : "2026-10-20",
+      "return_date" : "2026-10-25",
+      "available_seats" : 25,
+      "total_capacity" : 25
+    }, {
+      "id" : 23,
+      "tour_package_id" : 3,
+      "departure_date" : "2026-11-04",
+      "return_date" : "2026-11-09",
+      "available_seats" : 24,
+      "total_capacity" : 25
+    }, {
+      "id" : 24,
+      "tour_package_id" : 3,
+      "departure_date" : "2026-11-19",
+      "return_date" : "2026-11-24",
+      "available_seats" : 25,
+      "total_capacity" : 25
+    }, {
+      "id" : 25,
+      "tour_package_id" : 4,
+      "departure_date" : "2026-10-20",
+      "return_date" : "2026-10-26",
+      "available_seats" : 18,
+      "total_capacity" : 18
+    }, {
+      "id" : 26,
+      "tour_package_id" : 4,
+      "departure_date" : "2026-11-04",
+      "return_date" : "2026-11-10",
+      "available_seats" : 17,
+      "total_capacity" : 18
+    }, {
+      "id" : 27,
+      "tour_package_id" : 4,
+      "departure_date" : "2026-11-19",
+      "return_date" : "2026-11-25",
+      "available_seats" : 18,
+      "total_capacity" : 18
+    } ]
+  }
+}

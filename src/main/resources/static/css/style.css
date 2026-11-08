@@ -345,7 +345,7 @@ img {
     z-index: 1001;
 }
 
-.nav-toggle span {
+.nav-toggle > span:not(.nav-toggle-label) {
     display: block;
     width: 22px;
     height: 2px;

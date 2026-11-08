@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /** Catalogue reads and rendered filters use a rollback-only H2 profile, never the application database. */
 @SpringBootTest(properties = {"spring.config.import=", "spring.jpa.open-in-view=true"})
 @ActiveProfiles("test")
+@Import(TestDatabaseSafetyConfiguration.class)
 @Transactional
 class CatalogueDiscoveryTests {
     @Autowired CatalogueDiscoveryService discovery;
@@ -132,7 +134,11 @@ class CatalogueDiscoveryTests {
         assertTrue(page.getResponse().getContentAsString().contains(hotel.getName()));
         assertTrue(page.getResponse().getContentAsString().contains("/packages/" + a.getId()));
         mvc.perform(get("/packages/" + a.getId())).andExpect(status().isOk()).andExpect(view().name("package-detail"));
-        mvc.perform(get("/")).andExpect(status().isOk()).andExpect(model().attributeExists("valuePackages", "destinationSummaries"));
+        var home = mvc.perform(get("/")).andExpect(status().isOk()).andExpect(view().name("index"))
+            .andExpect(model().attributeExists("destinations", "packages", "categories")).andReturn();
+        assertTrue(home.getResponse().getContentAsString().contains("/packages/" + a.getId()));
+        assertTrue(home.getResponse().getContentAsString().contains(a.getName()));
+        assertTrue(home.getResponse().getContentAsString().contains("Alpha, " + marker));
     }
 
     @Test void invalidFilterRangesAndMissingRecordsReturnClearHttpErrors() throws Exception {

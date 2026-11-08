@@ -6,12 +6,12 @@
  <link rel="stylesheet" th:href="@{/css/style.css}">
  <link rel="stylesheet" th:href="@{/css/login.css}">
  <link rel="stylesheet" th:href="@{/css/brand.css}">
- <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+ <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-favicon-64.png}">
 <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block></head>
 <body class="auth-site">
  <main class="signin-shell">
   <section class="signin-story" aria-label="Travel account">
-   <a th:href="@{/}" class="signin-brand"><span class="official-mark"><img th:with="agencyLogo=${@travelImages.logo(systemSettings != null ? systemSettings.logoUrl : null)}" th:src="${agencyLogo == '/images/travelgo-logo.png' ? '/images/brand/travelgo-airborne.png' : agencyLogo}" th:classappend="${agencyLogo != '/images/travelgo-logo.png' ? 'agency-logo-custom' : null}" data-image-fallback="brand" alt="" width="100" height="100"></span><span th:text="${systemSettings != null and !#strings.isEmpty(systemSettings.companyName) ? systemSettings.companyName : 'TravelGO'}">TravelGO</span></a>
+   <a th:href="@{/}" class="signin-brand"><span class="official-mark"><img th:with="agencyLogo=${@travelImages.logo(systemSettings != null ? systemSettings.logoUrl : null)}" th:src="${agencyLogo == '/images/travelgo-logo.png' ? '/images/brand/travelgo-airborne.png' : agencyLogo}" th:classappend="${agencyLogo != '/images/travelgo-logo.png' ? 'agency-logo-custom' : null}" data-image-fallback="brand" alt="" width="100" height="100" th:srcset="${agencyLogo == '/images/travelgo-logo.png' or agencyLogo == '/images/brand/travelgo-airborne.png' ? '/images/brand/travelgo-airborne-192.webp 192w, /images/brand/travelgo-airborne-384.webp 384w' : null}" sizes="(max-width: 760px) 120px, 145px"></span><span th:text="${systemSettings != null and !#strings.isEmpty(systemSettings.companyName) ? systemSettings.companyName : 'TravelGO'}">TravelGO</span></a>
    <div class="story-copy"><h2>Manage your<br>travel plans.</h2><p>View your bookings, visa applications and messages from our travel team.</p></div>
   </section>
   <section class="signin-main" aria-labelledby="signin-title">
@@ -74,5 +74,5 @@
   </section>
  </main>
  <script th:attr="nonce=${cspNonce}" th:src="@{/js/login.js}" defer></script>
-<script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script></body>
+<script defer th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=a32e401bb4dd}"></script></body>
 </html>

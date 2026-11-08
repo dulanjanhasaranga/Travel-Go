@@ -3,6 +3,8 @@
 <!-- Only established local destination photos have generated WebP alternatives. -->
 <picture class="responsive-photo" th:fragment="image(photo, altText, sizes, lazy)"
          th:with="safePhoto=${@travelImages.resolve(photo)}, originalSources=${@travelImages.srcset(safePhoto)}, responsiveBase=${originalSources != null ? #strings.substringBefore(#strings.substringAfter(originalSources, '/images/'), '.jpg') : ''}">
+    <source th:if="${responsiveBase == 'swiss-alps-photo'}" type="image/avif"
+            th:attr="srcset=${'/images/optimized/swiss-alps-photo-640.avif 640w, /images/optimized/swiss-alps-photo-960.avif 960w, /images/optimized/swiss-alps-photo-1600.avif 1600w, /images/optimized/swiss-alps-photo-1920.avif 1920w'}, sizes=${sizes}">
     <source th:if="${originalSources != null}" type="image/webp"
             th:attr="srcset=${'/images/optimized/' + responsiveBase + '-640.webp 640w, /images/optimized/' + responsiveBase + '-960.webp 960w, /images/optimized/' + responsiveBase + '-1600.webp 1600w, /images/optimized/' + responsiveBase + '-1920.webp 1920w'}, sizes=${sizes}">
     <img data-catalogue-photo th:src="${safePhoto}" th:alt="${altText}"

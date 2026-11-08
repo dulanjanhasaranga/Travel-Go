@@ -5,7 +5,7 @@
     <aside th:fragment="admin-sidebar(activeTab)" class="admin-sidebar">
         <div class="sidebar-header">
             <a th:href="@{/admin/dashboard}" class="sidebar-logo">
-                <span class="official-mark"><img th:with="agencyLogo=${@travelImages.logo(systemSettings != null ? systemSettings.logoUrl : null)}" th:src="${agencyLogo == '/images/travelgo-logo.png' ? '/images/brand/travelgo-airborne.png' : agencyLogo}" th:classappend="${agencyLogo != '/images/travelgo-logo.png' ? 'agency-logo-custom' : null}" data-image-fallback="brand" alt="" width="100" height="100"></span>
+                <span class="official-mark"><img th:with="agencyLogo=${@travelImages.logo(systemSettings != null ? systemSettings.logoUrl : null)}" th:src="${agencyLogo == '/images/travelgo-logo.png' ? '/images/brand/travelgo-airborne.png' : agencyLogo}" th:classappend="${agencyLogo != '/images/travelgo-logo.png' ? 'agency-logo-custom' : null}" data-image-fallback="brand" alt="" width="100" height="100" th:srcset="${agencyLogo == '/images/travelgo-logo.png' or agencyLogo == '/images/brand/travelgo-airborne.png' ? '/images/brand/travelgo-airborne-192.webp 192w, /images/brand/travelgo-airborne-384.webp 384w' : null}" sizes="100px"></span>
                 <span th:text="${systemSettings != null and !#strings.isEmpty(systemSettings.companyName) ? systemSettings.companyName : 'TravelGO'}">TravelGO</span>
             </a>
             <span class="sidebar-logo-badge">Admin console</span>

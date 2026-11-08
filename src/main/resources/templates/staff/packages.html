@@ -8,7 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/admin.css(v=2)}">
     
     <link rel="stylesheet" th:href="@{/css/brand.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-favicon-64.png}">
 <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block><link rel="stylesheet" th:href="@{/css/catalogue-photos.css}"></head>
 <body class="agency-workspace" th:attr="data-package-manage=${#authorization.expression('hasAuthority(''PERM_PACKAGE_MANAGE'')')},data-destination-manage=${#authorization.expression('hasAuthority(''PERM_DESTINATION_MANAGE'')')}">
     <div class="admin-layout">
@@ -1115,7 +1115,7 @@
         }
 
 </script>
-<script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script>
+<script defer th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=a32e401bb4dd}"></script>
 <!-- Manage Departures Modal -->
 <div id="manageDeparturesBackdrop" class="slide-backdrop" data-ui-click="closeManageDeparturesModal"></div>
 <div id="manageDeparturesModal" class="slide-panel" style="width: 500px; max-width: 90vw;">

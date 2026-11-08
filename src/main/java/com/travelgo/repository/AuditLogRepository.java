@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
+    boolean existsByActionAndEntityNameAndEntityId(String action, String entityName, Long entityId);
     List<AuditLog> findByUsernameOrderByTimestampDesc(String username);
     List<AuditLog> findAllByOrderByTimestampDesc();
 }

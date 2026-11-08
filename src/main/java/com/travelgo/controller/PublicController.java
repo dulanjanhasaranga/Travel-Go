@@ -52,9 +52,7 @@ public class PublicController {
         model.addAttribute("settings", settingsService.getSettings());
         var destinations = discovery.destinations(null, null, "name");
         model.addAttribute("destinations", destinations);
-        model.addAttribute("destinationSummaries", discovery.summaries(destinations));
         model.addAttribute("packages", tourPackageService.findAll().stream().filter(p -> p.isActive() && p.getDestination().isActive()).toList());
-        model.addAttribute("valuePackages", discovery.packages(null, null, null, null, null, null, null, null, null, "price-asc").stream().limit(3).toList());
         model.addAttribute("categories", packageCategoryService.findAll());
         return "index";
     }

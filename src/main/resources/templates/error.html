@@ -6,16 +6,16 @@
     <title>Unable to open this page | TravelGO</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/brand.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-airborne.png}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/travelgo-favicon-64.png}">
 <th:block th:replace="~{fragments/site-head :: navigation-styles}"></th:block></head>
 <body class="public-site journey-site system-page" th:with="agencySettings=${settings != null ? settings : systemSettings}">
 <main class="system-status" id="page-content" aria-labelledby="system-title">
-    <a class="system-brand" th:href="@{/}"><span class="official-mark"><img th:with="agencyLogo=${@travelImages.logo(agencySettings != null ? agencySettings.logoUrl : null)}" th:src="${agencyLogo == '/images/travelgo-logo.png' ? '/images/brand/travelgo-airborne.png' : agencyLogo}" data-image-fallback="brand" alt="" width="44" height="44"></span><span th:text="${agencySettings != null and !#strings.isEmpty(agencySettings.companyName) ? agencySettings.companyName : 'TravelGO'}">TravelGO</span></a>
+    <a class="system-brand" th:href="@{/}"><span class="official-mark"><img th:with="agencyLogo=${@travelImages.logo(agencySettings != null ? agencySettings.logoUrl : null)}" th:src="${agencyLogo == '/images/travelgo-logo.png' ? '/images/brand/travelgo-airborne.png' : agencyLogo}" data-image-fallback="brand" alt="" width="44" height="44" th:srcset="${agencyLogo == '/images/travelgo-logo.png' or agencyLogo == '/images/brand/travelgo-airborne.png' ? '/images/brand/travelgo-airborne-192.webp 192w, /images/brand/travelgo-airborne-384.webp 384w' : null}" sizes="120px"></span><span th:text="${agencySettings != null and !#strings.isEmpty(agencySettings.companyName) ? agencySettings.companyName : 'TravelGO'}">TravelGO</span></a>
     <span class="system-status-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 3v1"/></svg></span>
     <p class="journey-kicker">Page unavailable</p>
     <h1 id="system-title">We couldn’t open this page.</h1>
     <p th:text="${errorMessage != null ? errorMessage : 'Please try again. If the problem continues, contact our travel team for assistance.'}">Please try again. If the problem continues, contact our travel team for assistance.</p>
     <div class="actions"><a th:href="@{/}" class="btn btn-primary">Go to homepage</a><a th:href="@{/contact}" class="btn btn-outline">Contact our team</a></div>
 </main>
-<script th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=20261013-csp}"></script></body>
+<script defer th:attr="nonce=${cspNonce}" th:src="@{/js/main.js?v=a32e401bb4dd}"></script></body>
 </html>

@@ -62,6 +62,50 @@ header.navbar .nav-links {
   padding: 0;
 }
 
+header.navbar .nav-panel {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 20px;
+}
+
+header.navbar .nav-panel-heading,
+header.navbar .nav-backdrop {
+  display: none;
+}
+
+header.navbar .nav-toggle > .nav-toggle-label {
+  display: inline;
+  width: auto;
+  height: auto;
+  background: none;
+  border-radius: 0;
+  color: inherit;
+  font: inherit;
+}
+
+header.navbar .nav-toggle-icon {
+  overflow: visible;
+}
+
+header.navbar .nav-toggle-line {
+  transform-origin: 12px 12px;
+  transition: transform .24s ease;
+}
+
+header.navbar .nav-toggle[aria-expanded="true"] .nav-toggle-line-top {
+  transform: rotate(45deg) translateY(4px);
+}
+
+header.navbar .nav-toggle-line-bottom {
+  transform: translateX(3px) scaleX(.7);
+}
+
+header.navbar .nav-toggle[aria-expanded="true"] .nav-toggle-line-bottom {
+  transform: rotate(-45deg) translateY(-4px);
+}
+
 header.navbar .nav-link {
   display: inline-flex;
   align-items: center;
@@ -258,69 +302,263 @@ header.navbar .account-chevron {
 }
 
 @media (max-width:1199px) {
-  header.navbar .nav-container {
+  :root body header.navbar .nav-container {
+    min-height: 76px;
+    padding-block: 10px;
+    padding-left: max(20px,env(safe-area-inset-left));
+    padding-right: max(20px,env(safe-area-inset-right));
     flex-wrap: wrap;
     gap: 12px;
   }
 
-  header.navbar .nav-actions {
-    margin-left: auto;
+  /* With scripts unavailable, all destinations and account actions remain inline. */
+  :root body header.navbar .nav-panel {
+    flex-basis: 100%;
+    align-items: stretch;
+    flex-direction: column;
   }
 
-  header.navbar .nav-links {
-    flex-basis: 100%;
-    order: 3;
+  :root body header.navbar .nav-links {
+    display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
-    gap: 4px;
-    border-top: 1px solid var(--border-subtle,#e2e8f0);
-    padding-top: 12px;
   }
 
-  .nav-ready header.navbar .nav-toggle {
+  :root body header.navbar .nav-actions {
+    flex-basis: auto;
+    justify-content: flex-start;
+    margin: 0;
+  }
+
+  :root.nav-js body header.navbar .nav-container {
+    flex-wrap: nowrap;
+  }
+
+  :root.nav-js body header.navbar .nav-toggle {
     display: inline-flex;
+    flex: none;
+    flex-direction: row;
+    gap: 14px;
+    width: auto;
+    min-width: 106px;
+    height: 48px;
+    margin-left: auto;
+    padding: 0 16px;
+    border-radius: 14px;
+    border-color: #d6e0ef;
+    background: #fff;
+    color: #203d71;
+    font-size: .875rem;
+    box-shadow: none;
+    z-index: auto;
+  }
+
+  :root.nav-js body header.navbar .nav-toggle:hover {
+    background: #f1f5fc;
+    border-color: #9bb0d4;
+  }
+
+  :root.nav-js body header.navbar .nav-panel {
+    position: fixed;
+    z-index: 1003;
+    inset: 0 0 0 auto;
+    width: min(100%,440px);
+    height: 100vh;
+    height: 100dvh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+    padding: max(28px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));
+    border-left: 1px solid #dce4f0;
+    background: #fff;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    visibility: hidden;
+    transform: translateX(100%);
+    transition: transform .26s cubic-bezier(.2,.7,.2,1),visibility 0s linear .26s;
+  }
+
+  :root.nav-js body header.navbar.nav-is-open .nav-panel {
+    visibility: visible;
+    transform: translateX(0);
+    transition-delay: 0s;
+  }
+
+  :root.nav-js body header.navbar .nav-panel-heading {
+    display: flex;
+    order: 0;
+    flex: none;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e3e9f3;
+  }
+
+  :root.nav-js body header.navbar .nav-panel-eyebrow {
+    margin: 2px 0 8px;
+    color: #5d7091;
+    font: 700 .65rem/1.5 var(--font-body,system-ui);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  :root.nav-js body header.navbar .nav-panel-heading h2 {
+    margin: 0;
+    color: #19345f;
+    font: 700 clamp(1.35rem,5vw,1.65rem)/1.3 var(--font-heading,system-ui);
+    letter-spacing: -.04em;
+  }
+
+  :root.nav-js body header.navbar .nav-close {
+    display: grid;
+    place-items: center;
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 1px solid #dce4f0;
+    border-radius: 50%;
+    background: #fff;
+    color: #203d71;
+    cursor: pointer;
+  }
+
+  :root.nav-js body header.navbar .nav-close svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  :root.nav-js body header.navbar .nav-close:hover {
+    background: #edf2fa;
+  }
+
+  :root.nav-js body header.navbar .nav-close:focus-visible {
+    outline: 3px solid #3d64a7;
+    outline-offset: 3px;
+  }
+
+  :root.nav-js body header.navbar .nav-links {
+    display: flex;
+    order: 1;
+    flex: 0 0 auto;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 3px;
+    padding: 0;
+    border: 0;
+  }
+
+  :root.nav-js body header.navbar .nav-link {
+    display: flex;
+    justify-content: space-between;
+    min-height: 52px;
+    padding: 10px 15px;
+    border-radius: 10px;
+    color: #344b70;
+    font: 600 clamp(1.05rem,4.7vw,1.3rem)/1.5 var(--font-heading,system-ui);
+    letter-spacing: -.025em;
+    white-space: normal;
+  }
+
+  :root.nav-js body header.navbar .nav-link:hover {
+    background: #f4f7fc;
+    color: #233f7b;
+  }
+
+  :root.nav-js body header.navbar .nav-link[aria-current="page"] {
+    color: #274783;
+    background: #edf2fc;
+    box-shadow: inset 3px 0 #355b9e;
+  }
+
+  :root.nav-js body header.navbar .nav-actions {
+    display: flex;
+    order: 2;
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    flex: none;
+    gap: 14px;
+    width: 100%;
+    margin-top: auto;
+    padding-top: 24px;
+    border-top: 1px solid #e3e9f3;
+  }
+
+  :root.nav-js body header.navbar .nav-auth-actions {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 10px;
+  }
+
+  :root.nav-js body header.navbar .nav-control {
+    min-height: 48px;
+    border-radius: 12px;
+    font-size: .85rem;
+  }
+
+  :root.nav-js body header.navbar .nav-control-primary {
+    background: #294781;
+    border-color: #294781;
+    color: #fff;
+  }
+
+  :root.nav-js body header.navbar .nav-control-primary:hover {
+    background: #1c366a;
+    border-color: #1c366a;
+  }
+
+  :root.nav-js body header.navbar .account-toggle {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  :root.nav-js body header.navbar .account-chevron {
     margin-left: auto;
   }
 
-  .nav-ready header.navbar .nav-links:not(.is-open) {
-    display: none;
+  :root.nav-js body header.navbar .account-popover,
+  :root.nav-js body header.navbar .notification-popover {
+    position: static;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    box-sizing: border-box;
+    margin-top: 10px;
+    border: 1px solid #e3e9f3;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  :root.nav-js body header.navbar .nav-backdrop:not([hidden]) {
+    position: fixed;
+    z-index: 1002;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: rgba(16,33,60,.35);
+    cursor: pointer;
+    animation: nav-backdrop-in .2s ease;
   }
 }
 
-@media (max-width:600px) {
-  header.navbar {
-    position: relative;
-  }
-
-  header.navbar .nav-container {
-    padding-block: 12px;
-  }
-
-  header.navbar .nav-actions {
-    flex-basis: 100%;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-  }
-
-  header.navbar .nav-links {
-    display: grid;
-    grid-template-columns: repeat(2,minmax(0,1fr));
-  }
-
-  header.navbar .nav-link {
-    justify-content: flex-start;
-    font-size: .9rem;
-  }
-
-  header.navbar .nav-control,
-  header.navbar .notification-toggle {
-    min-height: 44px;
-  }
-}
+@keyframes nav-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
 
 @media (prefers-reduced-motion:reduce) {
+  :root.nav-js body header.navbar :is(.nav-panel,.nav-backdrop,.nav-toggle-line),
   header.navbar *,
   .account-chevron {
     transition: none;
+    animation: none;
   }
 }

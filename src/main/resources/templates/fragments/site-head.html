@@ -1,5 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"><head>
-<th:block th:fragment="theme-init"><script th:attr="nonce=${cspNonce}" th:src="@{/js/theme.js?v=20261014-light}"></script><script th:attr="nonce=${cspNonce}" defer th:src="@{/js/ui-actions.js?v=20261019-demo}"></script></th:block>
-<th:block th:fragment="navigation-styles"><link rel="stylesheet" th:href="@{/css/navigation.css}"><link rel="stylesheet" th:href="@{/css/modern.css?v=20261009}"><link rel="stylesheet" th:href="@{/css/workspace-modern.css?v=20261009}"><link rel="stylesheet" th:href="@{/css/currency-estimates.css}"><link rel="stylesheet" th:href="@{/css/journey.css?v=20261012}"><link rel="stylesheet" th:href="@{/css/journey-catalogue.css?v=20261012}"><link rel="stylesheet" th:href="@{/css/journey-pages.css?v=20261012}"><link rel="stylesheet" th:href="@{/css/workspace-clear.css?v=20261012}"><link rel="stylesheet" th:href="@{/css/site-ui-clear.css?v=20261013-recheck}"><link rel="stylesheet" th:href="@{/css/status-refinement.css?v=20261013}"><link rel="stylesheet" th:href="@{/css/workspace-status-refinement.css?v=20261020-status}"><link rel="stylesheet" th:href="@{/css/project-blue-white.css?v=20261013-theme}"><link rel="stylesheet" th:href="@{/css/brand-blue.css?v=20261013-footer}"><link rel="stylesheet" th:href="@{/css/action-controls.css?v=20261020-status}"><script th:attr="nonce=${cspNonce}" defer th:src="@{/js/currency-estimates.js}"></script></th:block>
+<th:block th:fragment="theme-init">
+    <link rel="preload" href="/css/fonts/plus-jakarta-sans-latin-400-800-153fc85b7029.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/css/fonts/inter-latin-300-700-3100e775e861.woff2" as="font" type="font/woff2" crossorigin>
+    <script th:attr="nonce=${cspNonce}" th:src="@{/js/theme.js?v=ab37188a4ef8}"></script>
+    <script th:attr="nonce=${cspNonce}" defer th:src="@{/js/ui-actions.js?v=20261019-demo}"></script>
+</th:block>
+<th:block th:fragment="navigation-styles">
+    <!-- Generated reference: run python scripts/build-shared-css.py after editing shared CSS. -->
+    <link rel="stylesheet" th:href="@{/css/site-bundle.5a01f6730e4ce41d.css}">
+    <script th:attr="nonce=${cspNonce}" defer th:src="@{/js/currency-estimates.js}"></script>
+</th:block>
 </head></html>

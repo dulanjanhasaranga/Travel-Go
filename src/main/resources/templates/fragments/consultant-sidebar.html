@@ -5,7 +5,7 @@
     <aside th:fragment="consultant-sidebar(activeTab)" class="admin-sidebar">
         <div class="sidebar-header">
             <a th:href="@{/staff/dashboard}" class="sidebar-logo">
-                <span class="official-mark"><img th:with="agencyLogo=${@travelImages.logo(systemSettings != null ? systemSettings.logoUrl : null)}" th:src="${agencyLogo == '/images/travelgo-logo.png' ? '/images/brand/travelgo-airborne.png' : agencyLogo}" th:classappend="${agencyLogo != '/images/travelgo-logo.png' ? 'agency-logo-custom' : null}" data-image-fallback="brand" alt="" width="100" height="100"></span>
+                <span class="official-mark"><img th:with="agencyLogo=${@travelImages.logo(systemSettings != null ? systemSettings.logoUrl : null)}" th:src="${agencyLogo == '/images/travelgo-logo.png' ? '/images/brand/travelgo-airborne.png' : agencyLogo}" th:classappend="${agencyLogo != '/images/travelgo-logo.png' ? 'agency-logo-custom' : null}" data-image-fallback="brand" alt="" width="100" height="100" th:srcset="${agencyLogo == '/images/travelgo-logo.png' or agencyLogo == '/images/brand/travelgo-airborne.png' ? '/images/brand/travelgo-airborne-192.webp 192w, /images/brand/travelgo-airborne-384.webp 384w' : null}" sizes="100px"></span>
                 <span th:text="${systemSettings != null and !#strings.isEmpty(systemSettings.companyName) ? systemSettings.companyName : 'TravelGO'}">TravelGO</span>
             </a>
             <div style="font-size: 0.65rem; letter-spacing: 1px;  color: #94A3B8; font-weight: 600; border: 1px solid rgba(148,163,184,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;">

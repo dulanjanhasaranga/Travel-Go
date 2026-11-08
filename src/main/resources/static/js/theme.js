@@ -2,6 +2,12 @@
 (function () {
     'use strict';
     const root = document.documentElement;
+    // Reserve the compact header before the first paint. If the navigation
+    // script cannot load, restore the usable inline links on window load.
+    root.classList.add('nav-js');
+    window.addEventListener('load', function () {
+        if (!root.classList.contains('nav-ready')) root.classList.remove('nav-js');
+    }, {once: true});
     root.dataset.theme = 'light';
     root.style.colorScheme = 'light';
     try {
