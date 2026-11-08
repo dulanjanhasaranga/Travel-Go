@@ -8,6 +8,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class HostedCatalogueRecoveryActivationTests {
+    @Test void visibilityRepairRunsOnlyForItsExactPlanAndAfterRecovery() throws Exception {
+        var service=mock(PublicCatalogueRecoveryService.class);
+        when(service.restoreOnce()).thenReturn(new PublicCatalogueRecoveryService.Result(false,0));
+        new HostedPublicCatalogueRecovery().restoreReviewedPublicCatalogue(service,"").run(new org.springframework.boot.DefaultApplicationArguments());
+        verify(service,never()).repairImportedParisVisibility();clearInvocations(service);
+        new HostedPublicCatalogueRecovery().restoreReviewedPublicCatalogue(service,"correct-restored-paris-20261108").run(new org.springframework.boot.DefaultApplicationArguments());
+        var order=inOrder(service);order.verify(service).restoreOnce();order.verify(service).repairImportedParisVisibility();
+    }
     private final ApplicationContextRunner context=new ApplicationContextRunner()
             .withUserConfiguration(HostedPublicCatalogueRecovery.class)
             .withBean(PublicCatalogueRecoveryService.class,()->mock(PublicCatalogueRecoveryService.class));

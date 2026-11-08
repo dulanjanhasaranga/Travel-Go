@@ -143,4 +143,33 @@ public class PublicCatalogueRecoveryService {
     private static <T> T required(Map<Long,T> values,long id){return Objects.requireNonNull(values.get(id),"Missing reviewed catalogue relationship");}
     private static <T> void unique(Map<String,T> values,String key,T value){if(values.putIfAbsent(key,value)!=null)throw new IllegalStateException("Ambiguous existing catalogue records; recovery made no changes.");}
     public record Result(boolean applied,int insertedRecords){}
+
+    /** Correct only the inactive test-city entry created by the complete reviewed import. */
+    @Transactional
+    public boolean repairImportedParisVisibility(){
+        em.createQuery("select s from SystemSettings s order by s.id",SystemSettings.class)
+                .setMaxResults(1).setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                .setHint("jakarta.persistence.lock.timeout",10000).getResultList();
+        String action="FIX_IMPORTED_PARIS_VISIBILITY";
+        if(audit.existsByActionAndEntityNameAndEntityId(action,VERSION,MARKER_ID))return false;
+        var original=audit.findFirstByActionAndEntityNameAndEntityIdOrderByTimestampAsc(ACTION,VERSION,MARKER_ID);
+        // An incomplete/additive import may have reused an operator's existing inactive record.
+        if(original.isEmpty()||!original.get().getDetails().contains("; inserted=52;"))return false;
+        JsonNode tables=validatedSnapshot();
+        JsonNode reviewed=null;
+        for(JsonNode row:tables.path("destinations"))
+            if("France".equals(text(row,"country"))&&"Parissss".equals(text(row,"city")))reviewed=row;
+        if(reviewed==null)throw new IllegalStateException("Reviewed Paris test entry is unavailable.");
+        List<Destination> existing=destinations.findAll();
+        List<Destination> candidates=existing.stream().filter(d->"France".equals(d.getCountry())&&"Parissss".equals(d.getCity())).toList();
+        if(candidates.isEmpty())return false; // A subsequent operator edit takes precedence.
+        if(candidates.size()!=1||existing.stream().anyMatch(d->"France".equalsIgnoreCase(d.getCountry())&&"Paris".equalsIgnoreCase(d.getCity())))
+            throw new IllegalStateException("Paris destination is ambiguous; no visibility change was made.");
+        Destination target=candidates.get(0);
+        if(target.isActive()||!Objects.equals(target.getImage(),text(reviewed,"image"))||!Objects.equals(target.getDescription(),text(reviewed,"description")))return false;
+        if(packages.findAll().stream().noneMatch(p->"European Classical Journey".equals(p.getName())&&p.isActive()&&p.getDestination().getId().equals(target.getId())))return false;
+        target.setCity("Paris");target.setActive(true);destinations.save(target);
+        audit.save(new AuditLog(action,VERSION,MARKER_ID,"system","Corrected the inactive Parissss test entry from the complete52-record recovery to active Paris; unrelated records preserved."));
+        em.flush();return true;
+    }
 }

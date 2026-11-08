@@ -1,6 +1,7 @@
 # Mobile navigation, performance and missing catalogue recovery — 8 November 2026
 
-Release status: tested release prepared; live deployment verification pending.
+Release status: the first recovery release48e03e3 is live. A targeted Paris visibility
+correction is tested and awaiting rollout verification on9 November2026.
 
 The hosted database was initialized separately from the local TravelGO database.
 The previous deployment had no destinations or tours; it did not copy the local
@@ -33,6 +34,15 @@ The operation locks the existing agency-settings row to serialize overlapping
 starts and writes an audit completion marker in the same transaction. A failure
 rolls back the additions and marker. Once complete, future starts skip recovery,
 so later intentional catalogue deletions or changes are not resurrected.
+
+The local snapshot contains an inactive test destination named `Parissss`, linked
+to European Classical Journey. This explains why the first successful deployment
+showed eight public tours. A separate, explicitly enabled visibility repair corrects
+that imported test entry to active `Paris`. It requires the audit proof of a complete
+52-record import and unchanged source description/image, rejects an ambiguous Paris
+record, and has its own transactional completion marker. Imports that reused existing
+operator records cannot activate this correction. Thirty focused checks passed for
+the visibility repair, preservation rules, activation and unchanged cloud gates.
 
 ## Navigation and delivery changes
 

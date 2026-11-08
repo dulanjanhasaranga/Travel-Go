@@ -15,8 +15,11 @@ import org.springframework.context.annotation.Profile;
 @ConditionalOnProperty(name="travelgo.cloud-evaluation.public-catalogue-recovery",havingValue=PublicCatalogueRecoveryService.VERSION)
 public class HostedPublicCatalogueRecovery {
     private static final Logger log=LoggerFactory.getLogger(HostedPublicCatalogueRecovery.class);
-    @Bean ApplicationRunner restoreReviewedPublicCatalogue(PublicCatalogueRecoveryService recovery){
+    @Bean public ApplicationRunner restoreReviewedPublicCatalogue(PublicCatalogueRecoveryService recovery,
+            @org.springframework.beans.factory.annotation.Value("${travelgo.cloud-evaluation.paris-visibility-repair:}") String visibilityPlan){
         return args->{var result=recovery.restoreOnce();log.info("Public catalogue recovery {}: applied={}, inserted={}",
-                PublicCatalogueRecoveryService.VERSION,result.applied(),result.insertedRecords());};
+                PublicCatalogueRecoveryService.VERSION,result.applied(),result.insertedRecords());
+            if("correct-restored-paris-20261108".equals(visibilityPlan))
+                log.info("Reviewed Paris visibility repair: applied={}",recovery.repairImportedParisVisibility());};
     }
 }

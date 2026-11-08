@@ -64,12 +64,21 @@ class PublicCatalogueRecoveryTests {
         Departure departure=new Departure();departure.setTourPackage(tour);departure.setDepartureDate(LocalDate.of(2026,10,20));
         departure.setReturnDate(LocalDate.of(2026,10,27));departure.setTotalCapacity(99);departure.setAvailableSeats(7);departure=departures.saveAndFlush(departure);
         recovery.restoreOnce();
+        assertFalse(recovery.repairImportedParisVisibility(),"An import reusing existing edits must not change inactive records");
         TourPackage existing=packages.findById(tour.getId()).orElseThrow();assertFalse(existing.isActive());
         assertEquals(0,new BigDecimal("9999.00").compareTo(existing.getBasePrice()));assertEquals("Existing operator edit",existing.getDescription());
         assertFalse(destinations.findById(paris.getId()).orElseThrow().isActive());
         assertFalse(categories.findById(category.getId()).orElseThrow().isActive());
         assertEquals(7,departures.findById(departure.getId()).orElseThrow().getAvailableSeats());
         assertPrivateDataPreserved();
+    }
+
+    @Test void repairsOnlyTheKnownImportedTestCitySoAllNineToursAreVisible(){
+        recovery.restoreOnce();assertTrue(recovery.repairImportedParisVisibility());
+        Destination paris=destinations.findAll().stream().filter(d->"Paris".equals(d.getCity())).findFirst().orElseThrow();
+        assertTrue(paris.isActive());assertTrue(destinations.findAll().stream().noneMatch(d->"Parissss".equals(d.getCity())));
+        assertEquals(9,packages.findAll().stream().filter(p->p.isActive()&&destinations.findById(p.getDestination().getId()).orElseThrow().isActive()).count());
+        assertFalse(recovery.repairImportedParisVisibility());assertEquals(2,audit.count());assertPrivateDataPreserved();
     }
 
     @Test void anyMidImportAmbiguityRollsBackAllNewRowsAndCompletionMarker(){
