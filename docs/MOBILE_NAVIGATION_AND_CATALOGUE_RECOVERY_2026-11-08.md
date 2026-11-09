@@ -1,7 +1,16 @@
 # Mobile navigation, performance and missing catalogue recovery — 8 November 2026
 
-Release status: the first recovery release48e03e3 is live. A targeted Paris visibility
-correction is tested and awaiting rollout verification on9 November2026.
+Release status: public catalogue recovery and the Paris correction were verified live
+on9 November2026, revision`cd9cf1bdddec5de820b2605c62e6aaf02fae41fe`.
+
+All nine tours and nine destinations were visible. All nine individual tour pages
+returned HTTP200, all three categories and four hotel references were present,
+the Maldives search returned its single expected tour, and `/healthz` returned UP.
+A fresh browser check again returned HTTP200 with all nine tours; normal scrolling
+confirmed that all nine card images loaded and the live mobile drawer opened correctly.
+Evidence and screenshots are in`target/mobile-performance-20261108/live-catalogue-proof.json`
+and`live-restored-packages-*.png`. This confirms a successful running instance;
+the free host can still sleep later and require a fresh browser visit to wake.
 
 The hosted database was initialized separately from the local TravelGO database.
 The previous deployment had no destinations or tours; it did not copy the local

@@ -30,13 +30,17 @@ public class CatalogueDiscoveryService {
     }
 
     public List<Destination> destinations(String search, String country, String sort) {
+        return filterDestinations(destinations.findAll(), search, country, sort);
+    }
+
+    public List<Destination> filterDestinations(List<Destination> candidates, String search, String country, String sort) {
         Comparator<Destination> order = Comparator.comparing(Destination::getCity, String.CASE_INSENSITIVE_ORDER)
                 .thenComparing(Destination::getId);
         if ("newest".equals(sort)) order = Comparator.comparing(Destination::getId).reversed();
         if ("oldest".equals(sort)) order = Comparator.comparing(Destination::getId);
         if ("name-desc".equals(sort)) order = Comparator.comparing(Destination::getCity, String.CASE_INSENSITIVE_ORDER).reversed().thenComparing(Destination::getId);
         String query = clean(search);
-        return destinations.findAll().stream().filter(Destination::isActive)
+        return candidates.stream().filter(Destination::isActive)
                 .filter(d -> clean(d.getCity() + ", " + d.getCountry()).contains(query))
                 .filter(d -> country == null || country.isBlank() || d.getCountry().equalsIgnoreCase(country.trim()))
                 .sorted(order).toList();

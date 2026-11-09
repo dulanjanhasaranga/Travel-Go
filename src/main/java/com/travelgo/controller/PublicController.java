@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class PublicController {
 
-    private final SystemSettingsService settingsService;
+    private final RequestPageLayout layout;
     private final DestinationService destinationService;
     private final TourPackageService tourPackageService;
     private final PackageCategoryService packageCategoryService;
@@ -29,14 +29,14 @@ public class PublicController {
     private final CatalogueDiscoveryService discovery;
     private final DepartureAvailability departureAvailability;
 
-    public PublicController(SystemSettingsService settingsService,
+    public PublicController(RequestPageLayout layout,
                            DestinationService destinationService,
                            TourPackageService tourPackageService,
                            PackageCategoryService packageCategoryService,
                            ContactMessageService contactMessageService,
                            UserService userService,
                            HotelService hotelService, CatalogueDiscoveryService discovery, DepartureAvailability departureAvailability) {
-        this.settingsService = settingsService;
+        this.layout = layout;
         this.destinationService = destinationService;
         this.tourPackageService = tourPackageService;
         this.packageCategoryService = packageCategoryService;
@@ -47,9 +47,12 @@ public class PublicController {
         this.departureAvailability = departureAvailability;
     }
 
+    @org.springframework.web.bind.annotation.ModelAttribute("settings")
+    public com.travelgo.entity.SystemSettings pageSettings() { return layout.get().settings(); }
+
     @GetMapping("/")
+    @org.springframework.transaction.annotation.Transactional(readOnly=true)
     public String home(Model model) {
-        model.addAttribute("settings", settingsService.getSettings());
         var destinations = discovery.destinations(null, null, "name");
         model.addAttribute("destinations", destinations);
         model.addAttribute("packages", tourPackageService.findAll().stream().filter(p -> p.isActive() && p.getDestination().isActive()).toList());
@@ -59,13 +62,13 @@ public class PublicController {
 
 
     @GetMapping("/destinations")
+    @org.springframework.transaction.annotation.Transactional(readOnly=true)
     public String destinations(@RequestParam(value = "search", required = false) String search,
                                @RequestParam(value = "country", required = false) String country,
                                @RequestParam(value = "sort", defaultValue = "name") String sort,
                                @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
-        model.addAttribute("settings", settingsService.getSettings());
         var all = discovery.destinations(null, null, "name");
-        var matching = discovery.destinations(search, country, sort);
+        var matching = discovery.filterDestinations(all, search, country, sort);
         model.addAttribute("countries", all.stream().map(com.travelgo.entity.Destination::getCountry).distinct().sorted().toList());
         model.addAttribute("destinationOptions", all);
         model.addAttribute("destinationSummaries", discovery.summaries(matching));
@@ -80,7 +83,6 @@ public class PublicController {
     public String destinationDetail(@PathVariable Long id, Model model) {
         var destination = destinationService.findById(id).filter(com.travelgo.entity.Destination::isActive)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND));
-        model.addAttribute("settings", settingsService.getSettings());
         model.addAttribute("destination", destination);
         model.addAttribute("packages", discovery.packages(null, id, null, null, null, null, null, null, null, "price-asc"));
         model.addAttribute("hotels", hotelService.findByDestinationId(id).stream().filter(com.travelgo.entity.Hotel::isActive).toList());
@@ -88,6 +90,7 @@ public class PublicController {
     }
 
     @GetMapping("/packages")
+    @org.springframework.transaction.annotation.Transactional(readOnly=true)
     public String packages(@RequestParam(value = "search", required = false) String search,
                           @RequestParam(value = "destinationId", required = false) Long destinationId,
                           @RequestParam(value = "categoryId", required = false) Long categoryId,
@@ -103,7 +106,6 @@ public class PublicController {
         if (maxPrice != null && maxPrice.signum() < 0 || minDays != null && (minDays < 1 || minDays > 365) || maxDays != null && (maxDays < 1 || maxDays > 365)
                 || minDays != null && maxDays != null && minDays > maxDays || travelers != null && (travelers < 1 || travelers > 1000))
             throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "Use a positive duration and traveler count, and a valid price range.");
-        model.addAttribute("settings", settingsService.getSettings());
         var matching = discovery.packagePage(search, destinationId, destinationQuery, categoryId, maxPrice,
                 minDays, maxDays, travelers, travelDate, sort, page);
         model.addAttribute("packages", matching.content());
@@ -118,7 +120,7 @@ public class PublicController {
         model.addAttribute("search", search);
         model.addAttribute("selectedDestinationId", destinationId);
         model.addAttribute("selectedCategoryId", categoryId);
-        model.addAttribute("destinationQuery", destinationQuery != null ? destinationQuery : destinationService.findById(destinationId == null ? -1L : destinationId)
+        model.addAttribute("destinationQuery", destinationQuery != null ? destinationQuery : destinationId == null ? "" : destinationService.findById(destinationId)
                 .map(d -> d.getCity() + ", " + d.getCountry()).orElse(""));
         model.addAttribute("minDays", minDays);
         model.addAttribute("maxDays", maxDays);
@@ -149,7 +151,6 @@ public class PublicController {
             model.addAttribute("tourPackage", pkg);
             model.addAttribute("hotels", hotelService.findByDestinationId(pkg.getDestination().getId()).stream().filter(h -> h.isActive()).toList());
             model.addAttribute("departures", departureAvailability.forPackage(pkg.getId(), 1));
-            model.addAttribute("settings", settingsService.getSettings());
             return "customer/booking-form";
         }).orElse("redirect:/packages");
     }
@@ -160,7 +161,6 @@ public class PublicController {
             .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND));
         model.addAttribute("tourPackage", pkg);
         model.addAttribute("departures", departureAvailability.forPackage(pkg.getId(), 1));
-        model.addAttribute("settings", settingsService.getSettings());
         model.addAttribute("hotels", hotelService.findByDestinationId(pkg.getDestination().getId()).stream().filter(h -> h.isActive()).toList());
         model.addAttribute("relatedPackages", tourPackageService.findByDestinationId(pkg.getDestination().getId()).stream()
             .filter(p -> p.isActive() && !p.getId().equals(id)).limit(3).toList());
@@ -169,19 +169,16 @@ public class PublicController {
 
     @GetMapping("/visa-info")
     public String visaInfo(Model model) {
-        model.addAttribute("settings", settingsService.getSettings());
         return "visa-info";
     }
 
     @GetMapping("/about")
     public String about(Model model) {
-        model.addAttribute("settings", settingsService.getSettings());
         return "about";
     }
 
     @GetMapping("/contact")
     public String contact(Model model) {
-        model.addAttribute("settings",settingsService.getSettings());
         model.addAttribute("destinations",destinationService.findAll().stream().filter(d->d.isActive()).toList());
         model.addAttribute("packages",tourPackageService.findAll().stream().filter(p->p.isActive()&&p.getDestination().isActive()).toList());
         if(!model.containsAttribute("inquiry"))model.addAttribute("inquiry",new com.travelgo.dto.InquiryRequest("","","","",null,"GENERAL",null,null,null,null,"",java.util.UUID.randomUUID().toString()));
@@ -204,13 +201,11 @@ public class PublicController {
 
     @GetMapping("/faq")
     public String faq(Model model) {
-        model.addAttribute("settings", settingsService.getSettings());
         return "faq";
     }
 
     @GetMapping("/maintenance")
     public String maintenance(Model model) {
-        model.addAttribute("settings", settingsService.getSettings());
         return "maintenance";
     }
 }

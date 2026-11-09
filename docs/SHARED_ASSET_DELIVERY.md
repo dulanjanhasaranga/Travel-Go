@@ -12,6 +12,8 @@ After changing any shared stylesheet, run from the Java project directory:
 ```powershell
 python scripts/build-shared-css.py
 python scripts/build-shared-css.py --check
+python scripts/build-base-styles.py
+python scripts/build-base-styles.py --check
 ```
 
 Commit/package the generated `site-bundle.<content hash>.css`, its source changes,
@@ -19,6 +21,13 @@ and `templates/fragments/site-head.html` together. `--check` is read-only and fa
 if the checked-in asset or template reference is stale. The generator only removes
 obsolete files carrying its own generated-file marker. No runtime npm dependency
 or build server is needed.
+
+The base stylesheet generator also expands `style.css`'s single `transitions.css`
+import into `base-style.<content hash>.css`. It preserves the original rules and
+cascade position on each page, while removing one blocking nested request. Keep
+editing the original `style.css` and `transitions.css`, then regenerate and commit
+the base asset and updated page links together. Both generators' `--check` modes
+must pass before packaging.
 
 The same Plus Jakarta Sans and Inter variable weights are self-hosted under
 `/css/fonts/`, with `font-display:swap` definitions first in the bundle and early

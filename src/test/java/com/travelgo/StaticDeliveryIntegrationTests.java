@@ -55,4 +55,18 @@ class StaticDeliveryIntegrationTests {
             assertFalse(policy.contains("max-age=3600"), path + ": " + policy);
         }
     }
+
+    @Test void homepageUsesARealCacheableBaseStylesheetWithoutAnotherImportRequest() throws Exception {
+        var mvc=MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+        var home=mvc.perform(get("/")).andReturn().getResponse();
+        assertEquals(200,home.getStatus());
+        var link=java.util.regex.Pattern.compile("href=\"(/css/base-style\\.[a-f0-9]{16}\\.css)\"")
+                .matcher(home.getContentAsString());
+        assertTrue(link.find(),"The production page must use the generated base stylesheet");
+        var css=mvc.perform(get(link.group(1))).andReturn().getResponse();
+        assertEquals(200,css.getStatus());assertTrue(css.getHeader("Cache-Control").contains("max-age=3600"));
+        assertFalse(css.getContentAsString().contains("@import"),"Base styles must not create a second blocking CSS request");
+        assertTrue(css.getContentAsString().contains(".page-progress-bar"));
+        assertTrue(css.getContentAsString().contains(".navbar"));
+    }
 }

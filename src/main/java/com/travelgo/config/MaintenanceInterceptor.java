@@ -1,6 +1,6 @@
 package com.travelgo.config;
 
-import com.travelgo.service.SystemSettingsService;
+import com.travelgo.service.RequestPageLayout;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,10 +18,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class MaintenanceInterceptor implements HandlerInterceptor {
 
-    private final SystemSettingsService settingsService;
+    private final RequestPageLayout layout;
 
-    public MaintenanceInterceptor(SystemSettingsService settingsService) {
-        this.settingsService = settingsService;
+    public MaintenanceInterceptor(RequestPageLayout layout) {
+        this.layout = layout;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class MaintenanceInterceptor implements HandlerInterceptor {
         }
 
         // Check if maintenance mode is active
-        if (settingsService.isMaintenanceMode()) {
+        if ("MAINTENANCE".equals(layout.get().settings().getWebsiteStatus())) {
             response.sendRedirect("/maintenance");
             return false;
         }
@@ -52,7 +52,7 @@ public class MaintenanceInterceptor implements HandlerInterceptor {
         if (modelAndView != null && !request.getRequestURI().startsWith("/css")
                 && !request.getRequestURI().startsWith("/js")) {
             try {
-                modelAndView.addObject("systemSettings", settingsService.getSettings());
+                modelAndView.addObject("systemSettings", layout.get().settings());
             } catch (Exception e) {
                 // Silently ignore if settings are not yet initialized
             }

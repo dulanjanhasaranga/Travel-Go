@@ -28,9 +28,8 @@ class HomepageDataFetchTests {
         var discovery = new CatalogueDiscoveryService(destinationRepository, packageRepository, availability);
         var packageService = new TourPackageService(packageRepository, destinationRepository, categoryRepository,
             mock(BookingRepository.class), mock(WorkflowRules.class), mock(Validator.class), mock(AuditService.class));
-        var settingsService = mock(SystemSettingsService.class);
         var categoryService = mock(PackageCategoryService.class);
-        var controller = new PublicController(settingsService, mock(DestinationService.class), packageService,
+        var controller = new PublicController(mock(RequestPageLayout.class), mock(DestinationService.class), packageService,
             categoryService, mock(ContactMessageService.class), mock(UserService.class), mock(HotelService.class),
             discovery, availability);
 
@@ -41,16 +40,13 @@ class HomepageDataFetchTests {
         var second = tour(alpha, true);
         when(destinationRepository.findAll()).thenReturn(List.of(beta, hidden, alpha));
         when(packageRepository.findAll()).thenReturn(List.of(first, tour(hidden, true), tour(alpha, false), second));
-        var settings = new SystemSettings();
         var categories = List.of(new PackageCategory());
-        when(settingsService.getSettings()).thenReturn(settings);
         when(categoryService.findAll()).thenReturn(categories);
 
         var model = new ExtendedModelMap();
         assertEquals("index", controller.home(model));
         assertEquals(List.of(alpha, beta), model.get("destinations"));
         assertEquals(List.of(first, second), model.get("packages"));
-        assertSame(settings, model.get("settings"));
         assertSame(categories, model.get("categories"));
         verify(packageRepository, times(1)).findAll();
         // Reintroducing either unused summary/value-package computation adds an extra catalogue query.

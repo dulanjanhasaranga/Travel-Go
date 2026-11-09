@@ -149,7 +149,7 @@ class DepartureAvailabilityTests {
         when(packageService.findById(1L)).thenReturn(Optional.of(tour));
         var eligible = departure(2L, "2030-01-14", 8, 8);
         when(departures.findByTourPackage_Id(1L)).thenReturn(List.of(departure(1L, "2030-01-13", 8, 8), eligible));
-        var controller = new PublicController(mock(SystemSettingsService.class), mock(DestinationService.class), packageService,
+        var controller = new PublicController(pageLayout(), mock(DestinationService.class), packageService,
                 mock(PackageCategoryService.class), mock(ContactMessageService.class), mock(UserService.class),
                 mock(HotelService.class), discovery, availability);
 
@@ -164,7 +164,7 @@ class DepartureAvailabilityTests {
         when(packageService.findById(1L)).thenReturn(Optional.of(tour));
         var eligible = departure(2L, "2030-01-14", 8, 8);
         when(departures.findByTourPackage_Id(1L)).thenReturn(List.of(departure(1L, "2030-01-13", 8, 8), eligible));
-        var controller = new PublicController(mock(SystemSettingsService.class), mock(DestinationService.class), packageService,
+        var controller = new PublicController(pageLayout(), mock(DestinationService.class), packageService,
                 mock(PackageCategoryService.class), mock(ContactMessageService.class), mock(UserService.class),
                 mock(HotelService.class), discovery, availability);
         login();
@@ -199,6 +199,12 @@ class DepartureAvailabilityTests {
         mvc(controller).perform(get("/customer/bookings/10"))
                 .andExpect(status().isOk()).andExpect(view().name("customer/booking-detail"))
                 .andExpect(model().attribute("departures", List.of(eligible)));
+    }
+
+    private RequestPageLayout pageLayout() {
+        var layout = mock(RequestPageLayout.class);
+        when(layout.get()).thenReturn(new PageLayoutService.Layout(new com.travelgo.entity.SystemSettings(), null));
+        return layout;
     }
 
     private List<TourPackage> search(LocalDate date, Integer travelers) {
